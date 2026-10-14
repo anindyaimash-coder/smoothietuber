@@ -1718,8 +1718,10 @@
     }
 
     if (isMicMuted) {
-      setSpeakingState(false);
-      updateVolumeMeter(0);
+      if (!isAnyMediaPlaying()) {
+        setSpeakingState(false);
+        updateVolumeMeter(0);
+      }
       showToast('🔇 Mikrofon Dimute');
     } else {
       showToast('🎙️ Mikrofon Di-unmute (Aktif)');
@@ -1754,6 +1756,13 @@
 
   // Global Keydown Handler
   window.addEventListener('keydown', (e) => {
+    // 0. Tutup modal rekaman jika Escape ditekan
+    if (e.key === 'Escape' && recordResultModal && !recordResultModal.classList.contains('hidden')) {
+      recordResultModal.classList.add('hidden');
+      if (previewRecordedVideo) previewRecordedVideo.pause();
+      return;
+    }
+
     // 1. Sedang merekam Hotkey Sistem
     if (isRecordingSystemHotkey) {
       e.preventDefault();
@@ -1909,8 +1918,106 @@
       audioRecordDestination = audioContext.createMediaStreamDestination();
     }
     if (audioContext.state === 'suspended') {
-      audioContext.resume();
+      audioContext.resume().catch(() => {});
     }
+  }
+
+  // Tracking node sumber media agar createMediaElementSource hanya dipanggil sekali per elemen
+  const connectedMediaElements = new WeakMap();
+
+  function connectMediaElementToAudioEngine(mediaElement) {
+    if (!mediaElement) return null;
+    initAudioContext();
+
+    if (connectedMediaElements.has(mediaElement)) {
+      return connectedMediaElements.get(mediaElement);
+    }
+
+    try {
+      // 1. Hubungkan elemen media (audio/video) ke AudioContext yang sudah ada
+      const sourceNode = audioContext.createMediaElementSource(mediaElement);
+
+      // 2. Arahkan output media ke AnalyserNode yang sama persis dengan mikrofon
+      sourceNode.connect(analyser);
+
+      // 3. Arahkan output ke audioContext.destination agar suara tetap terdengar di speaker
+      sourceNode.connect(audioContext.destination);
+
+      // 4. Arahkan ke audioRecordDestination agar suara rekaman tersimpan saat proses ekspor video
+      if (audioRecordDestination) {
+        sourceNode.connect(audioRecordDestination);
+      }
+
+      connectedMediaElements.set(mediaElement, sourceNode);
+      return sourceNode;
+    } catch (err) {
+      console.warn('connectMediaElementToAudioEngine notice:', err);
+      return null;
+    }
+  }
+
+  function isAnyMediaPlaying() {
+    const isAudioPlaying = !!(audioFileElement && !audioFileElement.paused && !audioFileElement.ended);
+    const isVideoPlaying = !!(previewRecordedVideo && !previewRecordedVideo.paused && !previewRecordedVideo.ended);
+    return isAudioPlaying || isVideoPlaying;
+  }
+
+  function checkActiveAudioPlaybackState() {
+    if (isAnyMediaPlaying()) {
+      return; // Masih ada audio/video lain yang sedang diputar
+    }
+
+    // Jika seluruh pemutaran media telah berhenti/pause:
+    if (micStream && micStream.active) {
+      // Revert kembali ke mikrofon live secara otomatis & mulus
+      currentAudioSourceMode = 'mic';
+      if (!isMicMuted) {
+        isListening = true;
+        startAudioLoop();
+      } else {
+        setSpeakingState(false);
+        updateVolumeMeter(0);
+      }
+    } else {
+      // Mikrofon tidak aktif, hentikan loop dan reset animasi avatar ke posisi diam
+      isListening = false;
+      stopAudioLoop();
+      setSpeakingState(false);
+      updateVolumeMeter(0);
+    }
+  }
+
+  function setupMediaElementEvents(mediaElement, modeName = 'playback') {
+    if (!mediaElement || mediaElement._hasAudioSyncListeners) return;
+    mediaElement._hasAudioSyncListeners = true;
+
+    mediaElement.addEventListener('play', async () => {
+      initAudioContext();
+      if (audioContext && audioContext.state === 'suspended') {
+        try {
+          await audioContext.resume();
+        } catch (e) {}
+      }
+      connectMediaElementToAudioEngine(mediaElement);
+      currentAudioSourceMode = modeName;
+      isListening = true;
+      startAudioLoop();
+    });
+
+    mediaElement.addEventListener('pause', () => {
+      checkActiveAudioPlaybackState();
+    });
+
+    mediaElement.addEventListener('ended', () => {
+      checkActiveAudioPlaybackState();
+    });
+
+    mediaElement.addEventListener('seeked', () => {
+      if (mediaElement.paused && !isAnyMediaPlaying() && (!micStream || !micStream.active)) {
+        setSpeakingState(false);
+        updateVolumeMeter(0);
+      }
+    });
   }
 
   async function startMicrophone() {
@@ -1941,6 +2048,7 @@
       micSourceNode.connect(analyser);
       micSourceNode.connect(audioRecordDestination);
 
+      currentAudioSourceMode = 'mic';
       isListening = true;
       setMicStatus('active', 'Aktif & Mendengarkan');
       populateAudioDevices();
@@ -1972,8 +2080,9 @@
       micSourceNode = null;
     }
     setMicStatus('disconnected', 'Terputus');
-    if (currentAudioSourceMode === 'mic') {
+    if (currentAudioSourceMode === 'mic' && !isAnyMediaPlaying()) {
       isListening = false;
+      stopAudioLoop();
       updateVolumeMeter(0);
       setSpeakingState(false);
     }
@@ -2024,16 +2133,38 @@
   }
 
   // Audio loop
+  let isAudioLoopRunning = false;
+  let audioLoopRafId = null;
+
+  function stopAudioLoop() {
+    isAudioLoopRunning = false;
+    if (audioLoopRafId) {
+      cancelAnimationFrame(audioLoopRafId);
+      audioLoopRafId = null;
+    }
+  }
+
   function startAudioLoop() {
+    if (!analyser) return;
+    if (isAudioLoopRunning) return; // Mencegah duplikasi loop RAF
+    isAudioLoopRunning = true;
+
     const timeData = new Float32Array(analyser.fftSize);
 
     function loop() {
-      if (!isListening) return;
+      if (!isListening) {
+        isAudioLoopRunning = false;
+        audioLoopRafId = null;
+        return;
+      }
 
-      if (isMicMuted && currentAudioSourceMode === 'mic') {
+      const mediaPlaying = isAnyMediaPlaying();
+
+      // Jika mic dimute dan sedang di mode mic (dan tidak sedang memutar rekaman/file)
+      if (isMicMuted && currentAudioSourceMode === 'mic' && !mediaPlaying) {
         updateVolumeMeter(0);
         setSpeakingState(false);
-        requestAnimationFrame(loop);
+        audioLoopRafId = requestAnimationFrame(loop);
         return;
       }
 
@@ -2058,10 +2189,10 @@
         }
       }
 
-      requestAnimationFrame(loop);
+      audioLoopRafId = requestAnimationFrame(loop);
     }
 
-    loop();
+    audioLoopRafId = requestAnimationFrame(loop);
   }
 
   function setSpeakingState(speaking) {
@@ -2095,11 +2226,10 @@
 
     if (!audioFileElement) {
       audioFileElement = new Audio();
-      audioFileElement.crossOrigin = 'anonymous';
-      audioFileSourceNode = audioContext.createMediaElementSource(audioFileElement);
-      audioFileSourceNode.connect(analyser);
-      audioFileSourceNode.connect(audioContext.destination);
-      audioFileSourceNode.connect(audioRecordDestination);
+      connectMediaElementToAudioEngine(audioFileElement);
+      setupMediaElementEvents(audioFileElement, 'file');
+    } else {
+      connectMediaElementToAudioEngine(audioFileElement);
     }
 
     const fileUrl = URL.createObjectURL(file);
@@ -2122,29 +2252,37 @@
 
     audioFileElement.onended = () => {
       btnPlayPauseAudio.textContent = '▶️';
-      setSpeakingState(false);
-      updateVolumeMeter(0);
+      checkActiveAudioPlaybackState();
       if (isRecordingVideo) stopVideoRecording();
     };
 
     showToast(`File audio "${file.name}" siap dideteksi!`);
   });
 
-  btnPlayPauseAudio.addEventListener('click', () => {
+  btnPlayPauseAudio.addEventListener('click', async () => {
     if (!audioFileElement) return;
     initAudioContext();
+    if (audioContext && audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+      } catch (e) {}
+    }
+    connectMediaElementToAudioEngine(audioFileElement);
 
     if (audioFileElement.paused) {
-      audioFileElement.play();
-      btnPlayPauseAudio.textContent = '⏸️';
-      currentAudioSourceMode = 'file';
-      isListening = true;
-      startAudioLoop();
+      try {
+        currentAudioSourceMode = 'file';
+        isListening = true;
+        startAudioLoop();
+        await audioFileElement.play();
+        btnPlayPauseAudio.textContent = '⏸️';
+      } catch (err) {
+        console.error('Play audio failed:', err);
+      }
     } else {
       audioFileElement.pause();
       btnPlayPauseAudio.textContent = '▶️';
-      setSpeakingState(false);
-      updateVolumeMeter(0);
+      checkActiveAudioPlaybackState();
     }
   });
 
@@ -2392,7 +2530,15 @@
       const blob = new Blob(recordedChunks, { type: actualMime });
       const videoUrl = URL.createObjectURL(blob);
 
+      initAudioContext();
+      connectMediaElementToAudioEngine(previewRecordedVideo);
+      setupMediaElementEvents(previewRecordedVideo, 'playback');
+
       previewRecordedVideo.src = videoUrl;
+      previewRecordedVideo.load();
+      previewRecordedVideo.play().catch(() => {
+        // Fallback jika browser membutuhkan klik tombol play pada kontrol video
+      });
 
       const durationSec = Math.round((Date.now() - recordStartTime) / 1000);
       const sizeMb = (blob.size / (1024 * 1024)).toFixed(2);
@@ -2507,12 +2653,20 @@
 
   btnCloseModal.addEventListener('click', () => {
     recordResultModal.classList.add('hidden');
-    previewRecordedVideo.pause();
+    if (previewRecordedVideo) previewRecordedVideo.pause();
   });
   btnDismissModal.addEventListener('click', () => {
     recordResultModal.classList.add('hidden');
-    previewRecordedVideo.pause();
+    if (previewRecordedVideo) previewRecordedVideo.pause();
   });
+  if (recordResultModal) {
+    recordResultModal.addEventListener('click', (e) => {
+      if (e.target === recordResultModal) {
+        recordResultModal.classList.add('hidden');
+        if (previewRecordedVideo) previewRecordedVideo.pause();
+      }
+    });
+  }
 
   // --- 9. MOTION & VISUAL SLIDERS ---
   toggleFloating.addEventListener('change', (e) => {
@@ -3145,6 +3299,10 @@
     renderHotkeysUI();
     setupHotkeyEvents();
     scheduleNextBlink();
+
+    if (previewRecordedVideo) {
+      setupMediaElementEvents(previewRecordedVideo, 'playback');
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('obs') === '1' || urlParams.get('obs') === 'true') {
