@@ -212,10 +212,10 @@ def build_pdf(filename):
         [
             Paragraph("🔑", ParagraphStyle('KeyIco', fontSize=16, alignment=1)),
             Paragraph(
-                "<b>TAUTAN RESMI WEBSITE:</b> <font color='#1D4ED8'><b>https://smoothietuber-tester.netlify.app</b></font><br/>"
+                "<b>TAUTAN RESMI WEBSITE:</b> <font color='#1D4ED8'><b>https://anindyaimash-coder.github.io/smoothietuber/</b></font><br/>"
                 "Kode Akses VIP <b>BETATESTER</b> tersimpan aman di browser Anda. "
                 "Untuk langsung masuk otomatis tanpa mengetik kode: "
-                "<font color='#92400E'><b>https://smoothietuber-tester.netlify.app/?key=BETATESTER</b></font>",
+                "<font color='#92400E'><b>https://anindyaimash-coder.github.io/smoothietuber/?key=BETATESTER</b></font>",
                 callout_text
             )
         ]
@@ -337,7 +337,7 @@ def build_pdf(filename):
         [
             Paragraph("<b>Langkah 1:</b><br/>Buka &amp; Pilih Bahasa", body_bold),
             Paragraph(
-                "• Buka <font color='#1D4ED8'><b>https://smoothietuber-tester.netlify.app</b></font> di <b>Safari (iPhone)</b> atau <b>Chrome (Android)</b>.<br/>"
+                "• Buka <font color='#1D4ED8'><b>https://anindyaimash-coder.github.io/smoothietuber/</b></font> di <b>Safari (iPhone)</b> atau <b>Chrome (Android)</b>.<br/>"
                 "• Pilih bahasa antarmuka favorit Anda pada layar sambutan, lalu ketik kode <b>BETATESTER</b>.<br/>"
                 "• Saat browser meminta izin mikrofon, pilih <b>'Izinkan'</b> agar mulut avatar merespons suara.",
                 body_style
@@ -397,7 +397,7 @@ def build_pdf(filename):
         "1. Buka software <b>TikTok LIVE Studio</b> (atau OBS Studio) di komputer/laptop Anda.",
         "2. Di panel <b>Sumber (Sources)</b>, klik <b>'+ Tambah Sumber' ➔ 'Tautan Web' (Browser Source)</b>.",
         "3. Masukkan tautan URL berikut:<br/>"
-        "&nbsp;&nbsp;&nbsp;&nbsp;<font color='#92400E'><b>https://smoothietuber-tester.netlify.app/?obs=1&amp;key=BETATESTER</b></font><br/>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;<font color='#92400E'><b>https://anindyaimash-coder.github.io/smoothietuber/?obs=1&amp;key=BETATESTER</b></font><br/>"
         "&nbsp;&nbsp;&nbsp;&nbsp;<i>(Parameter <code>?obs=1</code> otomatis mengaktifkan mode transparan tanpa menu, dan <code>&amp;key=BETATESTER</code> membuka akses VIP secara otomatis).</i>",
         "4. Atur resolusi menjadi <b>Lebar: 1080</b> dan <b>Tinggi: 1080</b>, lalu klik Simpan.",
         "5. Avatar langsung melayang bebas di atas tampilan siaran game atau kamera PC Anda!"
