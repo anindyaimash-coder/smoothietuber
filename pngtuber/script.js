@@ -134,6 +134,7 @@
       flyout_audio_file_title: '📁 File Rekaman Suara',
       btn_pick_audio: '📂 Pilih File Audio (MP3 / WAV)',
       no_audio_loaded: 'Belum ada file dipilih',
+      btn_remove_audio: '🗑️ Hapus File Audio',
       flyout_export_title: '🎬 Rekam Video & Ekspor',
       label_export_bg: 'Latar Belakang Video:',
       opt_bg_current: '📷 Sesuai Layar (Kamera HP / Wallpaper Aktif)',
@@ -269,6 +270,7 @@
       flyout_audio_file_title: '📁 録音音声ファイル',
       btn_pick_audio: '📂 音声ファイル選択 (MP3 / WAV)',
       no_audio_loaded: 'ファイルが選択されていません',
+      btn_remove_audio: '🗑️ 音声ファイルを削除',
       flyout_export_title: '🎬 動画録画＆書き出し',
       label_export_bg: '動画の背景:',
       opt_bg_current: '📷 画面のまま (カメラ/壁紙)',
@@ -404,6 +406,7 @@
       flyout_audio_file_title: '📁 录音音频文件',
       btn_pick_audio: '📂 选择音频文件 (MP3 / WAV)',
       no_audio_loaded: '尚未选择文件',
+      btn_remove_audio: '🗑️ 删除音频文件',
       flyout_export_title: '🎬 录制视频与导出',
       label_export_bg: '视频背景:',
       opt_bg_current: '📷 当前屏幕 (实时摄像头/壁纸)',
@@ -539,6 +542,7 @@
       flyout_audio_file_title: '📁 Audio Recording File',
       btn_pick_audio: '📂 Choose Audio File (MP3 / WAV)',
       no_audio_loaded: 'No file selected',
+      btn_remove_audio: '🗑️ Remove Audio File',
       flyout_export_title: '🎬 Video Studio & Export',
       label_export_bg: 'Video Background:',
       opt_bg_current: '📷 Match Screen (Live Camera / Active Wallpaper)',
@@ -672,6 +676,7 @@
       flyout_audio_file_title: '📁 Audio Recording File',
       btn_pick_audio: '📂 Choose Audio File (MP3 / WAV)',
       no_audio_loaded: 'No file selected',
+      btn_remove_audio: '🗑️ Remove Audio File',
       flyout_export_title: '🎬 Video Studio & Export',
       label_export_bg: 'Video Background:',
       opt_bg_current: '📷 Match Screen (Live Camera / Active Wallpaper)',
@@ -1099,6 +1104,7 @@
   const audioScrubber = document.getElementById('audioScrubber');
   const audioCurrentTime = document.getElementById('audioCurrentTime');
   const audioTotalDuration = document.getElementById('audioTotalDuration');
+  const btnRemoveAudioFile = document.getElementById('btnRemoveAudioFile');
 
   // Export Flyout & Modal
   const btnMainRecord = document.getElementById('btnMainRecord');
@@ -1983,7 +1989,13 @@
     initAudioContext();
 
     if (connectedMediaElements.has(mediaElement)) {
-      return connectedMediaElements.get(mediaElement);
+      const existingNode = connectedMediaElements.get(mediaElement);
+      if (audioRecordDestination) {
+        try {
+          existingNode.connect(audioRecordDestination);
+        } catch (e) {}
+      }
+      return existingNode;
     }
 
     try {
@@ -2270,6 +2282,10 @@
     btnDirectResetAudio.addEventListener('click', () => resetAudioCalibration());
   }
 
+  function hasLoadedAudioFile() {
+    return !!(audioFileElement && audioFileElement.src && audioFileElement.src.trim() !== '' && !audioFileElement.src.endsWith('/'));
+  }
+
   // File audio eksternal
   inputAudioFile.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
@@ -2283,14 +2299,20 @@
       setupMediaElementEvents(audioFileElement, 'file');
     } else {
       connectMediaElementToAudioEngine(audioFileElement);
+      setupMediaElementEvents(audioFileElement, 'file');
     }
 
     const fileUrl = URL.createObjectURL(file);
     audioFileElement.src = fileUrl;
+    audioFileElement.load();
+    currentAudioSourceMode = 'file';
     loadedAudioName.textContent = `🎵 ${file.name}`;
     audioPlayerControls.classList.remove('disabled');
     btnPlayPauseAudio.disabled = false;
     audioScrubber.disabled = false;
+    audioScrubber.value = 0;
+    audioCurrentTime.textContent = '00:00';
+    btnPlayPauseAudio.textContent = '▶️';
 
     audioFileElement.onloadedmetadata = () => {
       audioTotalDuration.textContent = formatTime(audioFileElement.duration);
@@ -2303,6 +2325,14 @@
       audioCurrentTime.textContent = formatTime(audioFileElement.currentTime);
     };
 
+    audioFileElement.onplay = () => {
+      if (btnPlayPauseAudio) btnPlayPauseAudio.textContent = '⏸️';
+    };
+
+    audioFileElement.onpause = () => {
+      if (btnPlayPauseAudio) btnPlayPauseAudio.textContent = '▶️';
+    };
+
     audioFileElement.onended = () => {
       btnPlayPauseAudio.textContent = '▶️';
       checkActiveAudioPlaybackState();
@@ -2311,6 +2341,26 @@
 
     showToast(`File audio "${file.name}" siap dideteksi!`);
   });
+
+  if (btnRemoveAudioFile) {
+    btnRemoveAudioFile.addEventListener('click', () => {
+      if (audioFileElement) {
+        audioFileElement.pause();
+        audioFileElement.src = '';
+      }
+      inputAudioFile.value = '';
+      loadedAudioName.textContent = t('no_audio_loaded');
+      audioPlayerControls.classList.add('disabled');
+      btnPlayPauseAudio.disabled = true;
+      audioScrubber.disabled = true;
+      audioScrubber.value = 0;
+      audioCurrentTime.textContent = '00:00';
+      audioTotalDuration.textContent = '00:00';
+      currentAudioSourceMode = 'mic';
+      checkActiveAudioPlaybackState();
+      showToast('File audio dihapus. Kembali ke mikrofon live.');
+    });
+  }
 
   btnPlayPauseAudio.addEventListener('click', async () => {
     if (!audioFileElement) return;
@@ -2501,16 +2551,26 @@
   }
 
   async function startVideoRecording() {
-    initAudioContext();
+    if (recordResultModal) recordResultModal.classList.add('hidden');
+    if (previewRecordedVideo) previewRecordedVideo.pause();
 
-    if (currentAudioSourceMode === 'mic' && !micStream) {
+    initAudioContext();
+    if (audioContext && audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+      } catch (e) {}
+    }
+
+    const hasAudioFile = hasLoadedAudioFile();
+
+    if (hasAudioFile) {
+      // Hubungkan audio element ke analyser & audioRecordDestination sebelum rekaman dimulai
+      connectMediaElementToAudioEngine(audioFileElement);
+      try {
+        audioFileElement.currentTime = 0;
+      } catch (e) {}
+    } else if (currentAudioSourceMode === 'mic' && !micStream) {
       await startMicrophone();
-    } else if (currentAudioSourceMode === 'file' && audioFileElement) {
-      audioFileElement.currentTime = 0;
-      audioFileElement.play();
-      btnPlayPauseAudio.textContent = '⏸️';
-      isListening = true;
-      startAudioLoop();
     }
 
     // Pastikan avatar mulai dari keadaan mata terbuka & sprite sudah siap (cegah kedipan terpotong)
@@ -2525,7 +2585,9 @@
     renderExportFrame();
 
     const canvasStream = exportCanvas.captureStream(30);
-    const audioTracks = audioRecordDestination.stream.getAudioTracks();
+    const audioTracks = (audioRecordDestination && audioRecordDestination.stream) 
+      ? audioRecordDestination.stream.getAudioTracks() 
+      : [];
     const tracksToRecord = [...canvasStream.getVideoTracks(), ...audioTracks];
     const combinedStream = new MediaStream(tracksToRecord);
 
@@ -2664,7 +2726,30 @@
     mediaRecorder.start(250);
     recordStartTime = Date.now();
     setRecordingUI(true);
-    showToast('🔴 Merekam animasi & audio...');
+
+    // 4. Sinkronisasi Pemutaran File Audio dengan Fitur Rekam (Auto-Play Audio on Record)
+    if (hasAudioFile) {
+      currentAudioSourceMode = 'file';
+      isListening = true;
+      startAudioLoop();
+      try {
+        audioFileElement.currentTime = 0;
+        const playPromise = audioFileElement.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((playErr) => {
+            console.warn('Auto-play audio on record notice:', playErr);
+          });
+        }
+      } catch (err) {
+        console.warn('Auto-play audio exception:', err);
+      }
+      if (btnPlayPauseAudio) {
+        btnPlayPauseAudio.textContent = '⏸️';
+      }
+      showToast('🔴 Merekam & memutar audio rekaman...');
+    } else {
+      showToast('🔴 Merekam animasi & audio...');
+    }
   }
 
   function stopVideoRecording() {
@@ -2672,6 +2757,13 @@
     isRecordingVideo = false;
     if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
     setRecordingUI(false);
+
+    // Otomatis jeda (pause) pemutaran file audio jika sedang diputar saat merekam
+    if (audioFileElement && !audioFileElement.paused) {
+      audioFileElement.pause();
+      if (btnPlayPauseAudio) btnPlayPauseAudio.textContent = '▶️';
+      checkActiveAudioPlaybackState();
+    }
   }
 
   function setRecordingUI(recording) {
