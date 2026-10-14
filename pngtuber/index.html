@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>SmoothieTuber 🥤 - Doodle Avatar 2D Reaktif Suara (Veadotube Style)</title>
+  <meta name="description" content="SmoothieTuber - Aplikasi PNGTuber bergaya Doodle hand-drawn aesthetic dengan antarmuka ringkas ala Veadotube mini, animasi halus, multi-emosi, dan ekspor video transparan.">
+
+  <!-- Google Fonts: 100% Free for Commercial Use (SIL Open Font License OFL 1.1) -->
+  <!-- Cabin Sketch: Chalk / Pencil Sketch Hatching Headlines -->
+  <!-- Architects Daughter: Architectural Fine Pencil Drafting -->
+  <!-- Gaegu & Pangolin: Organic Hand-drawn Pencil Handwriting -->
+  <!-- Special Elite: Vintage Distressed Typewriter & Pencil Carbon (Matching Reference) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Cabin+Sketch:wght@400;700&family=Gaegu:wght@400;700&family=Pangolin&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css?v=3.6">
+</head>
+<body class="bg-checkerboard">
+
+  <!-- Background layer kustom (Wallpaper tetap di belakang avatar) -->
+  <div id="customBgLayer" class="custom-bg-layer hidden"></div>
+
+  <!-- Video layer kamera langsung (Handcam Meja/Kegiatan di HP - Fullscreen Cover) -->
+  <video
+    id="cameraBgVideo"
+    class="camera-bg-layer hidden"
+    autoplay
+    playsinline
+    webkit-playsinline
+    muted
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; min-width: 100vw; min-height: 100dvh; object-fit: cover; z-index: 1; pointer-events: none; background: #000000; margin: 0; padding: 0; border: none;"
+  ></video>
+
+  <!-- =========================================================================
+       TOMBOL PILIHAN BAHASA (POJOK KIRI ATAS)
+       ========================================================================= -->
+  <button id="btnHeaderLangSwitch" class="app-corner-lang-btn header-lang-pill" type="button" title="Pilih Bahasa / Switch Language" aria-label="Switch Language">
+    <span class="lang-pill-flag">🌐</span>
+    <span id="headerLangLabel" class="lang-pill-code">ID</span>
+  </button>
+
+  <!-- =========================================================================
+       1. STAGE / PREVIEW AVATAR UTAMA (CANVAS + SMOOTH CANVA FLOATING ANIMATION)
+       ========================================================================= -->
+  <main id="stage" class="avatar-stage" aria-label="Area Panggung Avatar">
+    <div id="avatarWrapper" class="avatar-wrapper floating-enabled">
+      <!-- Avatar Sprite Utama -->
+      <img
+        id="avatarImage"
+        class="avatar-image state-closed"
+        src="assets/normal_closed.png"
+        alt="Avatar PNGTuber"
+        draggable="false"
+      >
+    </div>
+
+    <!-- Hidden Rendering Canvas untuk Video Capture & Export -->
+    <canvas id="exportCanvas" width="1080" height="1080" class="export-canvas-hidden"></canvas>
+  </main>
+
+  <!-- =========================================================================
+       2. VEADOTUBE LEFT DOCK (AUDIO & TAMPILAN)
+       ========================================================================= -->
+  <aside id="leftDock" class="veado-dock veado-dock-left" aria-label="Toolbar Audio & Tampilan">
+    
+    <!-- VU Meter Vertikal dengan Penanda Ambang Batas -->
+    <div class="veado-meter-container" title="Bilah Volume & Ambang Batas Suara (Geser slider untuk atur batas)">
+      <div class="meter-track-vertical">
+        <div id="volumeBarVertical" class="meter-bar-vertical" style="height: 0%;"></div>
+        <div id="thresholdMarkerVertical" class="meter-threshold-pin-vert" style="bottom: 15%;" title="Ambang Batas Suara">
+          <span class="vert-pin-arrow">◀</span>
+        </div>
+      </div>
+      <!-- Slider vertikal untuk mengatur ambang batas suara -->
+      <input id="thresholdSlider" type="range" min="0.1" max="40.0" step="0.1" value="15.0" class="meter-range-vert" orient="vertical" title="Atur Ambang Batas (Threshold)">
+    </div>
+
+    <div class="dock-divider"></div>
+
+    <!-- Tombol Mute Cepat -->
+    <button id="btnQuickMute" class="dock-btn btn-quick-mute" type="button" title="Mute/Unmute Suara (Hotkey: M)" data-i18n-title="dock_mute">
+      <span id="quickMuteIcon" class="dock-icon">🔊</span>
+    </button>
+
+    <!-- Tombol Kalibrasi Audio & Hang Time -->
+    <button id="btnAudioFlyout" class="dock-btn" type="button" title="Kalibrasi Audio & Hang Time" data-i18n-title="dock_audio" data-flyout="flyoutAudio">
+      <span class="dock-icon">🎚️</span>
+    </button>
+
+    <!-- Tombol Latar Belakang / Grid -->
+    <button id="btnBgFlyout" class="dock-btn" type="button" title="Pilih Latar Belakang / Green Screen" data-i18n-title="dock_bg" data-flyout="flyoutBg">
+      <span class="dock-icon">🏁</span>
+    </button>
+
+    <!-- Tombol Mode Bersih OBS -->
+    <button id="btnToggleObs" class="dock-btn" type="button" title="Sembunyikan Menu untuk OBS (Hotkey: H)" data-i18n-title="dock_obs">
+      <span class="dock-icon">👁️</span>
+    </button>
+
+    <!-- Tombol Rekam Cepat Video -->
+    <button id="btnQuickRecord" class="dock-btn btn-rec-dock" type="button" title="Mulai / Hentikan Rekam Video Transparan" data-i18n-title="dock_record">
+      <span class="rec-dot"></span>
+      <span id="recTimer" class="dock-rec-timer hidden">00:00</span>
+    </button>
+  </aside>
+
+  <!-- =========================================================================
+       3. VEADOTUBE RIGHT DOCK (EMOSI, 4-SPRITE STACK, TOOLS)
+       ========================================================================= -->
+  <aside id="rightDock" class="veado-dock veado-dock-right" aria-label="Toolbar Emosi & Sprite 4-State">
+
+    <!-- Tombol Pilihan Emosi Aktif (Pill di atas stack sprite) -->
+    <button id="btnEmotionPicker" class="emotion-state-pill" type="button" title="Klik untuk kelola atau berganti emosi" data-i18n-title="dock_emotions" data-flyout="flyoutEmotions">
+      <span id="curEmotionName" class="cur-emotion-text">Normal</span>
+      <span id="curEmotionHotkey" class="cur-emotion-key">[1]</span>
+      <span class="pill-arrow">▾</span>
+    </button>
+
+    <!-- 4 TILE SPRITE STACK VERTIKAL (Persis Veadotube!) -->
+    <div class="veado-sprites-column" title="4 State Sprite Karakter (Klik tile mana saja untuk ganti PNG)">
+      
+      <!-- 1. Diam (Mulut Tutup, Mata Buka) -->
+      <label id="slotClosed" class="veado-slot" data-slot="closed" title="Mulut Tutup, Mata Buka (Klik untuk ganti PNG)" data-i18n-title="slot_closed">
+        <div class="slot-thumb">
+          <img id="slotImgClosed" src="assets/normal_closed.png" alt="Mulut Tutup Mata Buka">
+        </div>
+        <span class="slot-state-badge" title="Mulut Tutup, Mata Buka">😶</span>
+        <input type="file" accept="image/png,image/webp,image/gif" data-sprite-slot="closed" hidden>
+      </label>
+
+      <!-- 2. Bicara (Mulut Buka, Mata Buka) -->
+      <label id="slotOpen" class="veado-slot" data-slot="open" title="Mulut Buka, Mata Buka (Klik untuk ganti PNG)" data-i18n-title="slot_open">
+        <div class="slot-thumb">
+          <img id="slotImgOpen" src="assets/normal_open.png" alt="Mulut Buka Mata Buka">
+        </div>
+        <span class="slot-state-badge" title="Mulut Buka, Mata Buka">😮</span>
+        <input type="file" accept="image/png,image/webp,image/gif" data-sprite-slot="open" hidden>
+      </label>
+
+      <!-- 3. Kedip Diam (Mulut Tutup, Mata Kedip) -->
+      <label id="slotClosedBlink" class="veado-slot" data-slot="closedBlink" title="Mulut Tutup, Kedip Mata (Klik untuk ganti PNG)" data-i18n-title="slot_closed_blink">
+        <div class="slot-thumb">
+          <img id="slotImgClosedBlink" src="assets/normal_closed_blink.png" alt="Mulut Tutup Kedip Mata">
+        </div>
+        <span class="slot-state-badge" title="Mulut Tutup, Kedip Mata">😑</span>
+        <input type="file" accept="image/png,image/webp,image/gif" data-sprite-slot="closedBlink" hidden>
+      </label>
+
+      <!-- 4. Kedip Bicara (Mulut Buka, Mata Kedip) -->
+      <label id="slotOpenBlink" class="veado-slot" data-slot="openBlink" title="Mulut Buka, Kedip Mata (Klik untuk ganti PNG)" data-i18n-title="slot_open_blink">
+        <div class="slot-thumb">
+          <img id="slotImgOpenBlink" src="assets/normal_open_blink.png" alt="Mulut Buka Kedip Mata">
+        </div>
+        <span class="slot-state-badge" title="Mulut Buka, Kedip Mata">🥱</span>
+        <input type="file" accept="image/png,image/webp,image/gif" data-sprite-slot="openBlink" hidden>
+      </label>
+
+    </div>
+
+    <div class="dock-divider"></div>
+
+    <!-- Ikon-ikon Tool Ringkas di Bawah Sprite (Persis Veadotube!) -->
+    <div class="veado-tools-column">
+      <!-- Animasi Melayang & Gerak (Motion Icon) -->
+      <button id="btnMotionFlyout" class="dock-btn" type="button" title="Animasi Melayang Canva & Gerak" data-i18n-title="dock_motion" data-flyout="flyoutMotion">
+        <span class="dock-icon">✨</span>
+      </button>
+
+      <!-- Kustomisasi Hotkeys (Keyboard Icon) -->
+      <button id="btnHotkeysFlyout" class="dock-btn" type="button" title="Pintasan Keyboard (Hotkeys)" data-i18n-title="dock_hotkeys" data-flyout="flyoutHotkeys">
+        <span class="dock-icon">⌨️</span>
+      </button>
+
+      <!-- Deteksi File Audio Rekaman (Folder / Audio File Icon) -->
+      <button id="btnAudioFileFlyout" class="dock-btn" type="button" title="Deteksi dari File Rekaman Suara" data-i18n-title="dock_audio_file" data-flyout="flyoutAudioFile">
+        <span class="dock-icon">📁</span>
+      </button>
+
+      <!-- Studio Rekam & Ekspor Video (Video Export Icon) -->
+      <button id="btnExportFlyout" class="dock-btn" type="button" title="Studio Rekam & Ekspor Video" data-i18n-title="dock_export" data-flyout="flyoutExport">
+        <span class="dock-icon">🎬</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- =========================================================================
+       4. COMPACT DOODLE FLYOUTS (MUNCUL RAMPING DI SAMPING TOOLBAR)
+       ========================================================================= -->
+
+  <!-- FLYOUT A: KALIBRASI AUDIO (MUNCUL DI KIRI) -->
+  <div id="flyoutAudio" class="veado-flyout flyout-left hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_audio_title">🎙️ Kalibrasi Suara</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <div class="flyout-status-row">
+        <span>Status: <strong id="statusText">Terputus</strong></span>
+        <span>Vol: <strong id="volumeValue">0.0</strong> / <strong id="thresholdValueDisplay" class="text-accent">15.0</strong></span>
+      </div>
+      <div class="input-group">
+        <label for="micSelect" class="input-label" data-i18n="label_mic_device">Perangkat Mikrofon:</label>
+        <select id="micSelect" class="form-select" disabled>
+          <option value="" data-i18n="option_default_system">Default Sistem</option>
+        </select>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info">
+          <label for="thresholdSliderInput" class="slider-label" data-i18n="label_threshold">Ambang Batas Suara (Threshold):</label>
+        </div>
+        <div class="slider-with-number">
+          <input id="thresholdSliderInput" type="range" min="0.1" max="40.0" step="0.1" value="15.0" class="range-slider">
+          <span id="thresholdBadge" class="range-value-pill">15.0</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info">
+          <label for="holdDelaySlider" class="slider-label" data-i18n="label_hang_time">Waktu Tahan Mulut (Hang Time):</label>
+        </div>
+        <div class="slider-with-number">
+          <input id="holdDelaySlider" type="range" min="50" max="500" step="10" value="160" class="range-slider">
+          <span id="holdDelayBadge" class="range-value-pill">160 ms</span>
+        </div>
+      </div>
+      <button id="btnDirectResetAudio" class="btn btn-secondary btn-block" type="button" data-i18n="btn_reset_audio">
+        🔄 Reset / Rekalibrasi Audio (Hotkey: R)
+      </button>
+    </div>
+  </div>
+
+  <!-- FLYOUT B: PILIHAN LATAR BELAKANG (MUNCUL DI KIRI) -->
+  <div id="flyoutBg" class="veado-flyout flyout-left hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_bg_title">🏁 Latar Belakang</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <div class="bg-selector-grid">
+        <button type="button" class="btn-bg-choice active" data-bg="bg-checkerboard" data-i18n="bg_transparent">🏁 Transparan</button>
+        <button type="button" class="btn-bg-choice" data-bg="bg-green" data-i18n="bg_green">🟩 Green Screen</button>
+        <button type="button" class="btn-bg-choice" data-bg="bg-blue" data-i18n="bg_blue">🟦 Blue Screen</button>
+        <button type="button" class="btn-bg-choice" data-bg="bg-dark" data-i18n="bg_dark">⬛ Studio Gelap</button>
+      </div>
+      <div class="custom-bg-box">
+        <label class="btn btn-secondary btn-block">
+          <span data-i18n="btn_upload_bg">🖼️ Unggah Wallpaper Sendiri</span>
+          <input id="inputCustomBg" type="file" accept="image/*" hidden>
+        </label>
+        <button id="btnRemoveCustomBg" class="btn btn-text hidden" type="button" data-i18n="btn_remove_bg">
+          ❌ Hapus Gambar Kustom
+        </button>
+      </div>
+
+      <div class="divider" style="margin: 8px 0 6px 0;"></div>
+
+      <!-- Mode Kamera Langsung (Handcam Meja/Kegiatan) -->
+      <div class="camera-handcam-section">
+        <label class="input-label" style="display: block; margin-bottom: 2px;" data-i18n="label_camera_handcam">📷 Kamera Langsung (Handcam):</label>
+        <p class="section-desc" style="font-size: 11px; margin-bottom: 6px; color: var(--text-muted);" data-i18n="desc_camera_handcam">
+          Sorot meja, tangan, atau kegiatan live di HP. Avatar melayang di atas kamera secara live!
+        </p>
+        <div class="camera-btn-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+          <button id="btnCameraBack" class="btn btn-secondary" type="button" style="font-size: 11.5px; padding: 6px 4px;" data-i18n="btn_camera_back">
+            📷 Kamera Belakang
+          </button>
+          <button id="btnCameraFront" class="btn btn-secondary" type="button" style="font-size: 11.5px; padding: 6px 4px;" data-i18n="btn_camera_front">
+            🤳 Kamera Depan
+          </button>
+        </div>
+        <button id="btnStopCamera" class="btn btn-secondary btn-block hidden" type="button" style="margin-top: 6px; font-size: 11.5px; background: #fee2e2;" data-i18n="btn_camera_stop">
+          ⏹️ Matikan Kamera HP
+        </button>
+        <div id="cameraFitToggleGroup" class="hidden" style="margin-top: 6px;">
+          <button id="btnToggleCameraFit" class="btn btn-secondary btn-block" type="button" style="font-size: 11px; padding: 5px;" data-i18n="btn_camera_fit_cover">
+            📐 Tampilan: Penuh Layar (Cover)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLYOUT C: KELOLA MULTI-EMOSI (MUNCUL DI KANAN) -->
+  <div id="flyoutEmotions" class="veado-flyout flyout-right hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_emotions_title">🎭 Kelola Emosi</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <p class="section-desc" data-i18n="desc_emotions">Pilih emosi aktif, ubah nama atau atur tombol pintas:</p>
+      <div id="emotionsListCompact" class="emotions-compact-list">
+        <!-- Di-generate otomatis oleh script.js -->
+      </div>
+      <button id="btnAddEmotion" class="btn btn-primary btn-block" type="button" style="margin-top: 10px;" data-i18n="btn_add_emotion">
+        ➕ Tambah Emosi Baru
+      </button>
+
+      <div class="divider" style="margin: 12px 0 8px 0;"></div>
+
+      <!-- Cadangkan & Pulihkan Profil Avatar -->
+      <div class="backup-restore-box" style="background: rgba(43,40,37,0.03); border: 1.2px dashed var(--ink-light); border-radius: var(--radius-btn); padding: 8px;">
+        <div style="font-weight: 700; font-size: 11.5px; margin-bottom: 2px;" data-i18n="title_backup_restore">💾 Cadangkan &amp; Pulihkan Avatar</div>
+        <p class="section-desc" style="font-size: 10.5px; margin-bottom: 6px; color: var(--text-muted);" data-i18n="desc_backup_restore">
+          Simpan seluruh avatar &amp; pengaturan ke file agar tidak pernah hilang saat ganti perangkat atau update browser.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+          <button id="btnExportProfile" class="btn btn-secondary" type="button" style="font-size: 11px; padding: 5px;" title="Unduh file backup avatar &amp; setting" data-i18n="btn_export_profile">
+            📥 Ekspor Profil
+          </button>
+          <label class="btn btn-secondary" style="font-size: 11px; padding: 5px; text-align: center; cursor: pointer; margin: 0;" title="Pulihkan dari file backup">
+            <span data-i18n="btn_import_profile">📤 Impor Profil</span>
+            <input id="inputImportProfile" type="file" accept=".json" hidden>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLYOUT D: GERAKAN & ANIMASI MELAYANG (MUNCUL DI KANAN) -->
+  <div id="flyoutMotion" class="veado-flyout flyout-right hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_motion_title">✨ Gerakan & Melayang</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <div class="switch-row">
+        <div>
+          <label for="toggleFloating" class="switch-label" data-i18n="label_floating">Efek Melayang Canva:</label>
+          <span class="switch-hint" data-i18n="hint_floating">Gerakan bernapas lembut konstan</span>
+        </div>
+        <label class="switch-toggle">
+          <input type="checkbox" id="toggleFloating" checked>
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="floatIntensitySlider" class="slider-label" data-i18n="label_float_intensity">Tinggi Ayunan:</label></div>
+        <div class="slider-with-number">
+          <input id="floatIntensitySlider" type="range" min="1" max="50" value="8" class="range-slider">
+          <span id="floatIntensityBadge" class="range-value-pill">8 px</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="floatSpeedSlider" class="slider-label" data-i18n="label_float_speed">Kecepatan Melayang:</label></div>
+        <div class="slider-with-number">
+          <input id="floatSpeedSlider" type="range" min="0.1" max="6.0" step="0.1" value="3.8" class="range-slider">
+          <span id="floatSpeedBadge" class="range-value-pill">3.8 s</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="bounceIntensity" class="slider-label" data-i18n="label_bounce">Pantulan Bicara (Hop):</label></div>
+        <div class="slider-with-number">
+          <input id="bounceIntensity" type="range" min="0" max="30" value="12" class="range-slider">
+          <span id="bounceBadge" class="range-value-pill">12 px</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="avatarScale" class="slider-label" data-i18n="label_avatar_scale">Ukuran Avatar:</label></div>
+        <div class="slider-with-number">
+          <input id="avatarScale" type="range" min="30" max="200" value="100" class="range-slider">
+          <span id="scaleBadge" class="range-value-pill">100%</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="avatarPosY" class="slider-label" data-i18n="label_pos_y">Posisi Vertikal (Offset Y):</label></div>
+        <div class="slider-with-number">
+          <input id="avatarPosY" type="range" min="-200" max="200" value="0" class="range-slider">
+          <span id="posYBadge" class="range-value-pill">0 px</span>
+        </div>
+      </div>
+
+
+      <div class="divider"></div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="blinkIntervalSlider" class="slider-label" data-i18n="label_blink_interval">Interval Kedip Otomatis:</label></div>
+        <div class="slider-with-number">
+          <input id="blinkIntervalSlider" type="range" min="1.0" max="8.0" step="0.5" value="3.5" class="range-slider">
+          <span id="blinkIntervalBadge" class="range-value-pill">3.5 detik</span>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info"><label for="blinkDurationSlider" class="slider-label" data-i18n="label_blink_duration">Durasi Kedip:</label></div>
+        <div class="slider-with-number">
+          <input id="blinkDurationSlider" type="range" min="60" max="350" step="10" value="160" class="range-slider">
+          <span id="blinkDurationBadge" class="range-value-pill">160 ms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLYOUT E: HOTKEYS (MUNCUL DI KANAN) -->
+  <div id="flyoutHotkeys" class="veado-flyout flyout-right hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_hotkeys_title">⌨️ Kustomisasi Hotkeys</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <!-- 1. Pintasan Sistem -->
+      <div class="hotkey-section-title">
+        <span data-i18n="title_sys_hotkeys">🎮 Pintasan Sistem</span>
+      </div>
+      <div class="hotkeys-list">
+        <div class="hotkey-item-row">
+          <div class="hotkey-meta">
+            <div class="hotkey-name" data-i18n="name_mute">🎙️ Mute / Unmute</div>
+            <div class="hotkey-desc" data-i18n="desc_mute">Bungkam / buka suara instan</div>
+          </div>
+          <button id="btnHotkeyMute" class="btn-hotkey-rebind" type="button" data-system-action="toggleMute" title="Klik untuk ubah hotkey mute">
+            <span class="key-display">M</span>
+          </button>
+        </div>
+        <div class="hotkey-item-row">
+          <div class="hotkey-meta">
+            <div class="hotkey-name" data-i18n="name_obs">👁️ Sembunyikan Menu (OBS)</div>
+            <div class="hotkey-desc" data-i18n="desc_obs">Mode tampilan bersih transparan</div>
+          </div>
+          <button id="btnHotkeyObs" class="btn-hotkey-rebind" type="button" data-system-action="toggleObs" title="Klik untuk ubah hotkey OBS">
+            <span class="key-display">H</span>
+          </button>
+        </div>
+        <div class="hotkey-item-row">
+          <div class="hotkey-meta">
+            <div class="hotkey-name" data-i18n="name_reset">🔄 Reset Audio</div>
+            <div class="hotkey-desc" data-i18n="desc_reset">Normalkan volume & buffer</div>
+          </div>
+          <button id="btnHotkeyResetAudio" class="btn-hotkey-rebind" type="button" data-system-action="resetAudio" title="Klik untuk ubah hotkey reset audio">
+            <span class="key-display">R</span>
+          </button>
+        </div>
+      </div>
+      <button id="btnResetDefaultHotkeys" class="btn btn-secondary btn-block" type="button" style="margin-top: 2px;" data-i18n="btn_reset_sys_keys">
+        🔄 Pulihkan Hotkey Sistem (M, H, R)
+      </button>
+
+      <div class="divider" style="margin: 6px 0;"></div>
+
+      <!-- 2. Pintasan Ganti Emosi / Ekspresi -->
+      <div class="hotkey-section-title">
+        <span data-i18n="title_emo_hotkeys">🎭 Pintasan Ganti Emosi</span>
+      </div>
+      <p class="section-desc" style="margin: 0; font-size: 11px;" data-i18n="desc_emo_hotkeys">Tekan tombol untuk beralih ekspresi seketika. Tekan lagi untuk kembali ke Normal.</p>
+      <div id="hotkeysEmotionsList" class="hotkeys-list">
+        <!-- Di-generate otomatis oleh script.js -->
+      </div>
+      <button id="btnResetEmotionHotkeys" class="btn btn-secondary btn-block" type="button" style="margin-top: 2px;" data-i18n="btn_reset_emo_keys">
+        🔄 Pulihkan Hotkey Emosi (1, 2, 3...)
+      </button>
+
+    </div>
+  </div>
+
+  <!-- FLYOUT F: DETEKSI FILE AUDIO (MUNCUL DI KANAN) -->
+  <div id="flyoutAudioFile" class="veado-flyout flyout-right hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_audio_file_title">📁 File Rekaman Suara</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <label class="btn btn-secondary btn-block">
+        <span data-i18n="btn_pick_audio">📂 Pilih File Audio (MP3 / WAV)</span>
+        <input id="inputAudioFile" type="file" accept="audio/*" hidden>
+      </label>
+      <span id="loadedAudioName" class="loaded-audio-name" data-i18n="no_audio_loaded">Belum ada file dipilih</span>
+      <div id="audioPlayerControls" class="audio-player-controls disabled">
+        <div class="player-top-row">
+          <button id="btnPlayPauseAudio" class="btn-icon-play" type="button" disabled>▶️</button>
+          <div class="player-timeline-box">
+            <input id="audioScrubber" type="range" min="0" max="100" value="0" step="0.1" class="range-slider" disabled>
+            <div class="player-time-readout">
+              <span id="audioCurrentTime">00:00</span> / <span id="audioTotalDuration">00:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLYOUT G: STUDIO REKAM & EKSPOR VIDEO (MUNCUL DI KANAN) -->
+  <div id="flyoutExport" class="veado-flyout flyout-right hidden">
+    <div class="flyout-header">
+      <h3 class="flyout-title" data-i18n="flyout_export_title">🎬 Rekam Video & Ekspor</h3>
+      <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
+    </div>
+    <div class="flyout-body">
+      <div class="input-group">
+        <label for="exportBgMode" class="input-label" data-i18n="label_export_bg">Latar Belakang Video:</label>
+        <select id="exportBgMode" class="form-select">
+          <option value="current" selected data-i18n="opt_bg_current">📷 Sesuai Layar (Kamera HP / Wallpaper Aktif)</option>
+          <option value="green" data-i18n="opt_bg_green">🟩 Green Screen (Chroma Key CapCut / TikTok)</option>
+          <option value="transparent" data-i18n="opt_bg_transparent">✨ Transparan Penuh (Khusus OBS WebM di PC)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="exportFormat" class="input-label" data-i18n="label_export_format">Format Video:</label>
+        <select id="exportFormat" class="form-select">
+          <option value="mp4" selected data-i18n="opt_fmt_mp4">🎬 MP4 (Universal: iPhone, Android, TikTok, CapCut, PC)</option>
+          <option value="mov" data-i18n="opt_fmt_mov">🍏 MOV (Apple QuickTime / Final Cut Pro / iPhone)</option>
+          <option value="webm" data-i18n="opt_fmt_webm">✨ WebM (Transparan / Alpha Channel untuk OBS)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="exportResolution" class="input-label" data-i18n="label_export_resolution">Ukuran &amp; Rasio Video:</label>
+        <select id="exportResolution" class="form-select">
+          <option value="1080x1920" selected data-i18n="opt_res_9_16">📱 9:16 Vertikal (1080 × 1920 - TikTok, Reels, Shorts)</option>
+          <option value="1620x1080" data-i18n="opt_res_3_2">📷 3:2 Kamera (1620 × 1080 - Rasio Kamera Standar)</option>
+          <option value="1080x1620" data-i18n="opt_res_2_3">📸 2:3 Potret (1080 × 1620 - Foto Vertikal)</option>
+          <option value="1080x1080" data-i18n="opt_res_1_1">⏹️ 1:1 Persegi (1080 × 1080 - Feed IG &amp; Profil)</option>
+          <option value="1920x1080" data-i18n="opt_res_16_9">🖥️ 16:9 Horizontal (1920 × 1080 - YouTube / PC)</option>
+        </select>
+      </div>
+      <button id="btnMainRecord" class="btn btn-record-big" type="button">
+        <span class="rec-dot-big"></span>
+        <span id="btnMainRecordText" data-i18n="btn_record_start">Mulai Merekam Video</span>
+      </button>
+      <div id="recordingStatusNote" class="recording-status-note" data-i18n="status_record_ready">
+        Siap merekam animasi reaktif audio.
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING RESTORE BUTTON & TOAST -->
+  <button id="btnRestoreControls" class="btn-restore-controls hidden" title="Tampilkan Toolbar (Tekan H)" data-i18n="btn_restore_controls">
+    ⚙️ Tampilkan Toolbar
+  </button>
+
+  <div id="toastNotification" class="toast-notification hidden" role="status" aria-live="polite">
+    <span id="toastIcon">✨</span>
+    <span id="toastMsg">Notifikasi</span>
+  </div>
+
+  <!-- MODAL HASIL REKAMAN VIDEO -->
+  <div id="recordResultModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title" data-i18n="modal_rec_title">🎉 Rekaman Berhasil Dibuat!</h2>
+        <button id="btnCloseModal" class="btn-icon" aria-label="Tutup Modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="video-preview-wrapper">
+          <video id="previewRecordedVideo" controls autoplay loop playsinline class="recorded-video-preview"></video>
+        </div>
+        <div class="modal-meta-row">
+          <span id="metaDuration">Durasi: 00:00</span>
+          <span id="metaSize">Ukuran: 0 MB</span>
+          <span id="metaFormat">Format: MP4</span>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+        <div style="display: flex; gap: 8px; width: 100%; flex-wrap: wrap;">
+          <a id="btnDownloadVideo" class="btn btn-primary btn-download" style="flex: 1; min-width: 130px; text-align: center; text-decoration: none;" download="smoothietuber_video.mp4" data-i18n="btn_download_mp4">
+            ⬇️ Unduh MP4 (.mp4)
+          </a>
+          <a id="btnDownloadMov" class="btn btn-secondary" style="flex: 1; min-width: 130px; text-align: center; text-decoration: none;" download="smoothietuber_video.mov" title="Unduh format MOV untuk Apple" data-i18n="btn_download_mov">
+            🍏 Unduh MOV (.mov)
+          </a>
+        </div>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button id="btnShareVideo" class="btn btn-secondary" type="button" style="flex: 1; font-size: 11.5px;" title="Simpan langsung ke Galeri Foto HP" data-i18n="btn_share_video">
+            📱 Simpan ke Galeri / Bagikan
+          </button>
+          <button id="btnDismissModal" class="btn btn-secondary" type="button" style="width: auto; padding: 0 16px;" data-i18n="btn_dismiss_modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       LANGUAGE SELECTION SCREEN / MODAL (FIRST ACCESS & SWITCHER)
+       ========================================================================= -->
+  <div id="langSelectModal" class="lang-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="langModalTitle">
+    <div class="lang-modal-card">
+      <!-- Crayon Pastel Splash Underlay Blobs -->
+      <div class="lang-crayon-blobs" aria-hidden="true">
+        <span class="crayon-blob crayon-yellow"></span>
+        <span class="crayon-blob crayon-blue"></span>
+        <span class="crayon-blob crayon-orange"></span>
+      </div>
+
+      <div class="lang-card-header">
+        <img src="assets/logo.png" alt="SmoothieTuber Logo" class="lang-logo-img">
+        <div class="lang-badge-pill" data-i18n="lang_modal_badge">🌐 Multi-Language Support</div>
+        <h2 id="langModalTitle" class="lang-modal-title" data-i18n="lang_modal_title">Pilih Bahasa / Select Language</h2>
+        <p class="lang-modal-subtitle" data-i18n="lang_modal_subtitle">Silakan tentukan bahasa tampilan aplikasi favoritmu / Choose your display language:</p>
+      </div>
+
+      <div class="lang-selection-grid">
+        <button type="button" class="lang-card-btn" data-lang="id">
+          <span class="lang-flag">🇮🇩</span>
+          <div class="lang-meta">
+            <span class="lang-native">Bahasa Indonesia</span>
+            <span class="lang-sub">Indonesian</span>
+          </div>
+        </button>
+        <button type="button" class="lang-card-btn" data-lang="ja">
+          <span class="lang-flag">🇯🇵</span>
+          <div class="lang-meta">
+            <span class="lang-native">日本語</span>
+            <span class="lang-sub">Japanese</span>
+          </div>
+        </button>
+        <button type="button" class="lang-card-btn" data-lang="zh">
+          <span class="lang-flag">🇨🇳</span>
+          <div class="lang-meta">
+            <span class="lang-native">中文 (简体)</span>
+            <span class="lang-sub">Mandarin Chinese</span>
+          </div>
+        </button>
+        <button type="button" class="lang-card-btn" data-lang="en-US">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-meta">
+            <span class="lang-native">English (US)</span>
+            <span class="lang-sub">American English</span>
+          </div>
+        </button>
+        <button type="button" class="lang-card-btn" data-lang="en-GB">
+          <span class="lang-flag">🇬🇧</span>
+          <div class="lang-meta">
+            <span class="lang-native">English (UK)</span>
+            <span class="lang-sub">British English</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="lang-card-footer">
+        <button type="button" id="btnConfirmLang" class="btn btn-primary btn-block btn-confirm-lang" disabled>
+          <span data-i18n="lang_btn_confirm">Lanjutkan ✨ Continue</span>
+        </button>
+        <p class="lang-footer-hint" data-i18n="lang_footer_hint">💡 Kamu selalu bisa mengganti bahasa kapan saja lewat tombol 🌐 di bar atas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       EXCLUSIVE VIP TESTER ACCESS GATE (CLOSED BETA LOCK)
+       ========================================================================= -->
+  <div id="vipAccessModal" class="vip-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="vipTitle">
+    <div class="vip-modal-card">
+      <!-- Crayon Pastel Splash Underlay Blobs -->
+      <div class="vip-crayon-blobs" aria-hidden="true">
+        <span class="crayon-blob crayon-yellow"></span>
+        <span class="crayon-blob crayon-blue"></span>
+        <span class="crayon-blob crayon-orange"></span>
+      </div>
+
+      <div class="vip-card-header">
+        <img src="assets/logo.png" alt="SmoothieTuber Logo" class="vip-logo-img">
+        <div class="vip-badge-row">
+          <span class="vip-pill-badge" data-i18n="vip_pill_badge">🔒 Exclusive Closed Beta</span>
+          <span class="vip-version-badge">v1.0 VIP</span>
+        </div>
+        <h2 id="vipTitle" class="vip-modal-title">Smoothie<span class="brand-title-accent">Tuber</span> 🥤</h2>
+        <p class="vip-modal-subtitle" data-i18n="vip_subtitle">Aplikasi ini dalam tahap uji coba eksklusif &amp; berlisensi privat.</p>
+      </div>
+
+      <form id="vipAccessForm" class="vip-card-body" autocomplete="off">
+        <div class="vip-input-wrap">
+          <label for="vipAccessCode" class="vip-input-label" data-i18n="vip_input_label">Masukkan Kode Akses Tester:</label>
+          <div class="vip-input-row">
+            <span class="vip-input-icon">🔑</span>
+            <input 
+              type="text" 
+              id="vipAccessCode" 
+              class="vip-access-input" 
+              placeholder="Ketik kode di sini..." 
+              required
+              autofocus
+              autocapitalize="characters"
+              spellcheck="false"
+              data-i18n-placeholder="vip_placeholder"
+            >
+          </div>
+          <div id="vipErrorMsg" class="vip-error-msg hidden" role="alert" data-i18n="vip_error_msg">
+            ⚠️ Kode akses tidak sesuai! Silakan hubungi pembuat aplikasi.
+          </div>
+        </div>
+
+        <button type="submit" id="btnSubmitVip" class="btn btn-primary vip-btn-submit">
+          <span data-i18n="vip_btn_submit">Buka Aplikasi ✨</span>
+        </button>
+
+        <div class="vip-card-footer-note">
+          <p data-i18n="vip_footer_note">💡 Memiliki kode tester? Masukkan sekali dan kode akan otomatis tersimpan di HP/perangkat kamu.</p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Core Script with Cache Buster -->
+  <script src="script.js?v=3.6"></script>
+</body>
+</html>

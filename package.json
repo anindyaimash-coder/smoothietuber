@@ -1,0 +1,20 @@
+{
+  "name": "smoothietuber",
+  "version": "4.0.0",
+  "description": "SmoothieTuber - 2D Doodle PNGTuber Studio with Voice Reactive Web Audio API",
+  "main": "pngtuber/index.html",
+  "scripts": {
+    "start": "npx serve . -l 8080",
+    "dev": "npx serve . -l 8080"
+  },
+  "keywords": [
+    "pngtuber",
+    "vtuber",
+    "doodle",
+    "veadotube",
+    "web-audio-api",
+    "tiktok-live"
+  ],
+  "author": "SmoothieTuber Team",
+  "license": "MIT"
+}

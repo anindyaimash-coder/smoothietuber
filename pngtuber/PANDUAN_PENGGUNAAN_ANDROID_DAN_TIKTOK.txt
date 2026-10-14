@@ -1,0 +1,110 @@
+================================================================================
+   SMOOTHIETUBER 🥤 - PANDUAN LENGKAP PENGGUNAAN DI ANDROID & LIVE TIKTOK
+================================================================================
+
+Halo Tester! 
+Berikut adalah panduan langkah-demi-langkah cara menjalankan aplikasi SmoothieTuber
+di HP Android dan bagaimana cara menggunakannya saat Live Streaming di TikTok.
+
+--------------------------------------------------------------------------------
+BAGIAN 1: CARA MEMBUKA & MENJALANKAN DI HP ANDROID
+--------------------------------------------------------------------------------
+PENTING: Standar keamanan Google Chrome di Android mengharuskan izin Mikrofon
+berada di lingkungan "HTTPS" atau "Localhost", bukan "file://" langsung.
+
+Pilih salah satu cara di bawah ini yang paling nyaman:
+
+👉 CARA A (PALING MUDAH & DIREKOMENDASIKAN - Cukup Klik Link):
+   1. Buka link resmi di Google Chrome pada HP Android kamu:
+      https://smoothietuber-tester.netlify.app
+   2. Masukkan Kode Akses VIP Tester: BETATESTER
+   3. Saat pertama kali terbuka, akan muncul pop-up izin mikrofon:
+      "SmoothieTuber ingin menggunakan mikrofon Anda" -> Pilih "IZINKAN".
+   4. Selesai! Aplikasi langsung mendeteksi suaramu secara real-time.
+
+👉 CARA B (MENJALANKAN DARI FILE OFFLINE DI HP):
+   Jika kamu hanya menerima file ZIP ini di HP:
+   1. Ekstrak file ZIP ini ke folder internal HP (misalnya folder Download).
+   2. Download aplikasi gratis dari Play Store bernama:
+      "Simple HTTP Server" (oleh Andrei) atau "AWebServer" atau "Termux".
+   3. Buka aplikasinya, pilih folder hasil ekstrak tadi, lalu klik "Start".
+   4. Buka Chrome di HP dan ketik: http://localhost:8080 (atau port yang tertera).
+   5. Izinkan mikrofon saat diminta.
+
+👉 CARA C (AKSES VIA WI-FI DARI LAPTOP/PC YANG SATU JARINGAN):
+   Jika laptop/PC sedang menjalankan server lokal:
+   1. Pastikan HP dan Laptop terhubung ke Wi-Fi yang sama.
+   2. Buka Chrome di HP, lalu ketik IP laptop kamu: http://IP_LAPTOP:3000/pngtuber/
+   3. Izinkan mikrofon.
+
+--------------------------------------------------------------------------------
+BAGIAN 2: CARA MENERAPKAN SAAT LIVE DI TIKTOK DARI HP ANDROID
+--------------------------------------------------------------------------------
+Ada 2 metode praktis untuk live di TikTok menggunakan HP Android:
+
+====================================================================
+METODE 1: PAKAI FITUR BAWAAN TIKTOK (GAME SELULER / SIARAN LAYAR)
+====================================================================
+Metode ini adalah cara resmi paling cepat tanpa aplikasi tambahan:
+
+Langkah 1: Siapkan Avatar di Browser HP
+1. Buka SmoothieTuber di Google Chrome HP Android.
+2. Di toolbar kiri, pilih latar belakang (klik ikon kanvas/gambar):
+   - Jika ingin layar bersih: Pilih warna kesukaan atau wallpaper.
+3. Di toolbar kiri, klik tombol mata coret "Sembunyikan Panel" (atau tekan 'H')
+   agar semua tombol kontrol menghilang dan hanya menyisakan avatar kamu.
+4. Buat tampilan browser menjadi layar penuh (Full Screen / Add to Home Screen).
+
+Langkah 2: Gunakan Fitur "Jendela Mengambang" (Floating Window / Pop-Up)
+Sebagian besar HP Android (Samsung One UI, Xiaomi/Redmi MIUI, Oppo ColorOS, 
+Realme UI, Vivo Funtouch) memiliki fitur bawaan Floating Window:
+1. Buka Recent Apps (geser ke atas atau tombol menu aplikasi).
+2. Tekan dan tahan jendela browser Chrome, lalu pilih ikon "Pop-up View" 
+   atau "Floating Window" (Jendela Melayang).
+3. Jendela browser berisi SmoothieTuber sekarang akan mengecil dan mengambang 
+   bebas di atas layar HP kamu!
+4. Geser avatar ke pojok layar (misalnya pojok kanan bawah).
+
+Langkah 3: Mulai Live di TikTok
+1. Buka aplikasi TikTok.
+2. Klik tombol (+) di bagian bawah, lalu geser ke tab "LIVE".
+3. Pilih opsi "Game Seluler" (Mobile Gaming / Screen Broadcast).
+4. Beri judul live kamu, lalu klik "Mulai Siaran Langsung".
+5. TikTok akan menyiarkan seluruh layar HP kamu ke penonton!
+6. Buka game atau aplikasi yang ingin kamu mainkan. Avatar SmoothieTuber akan 
+   tetap melayang di atas layar, dan mulutnya otomatis buka-tutup mengikuti 
+   suaramu saat berbicara di live!
+
+====================================================================
+METODE 2: PAKAI APLIKASI BROADCASTER "PRISM LIVE STUDIO" (HASIL TERBAIK)
+====================================================================
+Jika kamu ingin tampilan profesional seperti streamer VTuber PC:
+
+1. Download aplikasi "PRISM Live Studio: Games & IRL" dari Google Play Store.
+2. Login dan hubungkan akun TikTok kamu ke PRISM.
+3. Di layar PRISM, geser menu ke opsi "Widget" atau "Web URL":
+   - Masukkan link SmoothieTuber lengkap dengan mode OBS dan kode akses:
+     https://smoothietuber-tester.netlify.app/?obs=1&key=BETATESTER
+4. Fitur `?obs=1` otomatis mengaktifkan mode OBS (latar belakang transparan 100% 
+   dan menyembunyikan semua tombol kontrol), dan `&key=BETATESTER` otomatis membuka gembok VIP.
+5. Atur posisi dan ukuran avatar di layar PRISM.
+6. Klik tombol "Go Live" ke TikTok! Penonton akan melihat avatar kamu melayang 
+   transparan tanpa ada kotak latar belakang sama sekali.
+
+--------------------------------------------------------------------------------
+BAGIAN 3: PANDUAN PINTASAN & PENGATURAN SUARA
+--------------------------------------------------------------------------------
+- Atur Sensitivitas Suara:
+  Di bilah VU Meter sebelah kiri, geser tanda panah ambang batas suara (threshold)
+  ke atas atau ke bawah. Jika mulut avatar sering terbuka padahal tidak bicara,
+  geser tanda panah sedikit ke atas.
+- Tombol Mute Cepat:
+  Klik ikon mikrofon di toolbar kiri untuk mematikan/menyalakan mic seketika.
+- Ganti Ekspresi Wajah:
+  Klik tombol ekspresi (Normal / Senang / Kaget) di toolbar kanan.
+- Mengembalikan Menu yang Disembunyikan:
+  Jika menu sedang disembunyikan, klik tombol kuning "Buka Menu" di pojok kanan 
+  bawah layar.
+
+Selamat mencoba & selamat live streaming di TikTok! 🥤✨
+================================================================================

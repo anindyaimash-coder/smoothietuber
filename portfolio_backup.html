@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StoryCraft Strategist | International Children's Book Illustrator & VO Content Hub</title>
+  <meta name="description" content="Internal personal branding and content strategy generator for international children's book illustrators and voice actors.">
+
+  <!-- Google Fonts: Fredoka & Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+  <!-- ========================================================================
+       TOP NOTIFICATION TOAST CONTAINER
+       ======================================================================== -->
+  <div id="toastNotification" class="toast-notification" role="status" aria-live="polite">
+    <span class="toast-icon">✨</span>
+    <span class="toast-message" id="toastMessage">Copied to clipboard!</span>
+  </div>
+
+  <!-- ========================================================================
+       MAIN DASHBOARD SHELL (SIDEBAR + MAIN CONTENT)
+       ======================================================================== -->
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="dashboard-sidebar">
+      <!-- Profile / Brand Header -->
+      <div class="sidebar-brand-card">
+        <div class="artist-avatar-wrap">
+          <img src="assets/images/mascot-artist.png" alt="Mascot Avatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%238E74E8\'><circle cx=\'50\' cy=\'50\' r=\'40\'/></svg>'">
+          <span class="avatar-status-dot" title="Active Strategist Mode"></span>
+        </div>
+        <div class="sidebar-brand-info">
+          <h1 class="brand-title">StoryCraft Studio</h1>
+          <span class="brand-role">Illustrator & VO Strategist</span>
+        </div>
+      </div>
+
+      <!-- Superpower Badges -->
+      <div class="superpower-tags-box">
+        <span class="superpower-tag tag-art">🎨 Picture Book Art</span>
+        <span class="superpower-tag tag-vo">🎙️ Character VO</span>
+        <span class="superpower-tag tag-global">🌍 US/UK Global Market</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="sidebar-nav">
+        <div class="nav-group-label">STRATEGY TOOLS</div>
+        
+        <button class="nav-tab-btn active" data-tab="tab-generator">
+          <span class="nav-tab-icon">💡</span>
+          <span class="nav-tab-text">Hook & Idea Generator</span>
+          <span class="nav-tab-badge">Hot</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="tab-script-builder">
+          <span class="nav-tab-icon">🎬</span>
+          <span class="nav-tab-text">Video Script Builder</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="tab-client-magnet">
+          <span class="nav-tab-icon">🧲</span>
+          <span class="nav-tab-text">Client Magnet Board</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="tab-vault">
+          <span class="nav-tab-icon">📂</span>
+          <span class="nav-tab-text">Saved Scripts Vault</span>
+          <span class="nav-tab-counter" id="savedCountBadge">0</span>
+        </button>
+
+        <button class="nav-tab-btn" data-tab="tab-profile">
+          <span class="nav-tab-icon">🎯</span>
+          <span class="nav-tab-text">Brand Positioning</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Quick Pitch Card -->
+      <div class="sidebar-pitch-box">
+        <div class="pitch-box-header">
+          <span class="pitch-badge">🌟 10-Second Elevator Pitch</span>
+          <button class="btn-icon-tiny" id="copySidebarPitchBtn" title="Copy Pitch to Clipboard">📋</button>
+        </div>
+        <p class="pitch-text" id="sidebarElevatorPitch">
+          "I illustrate heartwarming children's books and voice the characters to life—giving publishers a dual visual & audio experience for global young readers."
+        </p>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="sidebar-footer">
+        <span class="version-label">Internal Strategist v2.0 • English Output</span>
+      </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <main class="dashboard-main">
+
+      <!-- TOP BAR -->
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-trigger" id="mobileSidebarToggle" aria-label="Toggle menu">☰</button>
+          <div>
+            <h2 class="page-current-title" id="currentTabTitle">Hook & Content Idea Generator</h2>
+            <p class="page-current-subtitle" id="currentTabSubtitle">Generate scroll-stopping hooks and ideas tailored for global publishers & picture book authors.</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <!-- Market Target Indicator -->
+          <div class="market-pill">
+            <span class="market-indicator-dot"></span>
+            <span>Target: <strong>Global Publishers & Authors</strong></span>
+          </div>
+
+          <button class="btn btn-secondary btn-sm" id="exportAllDataBtn" title="Export All Saved Scripts">
+            <span>💾 Export Vault</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB CONTENT PANELS -->
+      <div class="tab-panels-wrapper">
+
+        <!-- ==================================================================
+             TAB 1: HOOK & CONTENT IDEA GENERATOR (CORE FEATURE)
+             ================================================================== -->
+        <section class="tab-panel active" id="tab-generator">
+          
+          <!-- Generator Config Card -->
+          <div class="card config-card">
+            <div class="config-header">
+              <div class="config-step-pill">STEP 1</div>
+              <h3 class="config-title">Choose Content Pillar & Hook Angle</h3>
+            </div>
+
+            <!-- 3 CONTENT PILLARS -->
+            <div class="pillars-selector-grid">
+              <!-- Pillar 1 -->
+              <label class="pillar-card selected" data-pillar="art">
+                <input type="radio" name="pillarChoice" value="art" checked>
+                <div class="pillar-icon-wrap icon-art">🎨</div>
+                <div class="pillar-info">
+                  <div class="pillar-name">Pillar 1: Picture Book Art & Craft</div>
+                  <div class="pillar-desc">Painting process, character expressions, double-page spreads, Procreate textures, color palette secrets.</div>
+                </div>
+              </label>
+
+              <!-- Pillar 2: The Secret Sauce! -->
+              <label class="pillar-card" data-pillar="vo">
+                <input type="radio" name="pillarChoice" value="vo">
+                <div class="pillar-icon-wrap icon-vo">🎙️</div>
+                <div class="pillar-info">
+                  <div class="pillar-name">Pillar 2: Character Voice & Storytelling</div>
+                  <div class="pillar-desc">Your secret superpower! Giving illustrated characters an authentic voice, read-aloud demos, vocal acting warmth.</div>
+                </div>
+                <span class="pillar-superpower-badge">Secret Sauce ⭐</span>
+              </label>
+
+              <!-- Pillar 3 -->
+              <label class="pillar-card" data-pillar="bts">
+                <input type="radio" name="pillarChoice" value="bts">
+                <div class="pillar-icon-wrap icon-bts">🚀</div>
+                <div class="pillar-info">
+                  <div class="pillar-name">Pillar 3: Behind The Scenes & Journey</div>
+                  <div class="pillar-desc">Building in public, studio life, picture book dummies, author collaboration tips, publisher pitch preparation.</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- HOOK CATEGORY FILTERS -->
+            <div class="hook-type-row">
+              <span class="hook-type-label">Hook Psychology:</span>
+              <div class="hook-type-chips">
+                <button class="chip-btn active" data-hook-type="scroll-stopper">⚡ Scroll-Stopper (High Curiosity)</button>
+                <button class="chip-btn" data-hook-type="emotional">📖 Storytelling & Emotional</button>
+                <button class="chip-btn" data-hook-type="educational">🎨 Craft & Educational BTS</button>
+                <button class="chip-btn" data-hook-type="client-magnet">🧲 Client Magnet (Direct Pitch)</button>
+                <button class="chip-btn" data-hook-type="random">🎲 Surprise Me</button>
+              </div>
+            </div>
+
+            <!-- GENERATE BUTTON ROW -->
+            <div class="generator-trigger-row">
+              <button class="btn btn-primary btn-generate" id="generateIdeasBtn">
+                <span class="btn-sparkle">✨</span>
+                <span>Generate International Content Idea & Hooks</span>
+              </button>
+              <span class="generator-hint">Powered by curated framework for global children's literature agents & publishers.</span>
+            </div>
+          </div>
+
+          <!-- GENERATED RESULT DISPLAY CONTAINER -->
+          <div class="generator-results-container" id="generatorResultsContainer">
+            <!-- Rendered by JavaScript -->
+          </div>
+
+          <!-- QUICK HOOKS CHEAT-SHEET ACCORDION -->
+          <div class="card cheatsheet-card">
+            <div class="cheatsheet-header" id="toggleCheatsheetHeader">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.4rem;">📚</span>
+                <div>
+                  <h4 style="font-size: 1.1rem; font-weight: 700;">Global Picture Book Hooks Library (Quick Reference)</h4>
+                  <p style="font-size: 0.88rem; color: var(--color-text-muted);">Browse tested opening lines categorized by international client psychological triggers.</p>
+                </div>
+              </div>
+              <span class="accordion-toggle-arrow">▼</span>
+            </div>
+
+            <div class="cheatsheet-body" id="cheatsheetBody" style="display: none;">
+              <div class="quick-hooks-grid" id="quickHooksGrid">
+                <!-- Injected by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ==================================================================
+             TAB 2: SHORT-FORM VIDEO SCRIPT & FRAMEWORK BUILDER
+             ================================================================== -->
+        <section class="tab-panel" id="tab-script-builder">
+          <div class="builder-split-layout">
+
+            <!-- SCRIPT FORM EDITOR (LEFT) -->
+            <div class="card builder-form-card">
+              <div class="builder-form-header">
+                <div class="config-step-pill">SCRIPT STUDIO</div>
+                <h3 class="config-title">Short-Form Video Script Planner</h3>
+                <p style="font-size: 0.88rem; color: var(--color-text-muted); margin-top: 4px;">Structure 15-45 second Reels/TikToks engineered to captivate art directors and picture book authors.</p>
+              </div>
+
+              <form id="scriptBuilderForm">
+                <!-- Title & Target Platform -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label" for="scriptTitle">Project / Concept Title</label>
+                    <input type="text" id="scriptTitle" class="form-input" placeholder="e.g. Giving Barnaby the Owl a Grumpy Scottish Accent" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scriptPlatform">Target Platform & Format</label>
+                    <select id="scriptPlatform" class="form-select">
+                      <option value="Instagram Reel (9:16)">Instagram Reel (9:16)</option>
+                      <option value="TikTok Video (9:16)">TikTok Video (9:16)</option>
+                      <option value="YouTube Shorts (9:16)">YouTube Shorts (9:16)</option>
+                      <option value="LinkedIn Video Post">LinkedIn Video (Client Authority)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Pillar & Duration -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label" for="scriptPillar">Content Pillar</label>
+                    <select id="scriptPillar" class="form-select">
+                      <option value="Pillar 2: Character Voice & Storytelling (Superpower)">🎙️ Character Voice & Storytelling (Superpower)</option>
+                      <option value="Pillar 1: Picture Book Art & Craft">🎨 Picture Book Art & Craft</option>
+                      <option value="Pillar 3: Behind The Scenes & Creator Journey">🚀 Behind The Scenes & Journey</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="scriptTargetAudience">Target Audience Intent</label>
+                    <select id="scriptTargetAudience" class="form-select">
+                      <option value="Publishers & Art Directors (Client Acquisition)">🏢 Publishers & Art Directors</option>
+                      <option value="Self-Publishing Authors looking for an Illustrator">✍️ Self-Publishing Authors</option>
+                      <option value="General Children's Book Lovers & Parents">📖 Picture Book Lovers & Parents</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- SECTION 1: THE HOOK (0-3 SEC) -->
+                <div class="script-block-card block-hook">
+                  <div class="block-label-row">
+                    <span class="block-phase-badge">Phase 1: 0 - 3s</span>
+                    <span class="block-title">The Hook (Stop The Scroll)</span>
+                    <button type="button" class="btn-text-tiny" id="pasteFromGeneratedHookBtn">Paste Active Hook ⚡</button>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-sublabel">Spoken Hook / On-Screen Text (In English):</label>
+                    <input type="text" id="scriptHookText" class="form-input font-bold" placeholder="e.g. 'What if your picture book character could actually talk?'" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-sublabel">Visual Hook Action (What you show in the first 2 seconds):</label>
+                    <input type="text" id="scriptHookVisual" class="form-input" placeholder="e.g. Extreme close-up of paintbrush tapping the eye of a cute painted character, then eye blinks!">
+                  </div>
+                </div>
+
+                <!-- SECTION 2: THE CORE STORY & VISUAL ACTION (3-25 SEC) -->
+                <div class="script-block-card block-body">
+                  <div class="block-label-row">
+                    <span class="block-phase-badge">Phase 2: 3 - 25s</span>
+                    <span class="block-title">Visual Action & Voice Acting Script</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-sublabel">📹 Visual Action (What the camera captures):</label>
+                    <textarea id="scriptVisualAction" class="form-textarea" rows="3" placeholder="e.g. 1. Time-lapse watercolor wash on the tree branches. 2. Cut to me wearing headphones with studio mic, voicing the grumpy owl. 3. Final picture book spread reveal with text typography." required></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-sublabel">🎙️ Spoken Voiceover (Dialogue / Narration in English):</label>
+                    <textarea id="scriptVoScript" class="form-textarea script-mono" rows="4" placeholder="e.g. 'Whenever I illustrate a new character for a children's book, I don't just draw them... I find their voice first. Meet Barnaby. He refuses to sleep until someone reads HIM a bedtime story. [Owl voice: Hoo-hoo, page 12 please!]'"></textarea>
+                  </div>
+                </div>
+
+                <!-- SECTION 3: CALL TO ACTION (CTA) -->
+                <div class="script-block-card block-cta">
+                  <div class="block-label-row">
+                    <span class="block-phase-badge">Phase 3: Final 5s</span>
+                    <span class="block-title">International Client Magnet CTA</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-sublabel">Select High-Converting CTA Preset:</label>
+                    <select id="ctaPresetSelector" class="form-select">
+                      <option value="If you're an author or publisher with a story waiting to be illustrated (and voiced), my collaboration link is in my bio! 📚✨">Direct Pitch: "If you're an author or publisher..."</option>
+                      <option value="Art Directors: Full picture book portfolio & interactive character voice reels linked in my bio. Currently booking Q3/Q4 books! 💌">Publisher/Agent: "Art Directors: Full portfolio & voice reels linked..."</option>
+                      <option value="Comment 'STORY' below and I'll send you my complete picture book production & narration timeline guide! 📖">Engagement: "Comment 'STORY' and I'll send my timeline..."</option>
+                      <option value="Would your story's main character sound squeaky or grumpy? Drop their personality in the comments! 👇">Conversational: "Would your character sound squeaky or grumpy?..."</option>
+                      <option value="custom">Custom CTA (Type your own below)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-sublabel">Final CTA Text / Caption Prompt:</label>
+                    <input type="text" id="scriptCtaText" class="form-input" value="If you're an author or publisher with a story waiting to be illustrated (and voiced), my collaboration link is in my bio! 📚✨">
+                  </div>
+                </div>
+
+                <!-- BUTTON ACTIONS -->
+                <div class="builder-actions-row">
+                  <button type="submit" class="btn btn-primary" id="saveScriptToVaultBtn">
+                    <span>💾 Save to Script Vault</span>
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="copyFullScriptBtn">
+                    <span>📋 Copy Full Production Script</span>
+                  </button>
+                  <button type="button" class="btn btn-ghost" id="clearScriptFormBtn">
+                    <span>Reset Form</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- LIVE PREVIEW REEL MOCKUP (RIGHT) -->
+            <div class="builder-preview-col">
+              <div class="card preview-card">
+                <div class="preview-header">
+                  <span class="preview-badge">📱 9:16 Reel Simulation</span>
+                  <span class="preview-timer" id="previewTimerEst">~ 28s Video</span>
+                </div>
+
+                <!-- PHONE MOCKUP FRAME -->
+                <div class="phone-mockup">
+                  <div class="phone-notch"></div>
+                  
+                  <div class="phone-screen">
+                    <!-- Overlay Top Badge -->
+                    <div class="reel-top-bar">
+                      <span class="reel-audio-track">🎵 Original Audio: Lulu Studio VO</span>
+                      <span class="reel-hd-badge">HD</span>
+                    </div>
+
+                    <!-- On-Screen Visual Simulation Canvas -->
+                    <div class="reel-canvas-area" id="mockupCanvasArea">
+                      <div class="canvas-visual-cue">
+                        <span class="cue-icon">📹</span>
+                        <div class="cue-text" id="previewVisualCueText">Close-up of illustration process & character expression</div>
+                      </div>
+
+                      <!-- Simulated On-screen Hook Caption Bubble -->
+                      <div class="reel-caption-sticker" id="previewHookCaption">
+                        "What if your picture book character could actually talk?"
+                      </div>
+                    </div>
+
+                    <!-- Lower Reel Overlay (Captions & Profile) -->
+                    <div class="reel-bottom-overlay">
+                      <div class="reel-user-row">
+                        <div class="reel-mini-avatar">
+                          <img src="assets/images/mascot-artist.png" alt="Avatar">
+                        </div>
+                        <span class="reel-username">@storycraft.illustrator</span>
+                        <span class="reel-follow-pill">Follow</span>
+                      </div>
+
+                      <div class="reel-dialogue-box" id="previewDialogueBox">
+                        <span class="vo-label">🎙️ VO:</span>
+                        <span id="previewDialogueText">"Whenever I illustrate a new character, I find their voice first..."</span>
+                      </div>
+
+                      <div class="reel-cta-strip" id="previewCtaStrip">
+                        📚 Authors & Publishers: Link in bio to collaborate!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="preview-footer-tips">
+                  <p>💡 <strong>Production Tip:</strong> Keep the hook caption within the middle 60% of the screen so Instagram/TikTok UI buttons don't block it.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ==================================================================
+             TAB 3: INTERNATIONAL CLIENT MAGNET STRATEGY BOARD
+             ================================================================== -->
+        <section class="tab-panel" id="tab-client-magnet">
+          
+          <!-- TOP STATS & FOCUS BANNER -->
+          <div class="client-strategy-banner">
+            <div class="banner-content">
+              <span class="banner-kicker">GLOBAL CLIENT ACQUISITION PLAYBOOK</span>
+              <h3 class="banner-title">How International Art Directors & Publishers Find You</h3>
+              <p class="banner-desc">Publishers in the US, UK, and Europe scout illustrators on Instagram, TikTok, and Cara who demonstrate <strong>consistency</strong>, <strong>expressive storytelling</strong>, and a clear point of difference. Your voice-over talent is your unique differentiator.</p>
+            </div>
+            <div class="banner-metric-cards">
+              <div class="metric-card">
+                <span class="metric-num">3x</span>
+                <span class="metric-label">Weekly Content Cadence</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-num">100%</span>
+                <span class="metric-label">English Output Standard</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- WEEKLY CONTENT CALENDAR & ACTION CHECKLIST -->
+          <div class="strategy-grid-2">
+            
+            <!-- WEEKLY CADENCE CHECKLIST -->
+            <div class="card cadence-card">
+              <div class="card-header-between">
+                <div>
+                  <h4 class="card-heading-title">📅 The 3-Post Weekly Cadence System</h4>
+                  <p class="card-heading-sub">Check off this week's content routine to maintain momentum.</p>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="resetWeeklyChecklistBtn">Reset Week</button>
+              </div>
+
+              <div class="checklist-items-wrap" id="weeklyChecklistWrap">
+                <!-- Checklist Item 1 -->
+                <label class="cadence-item">
+                  <input type="checkbox" class="cadence-checkbox" id="check-post-1">
+                  <div class="cadence-box">
+                    <div class="cadence-day-pill">POST 1 • TUESDAY</div>
+                    <div class="cadence-headline">🎨 Craft & Double-Spread Pacing (Visual Authority)</div>
+                    <p class="cadence-desc">Showcase how you plan a double-page spread. Art directors want to see how you leave space for text typography and character eyelines.</p>
+                    <span class="cadence-tag">Target: Picture Book Art Directors</span>
+                  </div>
+                </label>
+
+                <!-- Checklist Item 2 -->
+                <label class="cadence-item">
+                  <input type="checkbox" class="cadence-checkbox" id="check-post-2">
+                  <div class="cadence-box">
+                    <div class="cadence-day-pill pill-superpower">POST 2 • THURSDAY (SECRET SAUCE)</div>
+                    <div class="cadence-headline">🎙️ Art + Voice Acting Mashup (Viral / Emotional)</div>
+                    <p class="cadence-desc">Introduce a character you painted and perform their voice on microphone. This is your undeniable unique positioning that separates you from 10,000 other artists.</p>
+                    <span class="cadence-tag">Target: Global Authors & Kids Lit Community</span>
+                  </div>
+                </label>
+
+                <!-- Checklist Item 3 -->
+                <label class="cadence-item">
+                  <input type="checkbox" class="cadence-checkbox" id="check-post-3">
+                  <div class="cadence-box">
+                    <div class="cadence-day-pill">POST 3 • SATURDAY</div>
+                    <div class="cadence-headline">🧲 Behind The Dummy / Client Magnet (Direct Callout)</div>
+                    <p class="cadence-desc">Flip through a physical dummy book test or explain how you prep CMYK 300 DPI files. End with a direct call for authors booking next quarter.</p>
+                    <span class="cadence-tag">Target: Self-Publishing Authors & Small Presses</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- PROGRESS BAR -->
+              <div class="weekly-progress-box">
+                <div class="progress-label-row">
+                  <span>Weekly Authority Progress:</span>
+                  <span id="weeklyProgressPercent">0%</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" id="weeklyProgressFill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WHAT GLOBAL PUBLISHERS ACTUALLY LOOK FOR -->
+            <div class="card checklist-audit-card">
+              <h4 class="card-heading-title">📋 International Publisher Readiness Checklist</h4>
+              <p class="card-heading-sub">Essential checklist before sending your portfolio to global agents & publishing houses.</p>
+
+              <div class="audit-list">
+                <div class="audit-item">
+                  <span class="audit-icon-check">✓</span>
+                  <div>
+                    <strong>Consistent Character Model Sheets:</strong>
+                    <p>Can you draw the same protagonist from front, side, jumping, and crying across 32 pages without their head shape morphing?</p>
+                  </div>
+                </div>
+
+                <div class="audit-item">
+                  <span class="audit-icon-check">✓</span>
+                  <div>
+                    <strong>Text Placement Awareness (Negative Space):</strong>
+                    <p>Illustrations must leave generous 'quiet zones' for editorial text and typography.</p>
+                  </div>
+                </div>
+
+                <div class="audit-item">
+                  <span class="audit-icon-check">✓</span>
+                  <div>
+                    <strong>Full CMYK & Bleed Understanding:</strong>
+                    <p>Industry standard files: 300 DPI, CMYK color profiles, with 3mm - 5mm bleed for standard trim sizes (8.5x8.5", 8x10", 11x8.5").</p>
+                  </div>
+                </div>
+
+                <div class="audit-item">
+                  <span class="audit-icon-check">✓</span>
+                  <div>
+                    <strong>Clear Bio & Representation Availability:</strong>
+                    <p>Your Instagram/portfolio bio must state: "Represented by [Agency] or Currently Unrepresented & Open for Picture Book Commissions".</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KEY GLOBAL BOOK FAIRS SCHEDULE -->
+              <div class="book-fairs-card">
+                <span class="fairs-title">🌍 Key Global Picture Book Pitching Windows</span>
+                <ul class="fairs-list">
+                  <li><strong>Bologna Children's Book Fair (BCBF):</strong> March / April (Peak global scouting)</li>
+                  <li><strong>London Book Fair:</strong> March / April (UK & European publishers)</li>
+                  <li><strong>Frankfurt Book Fair:</strong> October (Rights & translation deals)</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ==================================================================
+             TAB 4: SAVED SCRIPTS VAULT
+             ================================================================== -->
+        <section class="tab-panel" id="tab-vault">
+          <div class="vault-top-actions">
+            <div>
+              <h3 class="config-title">Saved Production Scripts</h3>
+              <p style="font-size: 0.88rem; color: var(--color-text-muted);">Your personal library of drafted video scripts. Ready to film anytime.</p>
+            </div>
+
+            <div class="vault-btn-group">
+              <button class="btn btn-secondary btn-sm" id="exportMarkdownVaultBtn">
+                <span>📄 Download Markdown (.md)</span>
+              </button>
+              <button class="btn btn-ghost btn-sm" id="clearVaultBtn" style="color: #E03131;">
+                <span>Clear Vault</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- VAULT SCRIPTS LIST -->
+          <div class="vault-list-grid" id="vaultListGrid">
+            <!-- Injected by JavaScript -->
+          </div>
+        </section>
+
+
+        <!-- ==================================================================
+             TAB 5: BRAND POSITIONING PROFILE
+             ================================================================== -->
+        <section class="tab-panel" id="tab-profile">
+          <div class="card profile-overview-card">
+            <div class="profile-hero-row">
+              <div class="profile-avatar-large">
+                <img src="assets/images/mascot-artist.png" alt="Mascot Avatar">
+              </div>
+              <div class="profile-hero-meta">
+                <div class="badge-tag badge-lilac">Internal Brand Strategy Sheet</div>
+                <h3 class="profile-name">International Children's Book Illustrator & VO Talent</h3>
+                <p class="profile-tagline">"Where Hand-Crafted Whimsy Meets Expressive Storytelling Voices"</p>
+              </div>
+            </div>
+
+            <div class="profile-pillars-breakdown">
+              <!-- Box 1 -->
+              <div class="breakdown-card">
+                <span class="breakdown-icon">🎯</span>
+                <h4 class="breakdown-title">Primary Target Market</h4>
+                <ul class="breakdown-list">
+                  <li>US & UK Picture Book Publishers (Macmillan, Penguin, Chronicle, Walker Books, independent presses)</li>
+                  <li>Self-Publishing Authors investing in premium quality</li>
+                  <li>Literary Agents looking for distinctive author-illustrators</li>
+                  <li>Interactive E-Book & Audiobook Producers</li>
+                </ul>
+              </div>
+
+              <!-- Box 2 -->
+              <div class="breakdown-card highlight-card">
+                <span class="breakdown-icon">⚡</span>
+                <h4 class="breakdown-title">The Unfair Advantage (Secret Sauce)</h4>
+                <p style="font-size: 0.92rem; line-height: 1.5; color: var(--color-text-main); margin-bottom: 8px;">
+                  99% of illustrators only post flat drawings or speedpaints. You possess professional <strong>voice acting versatility</strong>.
+                </p>
+                <ul class="breakdown-list">
+                  <li>You give your illustrations a living soul on camera</li>
+                  <li>Publishers get a potential dual visual + audiobook narrator package</li>
+                  <li>Children and parents form an immediate emotional bond</li>
+                </ul>
+              </div>
+
+              <!-- Box 3 -->
+              <div class="breakdown-card">
+                <span class="breakdown-icon">🗣️</span>
+                <h4 class="breakdown-title">Global Bio & Taglines (Ready to Copy)</h4>
+                <div class="bio-snippet-box">
+                  <div class="bio-snippet-header">
+                    <span>Instagram / TikTok Bio (150 chars):</span>
+                    <button class="btn-text-tiny copy-bio-btn" data-target="bio-1">Copy</button>
+                  </div>
+                  <code id="bio-1">🎨 Children’s Book Illustrator + 🎙️ Voice Actor. Giving painted characters a voice. Open for global picture book commissions 📚✨ Link below 👇</code>
+                </div>
+
+                <div class="bio-snippet-box" style="margin-top: 10px;">
+                  <div class="bio-snippet-header">
+                    <span>Formal Publisher Pitch Bio (Email / Cover Letter):</span>
+                    <button class="btn-text-tiny copy-bio-btn" data-target="bio-2">Copy</button>
+                  </div>
+                  <code id="bio-2">"I am a children's book illustrator and voice storyteller specializing in whimsical, character-rich narratives. My unique integration of voice acting allows me to conceptualize characters with distinct personalities, emotional pacing, and read-aloud cadence tailored for young readers worldwide."</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- SCRIPT -->
+  <script src="app.js"></script>
+</body>
+</html>
