@@ -456,6 +456,31 @@ def build_pdf(filename):
         ('PADDING', (0, 0), (-1, -1), 5),
     ]))
     story.append(t_tips)
+    story.append(Spacer(1, 8))
+
+    # =========================================================================
+    # BAGIAN 5: FORMULIR SURVEY PENGUJI BETA & EVALUASI
+    # =========================================================================
+    survey_box_data = [
+        [
+            Paragraph("📝", ParagraphStyle('SurvIco', fontSize=18, alignment=1)),
+            Paragraph(
+                "<b>FORMULIR SURVEY KEPUASAN &amp; EVALUASI BETA TESTER:</b><br/>"
+                "Masukan dan ulasan pengalaman Anda sangat berharga untuk penyempurnaan SmoothieTuber sebelum peluncuran resmi. "
+                "Mohon kesediaannya meluangkan waktu sejenak untuk mengisi formulir evaluasi pada tautan dokumen resmi berikut:<br/>"
+                "👉 <font color='#1D4ED8'><b>https://drive.google.com/file/d/1KvGdsx-KrlJ976it--U1PwyCy4H_z9Nf/view</b></font>",
+                callout_text
+            )
+        ]
+    ]
+    t_survey = Table(survey_box_data, colWidths=[1.0 * cm, 16.8 * cm])
+    t_survey.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0, 0), (-1, -1), 1.2, colors.HexColor('#059669')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('PADDING', (0, 0), (-1, -1), 6),
+    ]))
+    story.append(t_survey)
 
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"[OK] Illustrated PDF successfully generated: {filename}")

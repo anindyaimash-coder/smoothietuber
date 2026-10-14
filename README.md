@@ -72,6 +72,8 @@ Dirancang khusus untuk streamer dan kreator konten yang ingin menyiarkan avatar 
   👉 [SmoothieTuber-Android-Tester.zip](SmoothieTuber-Android-Tester.zip)
 * 📝 **Panduan Teks Android & TikTok:**  
   👉 [pngtuber/PANDUAN_PENGGUNAAN_ANDROID_DAN_TIKTOK.txt](pngtuber/PANDUAN_PENGGUNAAN_ANDROID_DAN_TIKTOK.txt)
+* 📋 **Formulir Survey Kepuasan & Evaluasi Beta Tester:**  
+  👉 [Dokumen Survey Google Drive](https://drive.google.com/file/d/1KvGdsx-KrlJ976it--U1PwyCy4H_z9Nf/view)
 
 ---
 
