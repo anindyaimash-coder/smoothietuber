@@ -56,6 +56,8 @@
       dock_audio: 'Kalibrasi Audio & Hang Time',
       dock_bg: 'Pilih Latar Belakang / Green Screen',
       dock_obs: 'Sembunyikan Menu untuk OBS (Hotkey: H)',
+      dock_pure_green: 'Mode Layar Green Screen Murni (Prism Live / HP)',
+      dock_pip: 'Avatar Mengambang di Atas Aplikasi Lain (Picture-in-Picture)',
       dock_record: 'Mulai / Hentikan Rekam Video Transparan',
       dock_emotions: 'Kelola atau ganti emosi',
       dock_motion: 'Animasi Melayang Canva & Gerak',
@@ -152,6 +154,11 @@
       status_record_ready: 'Siap merekam animasi reaktif audio.',
       status_recording: 'Sedang merekam...',
       btn_restore_controls: '⚙️ Tampilkan Toolbar',
+      btn_pure_green: '🟩 Layar Penuh Green Screen Murni (#00FF00)',
+      desc_pure_green: 'Sembunyikan semua menu & ubah layar jadi hijau solid #00FF00. Siap untuk chroma key langsung di Prism Live / HP.',
+      btn_pip: '📺 Aktifkan Avatar Mengambang (PiP)',
+      desc_pip: 'Tampilkan avatar melayang di atas game atau aplikasi gambar lain saat membuka aplikasi berbeda di HP / Tablet / PC.',
+      btn_restore_green: '⚙️ Keluar Green Screen',
       modal_rec_title: '🎉 Rekaman Berhasil Dibuat!',
       meta_duration: 'Durasi:',
       meta_size: 'Ukuran:',
@@ -184,6 +191,8 @@
       dock_audio: '音声調整＆口の開き保持時間',
       dock_bg: '背景選択 / グリーンスクリーン',
       dock_obs: 'OBS用メニュー非表示 (ホットキー: H)',
+      dock_pure_green: '純粋グリーンスクリーンモード (スマホ配信/Prism Live)',
+      dock_pip: '他アプリ上にアバターを浮遊表示 (Picture-in-Picture)',
       dock_record: '透過動画の録画開始 / 停止',
       dock_emotions: '表情の管理・切り替え',
       dock_motion: 'Canva浮遊＆揺れアニメーション',
@@ -280,6 +289,11 @@
       status_record_ready: '音声反応アニメーションの録画準備完了',
       status_recording: '録画中...',
       btn_restore_controls: '⚙️ ツールバーを表示',
+      btn_pure_green: '🟩 全画面純粋グリーンスクリーン (#00FF00)',
+      desc_pure_green: 'すべてのメニューを隠し画面を純粋な#00FF00グリーンにします。Prism Liveやスマホ配信アプリのクロマキーに最適です。',
+      btn_pip: '📺 アバター浮遊表示を有効化 (PiP)',
+      desc_pip: '他のゲームやイラストアプリを開いている間も、アバターを画面上に重ねて浮遊表示させます。',
+      btn_restore_green: '⚙️ グリーンスクリーン解除',
       modal_rec_title: '🎉 録画が完了しました！',
       meta_duration: '再生時間:',
       meta_size: 'ファイル容量:',
@@ -312,6 +326,8 @@
       dock_audio: '音频校准与张嘴延时',
       dock_bg: '选择背景 / 绿幕',
       dock_obs: '隐藏菜单进入OBS模式 (快捷键: H)',
+      dock_pure_green: '纯净全屏绿幕模式 (手机推流/Prism Live)',
+      dock_pip: '在其他应用上方悬浮形象 (画中画 PiP)',
       dock_record: '开始 / 停止录制透明视频',
       dock_emotions: '管理或切换表情',
       dock_motion: 'Canva微风呼吸浮动动画',
@@ -408,6 +424,11 @@
       status_record_ready: '已就绪，随时可开始录制声音感应动画。',
       status_recording: '正在录制中...',
       btn_restore_controls: '⚙️ 显示工具栏',
+      btn_pure_green: '🟩 全屏纯净绿幕模式 (#00FF00)',
+      desc_pure_green: '隐藏所有菜单并将屏幕变为纯绿色#00FF00。完美适配手机推流应用 (如Prism Live) 的色度键抠图。',
+      btn_pip: '📺 开启形象悬浮画中画 (PiP)',
+      desc_pip: '在手机/平板/电脑上打开游戏或绘画应用时，让虚拟形象保持悬浮在最上层。',
+      btn_restore_green: '⚙️ 退出绿幕',
       modal_rec_title: '🎉 录制成功完成！',
       meta_duration: '时长:',
       meta_size: '文件大小:',
@@ -440,6 +461,8 @@
       dock_audio: 'Audio Calibration & Hang Time',
       dock_bg: 'Select Background / Green Screen',
       dock_obs: 'Hide Menus for OBS (Hotkey: H)',
+      dock_pure_green: 'Pure Green Screen Mode (Prism Live / Mobile Stream)',
+      dock_pip: 'Floating Avatar Over Other Apps (Picture-in-Picture)',
       dock_record: 'Start / Stop Transparent Video Recording',
       dock_emotions: 'Manage or switch emotions',
       dock_motion: 'Canva Floating & Breathing Animation',
@@ -536,6 +559,11 @@
       status_record_ready: 'Ready to record voice-reactive animation.',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
+      btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
+      desc_pure_green: 'Hides all menus and turns the background into solid #00FF00 green. Ready for chroma key in mobile streaming apps like Prism Live.',
+      btn_pip: '📺 Enable Floating Avatar (PiP)',
+      desc_pip: 'Keep your avatar floating on top while playing games or drawing in other apps on Mobile / Tablet / PC.',
+      btn_restore_green: '⚙️ Exit Green Screen',
       modal_rec_title: '🎉 Video Recorded Successfully!',
       meta_duration: 'Duration:',
       meta_size: 'Size:',
@@ -984,6 +1012,11 @@
   const btnQuickMute = document.getElementById('btnQuickMute');
   const quickMuteIcon = document.getElementById('quickMuteIcon');
   const btnToggleObs = document.getElementById('btnToggleObs');
+  const btnDockGreenScreen = document.getElementById('btnDockGreenScreen');
+  const btnDockPip = document.getElementById('btnDockPip');
+  const btnPureGreenScreen = document.getElementById('btnPureGreenScreen');
+  const btnFlyoutPip = document.getElementById('btnFlyoutPip');
+  const btnRestorePureGreen = document.getElementById('btnRestorePureGreen');
   const btnQuickRecord = document.getElementById('btnQuickRecord');
   const recTimer = document.getElementById('recTimer');
 
@@ -1756,11 +1789,17 @@
 
   // Global Keydown Handler
   window.addEventListener('keydown', (e) => {
-    // 0. Tutup modal rekaman jika Escape ditekan
-    if (e.key === 'Escape' && recordResultModal && !recordResultModal.classList.contains('hidden')) {
-      recordResultModal.classList.add('hidden');
-      if (previewRecordedVideo) previewRecordedVideo.pause();
-      return;
+    // 0. Tutup mode green screen murni atau modal rekaman jika Escape ditekan
+    if (e.key === 'Escape') {
+      if (isPureGreenMode) {
+        togglePureGreenMode(false);
+        return;
+      }
+      if (recordResultModal && !recordResultModal.classList.contains('hidden')) {
+        recordResultModal.classList.add('hidden');
+        if (previewRecordedVideo) previewRecordedVideo.pause();
+        return;
+      }
     }
 
     // 1. Sedang merekam Hotkey Sistem
@@ -1838,6 +1877,20 @@
     if (systemHotkeys.toggleObs && (pressed === systemHotkeys.toggleObs.toLowerCase() || (systemHotkeys.toggleObs === 'space' && pressed === ' '))) {
       e.preventDefault();
       toggleObsMode(!document.body.classList.contains('obs-mode'));
+      return;
+    }
+
+    // Hotkey Green Screen Murni (Tombol G)
+    if (pressed === 'g') {
+      e.preventDefault();
+      togglePureGreenMode(!isPureGreenMode);
+      return;
+    }
+
+    // Hotkey Picture-in-Picture Floating Avatar (Tombol P)
+    if (pressed === 'p') {
+      e.preventDefault();
+      togglePictureInPicture();
       return;
     }
 
@@ -3033,6 +3086,201 @@
   btnToggleObs.addEventListener('click', () => toggleObsMode(true));
   btnRestoreControls.addEventListener('click', () => toggleObsMode(false));
 
+  // --- 10B. MODE GREEN SCREEN MURNI (#00FF00) & PICTURE-IN-PICTURE (PIP) ENGINE ---
+  let isPureGreenMode = false;
+
+  function togglePureGreenMode(enable) {
+    if (typeof enable === 'boolean') {
+      isPureGreenMode = enable;
+    } else {
+      isPureGreenMode = !isPureGreenMode;
+    }
+
+    if (isPureGreenMode) {
+      document.body.classList.add('pure-green-mode');
+      closeAllFlyouts();
+      if (btnRestorePureGreen) btnRestorePureGreen.classList.remove('hidden');
+      if (btnDockGreenScreen) btnDockGreenScreen.classList.add('is-active');
+      showToast('🟩 Mode Green Screen Murni (#00FF00) Aktif (Prism Live Ready)');
+    } else {
+      document.body.classList.remove('pure-green-mode');
+      if (btnRestorePureGreen) btnRestorePureGreen.classList.add('hidden');
+      if (btnDockGreenScreen) btnDockGreenScreen.classList.remove('is-active');
+      showToast('Kembali ke tampilan editor');
+    }
+  }
+
+  if (btnDockGreenScreen) {
+    btnDockGreenScreen.addEventListener('click', () => togglePureGreenMode(!isPureGreenMode));
+  }
+  if (btnPureGreenScreen) {
+    btnPureGreenScreen.addEventListener('click', () => togglePureGreenMode(true));
+  }
+  if (btnRestorePureGreen) {
+    btnRestorePureGreen.addEventListener('click', () => togglePureGreenMode(false));
+  }
+
+  // --- Picture-in-Picture (PiP) Floating Canvas Engine ---
+  let isPipActive = false;
+  let pipRafId = null;
+  let pipCanvas = null;
+  let pipCtx = null;
+  let pipVideo = null;
+
+  function isPictureInPictureSupported() {
+    return (
+      ('pictureInPictureEnabled' in document && document.pictureInPictureEnabled) ||
+      (typeof HTMLVideoElement !== 'undefined' && typeof HTMLVideoElement.prototype.requestPictureInPicture === 'function')
+    );
+  }
+
+  function renderPipFrame() {
+    if (!isPipActive || !pipCanvas || !pipCtx) return;
+
+    const w = pipCanvas.width;
+    const h = pipCanvas.height;
+
+    // Background: Solid Green Screen #00FF00 untuk kemudahan chroma-keying di aplikasi lain
+    pipCtx.fillStyle = '#00FF00';
+    pipCtx.fillRect(0, 0, w, h);
+
+    const emo = getActiveEmotion();
+    let currentSrc = lastAppliedSpriteSrc || (emo && emo.sprites ? (isSpeaking ? emo.sprites.open : emo.sprites.closed) : '');
+    let currentImg = currentSrc ? getImageObject(currentSrc) : null;
+
+    if (!currentImg || !currentImg.complete || currentImg.naturalWidth === 0) {
+      if (avatarImage && avatarImage.complete && avatarImage.naturalWidth > 0) {
+        currentImg = avatarImage;
+      }
+    }
+
+    if (currentImg && currentImg.complete && currentImg.naturalWidth > 0) {
+      pipCtx.save();
+
+      const nowSec = performance.now() / 1000;
+      const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
+      const currentFloatOffset = floatSine * (floatIntensity * 0.8);
+      const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
+      const currentBounce = isSpeaking ? Math.max(8, bounceIntensity) : 0;
+
+      const cx = w / 2;
+      const cy = (h / 2) - currentFloatOffset - currentBounce;
+
+      pipCtx.translate(cx, cy);
+      pipCtx.scale(currentFloatScale, currentFloatScale);
+
+      const baseDrawHeight = h * 0.82;
+      const aspect = currentImg.naturalWidth / currentImg.naturalHeight;
+      const drawWidth = baseDrawHeight * aspect;
+
+      pipCtx.drawImage(
+        currentImg,
+        -drawWidth / 2,
+        -baseDrawHeight / 2,
+        drawWidth,
+        baseDrawHeight
+      );
+
+      pipCtx.restore();
+    }
+
+    pipRafId = requestAnimationFrame(renderPipFrame);
+  }
+
+  async function togglePictureInPicture() {
+    if (!isPictureInPictureSupported() || typeof HTMLCanvasElement.prototype.captureStream !== 'function') {
+      showToast('⚠️ Picture-in-Picture canvas tidak didukung di browser ini. Disarankan Chrome atau Safari.');
+      return;
+    }
+
+    // Jika sedang PiP, keluar dari PiP
+    if (document.pictureInPictureElement) {
+      try {
+        await document.exitPictureInPicture();
+      } catch (e) {}
+      return;
+    }
+
+    try {
+      if (!pipCanvas) {
+        pipCanvas = document.createElement('canvas');
+        pipCanvas.width = 512;
+        pipCanvas.height = 512;
+        pipCtx = pipCanvas.getContext('2d');
+      }
+
+      if (!pipVideo) {
+        pipVideo = document.createElement('video');
+        pipVideo.id = 'pipAvatarVideo';
+        pipVideo.muted = true;
+        pipVideo.playsInline = true;
+        pipVideo.autoplay = true;
+        pipVideo.style.position = 'fixed';
+        pipVideo.style.width = '1px';
+        pipVideo.style.height = '1px';
+        pipVideo.style.opacity = '0.001';
+        pipVideo.style.pointerEvents = 'none';
+        pipVideo.style.top = '-9999px';
+        pipVideo.style.left = '-9999px';
+        document.body.appendChild(pipVideo);
+
+        pipVideo.addEventListener('leavepictureinpicture', () => {
+          isPipActive = false;
+          if (pipRafId) cancelAnimationFrame(pipRafId);
+          updatePipUI(false);
+          showToast('Jendela melayang (PiP) ditutup');
+        });
+
+        pipVideo.addEventListener('enterpictureinpicture', () => {
+          isPipActive = true;
+          updatePipUI(true);
+          showToast('📺 Avatar melayang aktif di atas aplikasi lain!');
+        });
+      }
+
+      isPipActive = true;
+      renderPipFrame();
+
+      const stream = pipCanvas.captureStream(30);
+      pipVideo.srcObject = stream;
+      await pipVideo.play();
+      await pipVideo.requestPictureInPicture();
+    } catch (err) {
+      console.warn('PiP error:', err);
+      isPipActive = false;
+      if (pipRafId) cancelAnimationFrame(pipRafId);
+      updatePipUI(false);
+      if (err.name !== 'AbortError') {
+        showToast('⚠️ Gagal membuka PiP: ' + (err.message || 'Izin ditolak'));
+      }
+    }
+  }
+
+  function updatePipUI(active) {
+    if (btnDockPip) {
+      if (active) btnDockPip.classList.add('is-active');
+      else btnDockPip.classList.remove('is-active');
+    }
+    if (btnFlyoutPip) {
+      if (active) {
+        btnFlyoutPip.classList.add('btn-primary');
+        btnFlyoutPip.classList.remove('btn-secondary');
+        btnFlyoutPip.textContent = '📺 Tutup Avatar Melayang (PiP)';
+      } else {
+        btnFlyoutPip.classList.remove('btn-primary');
+        btnFlyoutPip.classList.add('btn-secondary');
+        btnFlyoutPip.textContent = '📺 Aktifkan Avatar Melayang (PiP)';
+      }
+    }
+  }
+
+  if (btnDockPip) {
+    btnDockPip.addEventListener('click', togglePictureInPicture);
+  }
+  if (btnFlyoutPip) {
+    btnFlyoutPip.addEventListener('click', togglePictureInPicture);
+  }
+
   // --- 11. HOTKEYS SETUP ---
   function setupHotkeyEvents() {
     if (btnHotkeyMute) {
@@ -3308,6 +3556,11 @@
     if (urlParams.get('obs') === '1' || urlParams.get('obs') === 'true') {
       document.body.classList.add('is-direct-obs');
       toggleObsMode(true);
+    }
+
+    const greenParam = urlParams.get('green') || urlParams.get('greenscreen');
+    if (greenParam === '1' || greenParam === 'true') {
+      togglePureGreenMode(true);
     }
 
     const posParam = urlParams.get('pos');

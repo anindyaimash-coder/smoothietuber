@@ -1371,6 +1371,72 @@ body.obs-mode .header-lang-pill {
   transform: scale(0.9) !important;
 }
 
+/* Mode Green Screen Murni (#00FF00) - Khusus Streaming Mobile / Tablet / Prism Live */
+body.pure-green-mode {
+  background: #00FF00 !important;
+  background-color: #00FF00 !important;
+  background-image: none !important;
+}
+
+body.pure-green-mode .custom-bg-layer,
+body.pure-green-mode .camera-bg-layer {
+  display: none !important;
+}
+
+body.pure-green-mode .veado-dock,
+body.pure-green-mode .veado-flyout,
+body.pure-green-mode .app-whimsical-header,
+body.pure-green-mode .app-corner-lang-btn,
+body.pure-green-mode .header-lang-pill {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.9) !important;
+}
+
+.btn-restore-pure-green {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 9999;
+  background: rgba(43, 40, 37, 0.88);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.72;
+}
+
+.btn-restore-pure-green:hover,
+.btn-restore-pure-green:focus-visible,
+.btn-restore-pure-green:active {
+  opacity: 1;
+  transform: scale(1.05);
+  background: rgba(43, 40, 37, 0.98);
+}
+
+body:not(.pure-green-mode) .btn-restore-pure-green {
+  display: none !important;
+}
+
+/* Active indicator for dock buttons */
+.dock-btn.is-active {
+  background: var(--crayon-yellow) !important;
+  border-color: var(--ink) !important;
+  box-shadow: 2px 2px 0px var(--ink) !important;
+  transform: translate(1px, 1px);
+}
+
 /* Toast Notification */
 .toast-notification {
   position: fixed;
