@@ -1,99 +1,92 @@
-# 🎙️ PNGTuber Mini Web (OBS Studio Ready)
+# SmoothieTuber 🥤 — 2D Doodle PNGTuber Studio
 
-Aplikasi PNGTuber web pribadi yang ringan, cepat, dan responsif mirip Veadotube Mini. Dibuat menggunakan **HTML5, CSS3, dan Web Audio API murni (Vanilla JavaScript)** tanpa ketergantungan library eksternal (zero dependencies).
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-22c55e?style=for-the-badge&logo=github)](https://anindyaimash-coder.github.io/smoothietuber/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Release](https://img.shields.io/badge/Release-v4.0.0-amber?style=for-the-badge)](https://github.com/anindyaimash-coder/smoothietuber/releases)
 
----
+**SmoothieTuber** adalah aplikasi web PNGTuber pribadi bergaya *whimsical sketchy line-art & doodle aesthetic* (ala Veadotube mini) yang ringan, cepat, dan reaktif suara secara *real-time* menggunakan **Web Audio API murni**.
 
-## ✨ Fitur Utama
-
-1. **Deteksi Suara Real-Time (Web Audio API)**:
-   - Menggunakan `AudioContext` dan `AnalyserNode` untuk membaca amplitudo suara secara instan menggunakan kalkulasi energi RMS (*Root Mean Square*).
-   - Visual VU Meter dinamis lengkap dengan pin penanda ambang batas (*threshold marker*).
-
-2. **Avatar Reaktif 2D (State-Switching Cepat)**:
-   - Mulut tertutup (`closed.png`) saat volume berada di bawah ambang batas (*idle*).
-   - Mulut terbuka (`open.png`) saat volume berada di atas ambang batas (*speaking*).
-   - **Hang Time / Hold Delay (Anti-Flicker)**: Dilengkapi jeda tahanan mulut sehingga avatar tidak berkedip cepat saat ada jeda singkat antar suku kata bicara.
-   - **Efek Pantulan Veadotube (Bounce)**: Avatar melompat kecil secara alami saat berbicara.
-
-3. **Panel Kontrol Interaktif**:
-   - Tombol **Mulai / Hentikan Mikrofon** dengan indikator LED status.
-   - Slider penggeser sensitivitas (*Threshold*) yang responsif.
-   - Slider pengaturan intensitas pantulan (*Bounce*) dan skala avatar (*Scale*).
-   - Fitur ganti gambar avatar kustom langsung dari browser (tersimpan otomatis di browser `localStorage`).
-
-4. **Siap Digunakan di OBS Studio**:
-   - Latar belakang transparan secara default.
-   - Tombol cepat **Mode OBS (Sembunyikan Panel)** dan shortcut keyboard `H` atau `O`.
-   - Dukungan URL parameter `?obs=1` agar panel kontrol langsung tersembunyi saat dimuat sebagai *Browser Source* di OBS Studio.
+Dirancang khusus untuk streamer dan kreator konten yang ingin menyiarkan avatar 2D langsung di **TikTok LIVE (iPhone & Android)**, **TikTok LIVE Studio**, serta **OBS Studio** dengan latar belakang transparan alami tanpa perlu memasang aplikasi berat.
 
 ---
 
-## 📁 Struktur File
+## 🌐 Tautan Resmi Aplikasi (Live Deployment)
 
-```text
-pngtuber/
-├── index.html        # Struktur antarmuka, stage avatar, & panel kontrol
-├── style.css         # Desain glassmorphism, animasi pantulan, & transparansi
-├── script.js         # Logika Web Audio API, kalkulasi RMS, & state-switching
-├── closed.png        # Gambar avatar default saat diam (mulut tertutup)
-├── open.png          # Gambar avatar default saat bicara (mulut terbuka)
-└── README.md         # Dokumentasi panduan penggunaan & konfigurasi OBS
-```
+* 🚀 **Aplikasi Web Resmi (Langsung Pakai):**  
+  👉 **[https://anindyaimash-coder.github.io/smoothietuber/](https://anindyaimash-coder.github.io/smoothietuber/)**
 
----
+* 🔑 **Tautan Otomatis Masuk (Tanpa Ketik Kode Akses):**  
+  👉 **[https://anindyaimash-coder.github.io/smoothietuber/?key=BETATESTER](https://anindyaimash-coder.github.io/smoothietuber/?key=BETATESTER)**
 
-## 🚀 Cara Menjalankan Aplikasi
+* 🪟 **Tautan Browser Source (Khusus OBS Studio & TikTok LIVE Studio — 100% Transparan):**  
+  👉 **[https://anindyaimash-coder.github.io/smoothietuber/?obs=1&key=BETATESTER](https://anindyaimash-coder.github.io/smoothietuber/?obs=1&key=BETATESTER)**
 
-> [!IMPORTANT]
-> **Catatan Keamanan Browser:**
-> Fitur mikrofon (`getUserMedia` & `Web Audio API`) **wajib dijalankan melalui server lokal** (`http://localhost`) atau koneksi aman HTTPS. Browser memblokir akses mikrofon jika dibuka langsung dengan klik ganda berkas `file:///`.
-
-Pilih salah satu cara menjalankan server lokal berikut:
-
-### Cara 1: Menggunakan Python (Paling Mudah)
-Buka Terminal / Command Prompt di dalam folder proyek, lalu jalankan:
-```bash
-python3 -m http.server 3000
-```
-Buka browser dan akses:
-👉 `http://localhost:3000/pngtuber/`
-
-### Cara 2: Menggunakan Node.js / npx
-```bash
-npx serve . -l 3000
-```
-Buka browser dan akses:
-👉 `http://localhost:3000/pngtuber/`
-
-### Cara 3: Menggunakan VS Code Live Server
-1. Buka folder di Visual Studio Code.
-2. Pasang ekstensi **Live Server**.
-3. Klik kanan pada `pngtuber/index.html` dan pilih **"Open with Live Server"**.
+* 🔐 **Kode Akses VIP Tester:**  
+  `BETATESTER`
 
 ---
 
-## 🎥 Panduan Pemasangan di OBS Studio
+## ✨ Fitur-Fitur Utama (Versi 4.0)
 
-1. Buka **OBS Studio**.
-2. Pada panel **Sources** (Sumber), klik tombol **`+`** lalu pilih **Browser** (Peramban).
-3. Beri nama sumber (misalnya `PNGTuber Avatar`).
-4. Pada kolom **URL**, masukkan alamat web server lokal Anda dengan menambahkan parameter `?obs=1`:
-   ```text
-   http://localhost:3000/pngtuber/?obs=1
-   ```
-   *(Parameter `?obs=1` akan otomatis menyembunyikan semua tombol dan panel kontrol, sehingga hanya avatar transparan yang tampil)*.
-5. Atur ukuran jendela:
-   - **Width**: `800` (atau `1080`)
-   - **Height**: `800` (atau `1080`)
-6. Centang opsi:
-   - ✅ **Shutdown source when not visible** (opsional)
-   - ✅ **Refresh browser when scene becomes active** (opsional)
-7. Klik **OK**. Avatar PNGTuber Anda sekarang langsung melayang transparan di atas gameplay atau background streaming Anda!
+1. **🌐 Layar Pemilihan Bahasa Awal & Dynamic Translation**:
+   - Mendukung 5 bahasa: **Bahasa Indonesia**, **日本語 (Japanese)**, **中文 (Mandarin)**, **English (US)**, dan **English (UK)**.
+   - Tombol pengubah bahasa (`🌐`) selalu tersedia di pojok kiri atas layar.
+   - Preferensi bahasa langsung tersimpan otomatis di *LocalStorage*.
+
+2. **🎚️ VU Meter & Ambang Batas Suara Presisi (0.1 – 40.0)**:
+   - Pembacaan energi suara real-time (kalkulasi RMS) dengan rentang desimal yang peka (`0.1 - 40.0`, step `0.1`).
+   - Jarum ambang batas reaktif: mulut avatar membuka seketika saat volume bicara melewati posisi jarum.
+   - Fitur *Hang Time* (50–500 ms) untuk mencegah kedipan mulut cepat antar suku kata bicara.
+
+3. **✏️ Fitur Ganti Nama Emosi Langsung (Inline Rename)**:
+   - Ubah nama label emosi langsung di flyout dok (misal: *Senyum, Kaget, Marah, Tertawa*).
+   - Dilengkapi isolasi tombol keyboard (*keystroke protection*) agar pengetikan nama tidak memicu pergantian ekspresi secara tidak sengaja.
+
+4. **✨ Efek Animasi Melayang Canva (Breathing Effect)**:
+   - Slider **Tinggi Ayunan** dapat diatur dari **`1 px` hingga `50 px`**.
+   - Slider **Kecepatan Melayang** dapat diatur dari **`0.1 s` hingga `6.0 s`**.
+   - Gerakan napas lembut dan konstan tanpa membebani GPU/baterai HP.
+
+5. **👆 Penataan Posisi Bebas (Drag & Drop)**:
+   - Sentuh avatar dengan jari di HP atau klik tahan kursor mouse di PC untuk memposisikan avatar di sudut mana pun di layar.
+
+6. **📷 Kamera Latar Belakang (Handcam Mode)**:
+   - Aktifkan kamera belakang HP secara penuh (*Edge-to-Edge Fullscreen*) untuk merekam meja kegiatan (menggambar, melukis, unboxing, kerajinan tangan, atau main piano) sambil avatar melayang di sudut layar.
+
+7. **📹 Perekam Video & Ekspor Galeri**:
+   - Rasio video: **📱 9:16 Vertikal (Default TikTok/Reels/Shorts)**, **📷 3:2**, **⏹️ 1:1**, dan **📺 16:9**.
+   - Pilihan format ekspor: **MP4**, **MOV**, dan **WebM**.
+   - Dilengkapi tombol *"📱 Simpan ke Galeri / Bagikan"* (Web Share API) untuk langsung mengirim video ke Album Foto HP.
+
+8. **🛡️ Keamanan Data Mandiri (Client-Side LocalStorage)**:
+   - Seluruh avatar, pengaturan suara, dan kalibrasi tersimpan di memori browser pengguna masing-masing.
+   - Penonton siaran langsung maupun tester lain di internet **100% tidak bisa** mengacak-acak sistem atau pengaturan Anda.
 
 ---
 
-## ⌨️ Tombol Pintas & Pengaturan
+## 📦 Berkas Unduhan & Panduan Lengkap
 
-- **Tombol H atau O**: Sembunyikan atau tampilkan kembali panel kontrol secara instan.
-- **Ganti Gambar Sendiri**: Klik tombol **"📁 Unggah PNG"** di panel kontrol untuk mengganti avatar dengan gambar PNG buatan Anda sendiri tanpa perlu mengedit kode.
+* 📄 **Buku Panduan PDF Lengkap (TikTok Live & Direktori 12 Ikon Visual):**  
+  👉 [SmoothieTuber-Tutorial-TikTok-Live.pdf](SmoothieTuber-Tutorial-TikTok-Live.pdf)
+* 📱 **Paket Arsip Distribusi Tester Android:**  
+  👉 [SmoothieTuber-Android-Tester.zip](SmoothieTuber-Android-Tester.zip)
+* 📝 **Panduan Teks Android & TikTok:**  
+  👉 [pngtuber/PANDUAN_PENGGUNAAN_ANDROID_DAN_TIKTOK.txt](pngtuber/PANDUAN_PENGGUNAAN_ANDROID_DAN_TIKTOK.txt)
+
+---
+
+## ⌨️ Pintasan Keyboard (*Hotkeys*) di PC
+
+| Tombol | Fungsi |
+| :---: | :--- |
+| <kbd>M</kbd> | Bisu / Aktifkan Mikrofon (*Mute / Unmute*) |
+| <kbd>H</kbd> | Mode OBS Bersih (Sembunyikan / Tampilkan Seluruh Menu) |
+| <kbd>R</kbd> | Reset & Rekalibrasi Mesin Audio |
+| <kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>... | Beralih Ekspresi Wajah Seketika |
+
+---
+
+## 📝 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+SmoothieTuber © 2026.
