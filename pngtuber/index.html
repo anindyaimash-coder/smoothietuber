@@ -518,6 +518,16 @@
       <button class="btn-close-flyout" type="button" aria-label="Tutup">×</button>
     </div>
     <div class="flyout-body">
+      <div class="switch-row" style="margin-bottom: 14px; padding: 10px 12px; background: rgba(99, 102, 241, 0.08); border-radius: 10px; border: 1.5px solid var(--crayon-yellow);">
+        <div>
+          <label for="toggleTransparentExport" class="switch-label" style="font-weight: 700; font-size: 0.95rem;" data-i18n="label_transparent_export">✨ Ekspor Transparan (Format WEBM)</label>
+          <span class="switch-hint" style="font-size: 0.78rem; display: block; color: var(--text-muted); margin-top: 2px;" data-i18n="hint_transparent_export">Alpha channel murni tanpa background, siap drag & drop ke OBS / Premiere</span>
+        </div>
+        <label class="switch-toggle">
+          <input type="checkbox" id="toggleTransparentExport">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
       <div class="input-group">
         <label for="exportBgMode" class="input-label" data-i18n="label_export_bg">Latar Belakang Video:</label>
         <select id="exportBgMode" class="form-select">

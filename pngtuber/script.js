@@ -136,6 +136,8 @@
       no_audio_loaded: 'Belum ada file dipilih',
       btn_remove_audio: '🗑️ Hapus File Audio',
       flyout_export_title: '🎬 Rekam Video & Ekspor',
+      label_transparent_export: '✨ Ekspor Transparan (Format WEBM)',
+      hint_transparent_export: 'Alpha channel murni tanpa background, siap drag & drop ke OBS / Premiere',
       label_export_bg: 'Latar Belakang Video:',
       opt_bg_current: '📷 Sesuai Layar (Kamera HP / Wallpaper Aktif)',
       opt_bg_green: '🟩 Green Screen (Chroma Key CapCut / TikTok)',
@@ -272,6 +274,8 @@
       no_audio_loaded: 'ファイルが選択されていません',
       btn_remove_audio: '🗑️ 音声ファイルを削除',
       flyout_export_title: '🎬 動画録画＆書き出し',
+      label_transparent_export: '✨ 透過動画エクスポート (WEBM形式)',
+      hint_transparent_export: '背景なしの純粋なアルファチャンネル。OBSや動画編集ソフトにそのままD&D可能',
       label_export_bg: '動画の背景:',
       opt_bg_current: '📷 画面のまま (カメラ/壁紙)',
       opt_bg_green: '🟩 グリーンスクリーン (TikTok/CapCut用クロマキー)',
@@ -408,6 +412,8 @@
       no_audio_loaded: '尚未选择文件',
       btn_remove_audio: '🗑️ 删除音频文件',
       flyout_export_title: '🎬 录制视频与导出',
+      label_transparent_export: '✨ 透明通道导出 (WEBM格式)',
+      hint_transparent_export: '无背景纯透明Alpha通道，可直接拖拽至OBS或剪辑软件无需抠图',
       label_export_bg: '视频背景:',
       opt_bg_current: '📷 当前屏幕 (实时摄像头/壁纸)',
       opt_bg_green: '🟩 绿幕背景 (适用于剪映/抖音色度键抠图)',
@@ -544,6 +550,8 @@
       no_audio_loaded: 'No file selected',
       btn_remove_audio: '🗑️ Remove Audio File',
       flyout_export_title: '🎬 Video Studio & Export',
+      label_transparent_export: '✨ Transparent Export (WEBM Format)',
+      hint_transparent_export: 'Pure alpha transparency without background, ready to drag & drop into OBS or Premiere',
       label_export_bg: 'Video Background:',
       opt_bg_current: '📷 Match Screen (Live Camera / Active Wallpaper)',
       opt_bg_green: '🟩 Green Screen (Chroma Key for CapCut / TikTok)',
@@ -678,6 +686,8 @@
       no_audio_loaded: 'No file selected',
       btn_remove_audio: '🗑️ Remove Audio File',
       flyout_export_title: '🎬 Video Studio & Export',
+      label_transparent_export: '✨ Transparent Export (WEBM Format)',
+      hint_transparent_export: 'Pure alpha transparency without background, ready to drag & drop into OBS or Premiere',
       label_export_bg: 'Video Background:',
       opt_bg_current: '📷 Match Screen (Live Camera / Active Wallpaper)',
       opt_bg_green: '🟩 Green Screen (Chroma Key for CapCut / TikTok)',
@@ -1003,7 +1013,7 @@
   const avatarImage = document.getElementById('avatarImage');
   const avatarWrapper = document.getElementById('avatarWrapper');
   const exportCanvas = document.getElementById('exportCanvas');
-  const exportCtx = exportCanvas.getContext('2d');
+  const exportCtx = exportCanvas.getContext('2d', { alpha: true });
   const customBgLayer = document.getElementById('customBgLayer');
   const cameraBgVideo = document.getElementById('cameraBgVideo');
 
@@ -1107,6 +1117,7 @@
   const btnRemoveAudioFile = document.getElementById('btnRemoveAudioFile');
 
   // Export Flyout & Modal
+  const toggleTransparentExport = document.getElementById('toggleTransparentExport');
   const btnMainRecord = document.getElementById('btnMainRecord');
   const btnMainRecordText = document.getElementById('btnMainRecordText');
   const exportBgMode = document.getElementById('exportBgMode');
@@ -2435,12 +2446,16 @@
   function renderExportFrame() {
     const w = exportCanvas.width;
     const h = exportCanvas.height;
-    const bgMode = exportBgMode ? exportBgMode.value : 'current';
+    const isTransparentMode = (toggleTransparentExport && toggleTransparentExport.checked) || (exportBgMode && exportBgMode.value === 'transparent');
+    const bgMode = isTransparentMode ? 'transparent' : (exportBgMode ? exportBgMode.value : 'current');
     const isCameraActive = cameraStream && cameraBgVideo && !cameraBgVideo.paused && !cameraBgVideo.ended;
 
+    // Bersihkan seluruh bidang canvas agar murni transparan (alpha channel = 0)
     exportCtx.clearRect(0, 0, w, h);
 
-    if (bgMode === 'green') {
+    if (isTransparentMode || bgMode === 'transparent') {
+      // JANGAN beri warna solid/fill rect pada latar belakang saat direkam (biarkan clearRect agar alpha channel tetap terjaga)
+    } else if (bgMode === 'green') {
       exportCtx.fillStyle = '#00FF00';
       exportCtx.fillRect(0, 0, w, h);
     } else if (isCameraActive && bgMode !== 'green') {
@@ -2591,10 +2606,20 @@
     const tracksToRecord = [...canvasStream.getVideoTracks(), ...audioTracks];
     const combinedStream = new MediaStream(tracksToRecord);
 
-    const chosenFormat = exportFormat ? exportFormat.value : 'mp4';
+    const isTransparentMode = (toggleTransparentExport && toggleTransparentExport.checked) || (exportBgMode && exportBgMode.value === 'transparent');
+    const chosenFormat = isTransparentMode ? 'webm' : (exportFormat ? exportFormat.value : 'mp4');
     let supportedTypes = [];
 
-    if (chosenFormat === 'mp4' || chosenFormat === 'mov') {
+    if (isTransparentMode || chosenFormat === 'webm') {
+      // Prioritaskan WebM VP9 yang mendukung native alpha channel transparency
+      supportedTypes = [
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp8',
+        'video/webm'
+      ];
+    } else if (chosenFormat === 'mp4' || chosenFormat === 'mov') {
       supportedTypes = [
         'video/mp4;codecs=avc1,mp4a.40.2',
         'video/mp4;codecs=avc1',
@@ -2640,7 +2665,8 @@
 
     mediaRecorder.onstop = () => {
       cancelAnimationFrame(currentRenderRaf);
-      const actualFormat = exportFormat ? exportFormat.value : 'mp4';
+      const isTransparentRecorded = isTransparentMode || (exportBgMode && exportBgMode.value === 'transparent');
+      const actualFormat = isTransparentRecorded ? 'webm' : (exportFormat ? exportFormat.value : 'mp4');
       const actualMime = mediaRecorder.mimeType || (actualFormat === 'webm' ? 'video/webm' : 'video/mp4');
       const blob = new Blob(recordedChunks, { type: actualMime });
       const videoUrl = URL.createObjectURL(blob);
@@ -2657,18 +2683,20 @@
 
       const durationSec = Math.round((Date.now() - recordStartTime) / 1000);
       const sizeMb = (blob.size / (1024 * 1024)).toFixed(2);
-      const baseFilename = `smoothietuber_${Date.now()}`;
+      const baseFilename = isTransparentRecorded ? `smoothietuber_transparan_${Date.now()}` : `smoothietuber_${Date.now()}`;
 
       metaDuration.textContent = `Durasi: ${formatTime(durationSec)}`;
       metaSize.textContent = `Ukuran: ${sizeMb} MB`;
-      metaFormat.textContent = `Format: ${actualFormat.toUpperCase()} (${actualMime.split(';')[0]})`;
+      metaFormat.textContent = isTransparentRecorded 
+        ? `Format: WEBM TRANSPARAN (${actualMime.split(';')[0]})` 
+        : `Format: ${actualFormat.toUpperCase()} (${actualMime.split(';')[0]})`;
 
       // 1. Primary Download button (.mp4 / .webm)
       if (btnDownloadVideo) {
         btnDownloadVideo.href = videoUrl;
-        if (actualFormat === 'webm') {
+        if (actualFormat === 'webm' || isTransparentRecorded) {
           btnDownloadVideo.download = `${baseFilename}.webm`;
-          btnDownloadVideo.textContent = '⬇️ Unduh WebM (.webm)';
+          btnDownloadVideo.textContent = '✨ Unduh WebM Transparan (.webm)';
         } else {
           btnDownloadVideo.download = `${baseFilename}.mp4`;
           btnDownloadVideo.textContent = '⬇️ Unduh MP4 (.mp4)';
@@ -2677,17 +2705,22 @@
 
       // 2. Apple MOV button (.mov)
       if (btnDownloadMov) {
-        const movBlob = new Blob(recordedChunks, { type: 'video/quicktime' });
-        btnDownloadMov.href = URL.createObjectURL(movBlob);
-        btnDownloadMov.download = `${baseFilename}.mov`;
+        if (isTransparentRecorded) {
+          btnDownloadMov.classList.add('hidden');
+        } else {
+          btnDownloadMov.classList.remove('hidden');
+          const movBlob = new Blob(recordedChunks, { type: 'video/quicktime' });
+          btnDownloadMov.href = URL.createObjectURL(movBlob);
+          btnDownloadMov.download = `${baseFilename}.mov`;
+        }
       }
 
       // 3. Simpan ke Galeri Foto HP / Web Share API (iOS Safari Camera Roll & Android)
       if (btnShareVideo) {
         btnShareVideo.onclick = async () => {
           try {
-            const ext = actualFormat === 'mov' ? 'mov' : (actualFormat === 'webm' ? 'webm' : 'mp4');
-            const fileMime = ext === 'mov' ? 'video/quicktime' : (ext === 'webm' ? 'video/webm' : 'video/mp4');
+            const ext = isTransparentRecorded ? 'webm' : (actualFormat === 'mov' ? 'mov' : (actualFormat === 'webm' ? 'webm' : 'mp4'));
+            const fileMime = isTransparentRecorded ? 'video/webm' : (ext === 'mov' ? 'video/quicktime' : (ext === 'webm' ? 'video/webm' : 'video/mp4'));
             const shareFile = new File([blob], `${baseFilename}.${ext}`, { type: fileMime });
             if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
               await navigator.share({
@@ -2746,9 +2779,9 @@
       if (btnPlayPauseAudio) {
         btnPlayPauseAudio.textContent = '⏸️';
       }
-      showToast('🔴 Merekam & memutar audio rekaman...');
+      showToast(isTransparentMode ? '✨🔴 Merekam WebM Transparan & memutar audio...' : '🔴 Merekam & memutar audio rekaman...');
     } else {
-      showToast('🔴 Merekam animasi & audio...');
+      showToast(isTransparentMode ? '✨🔴 Merekam video WebM transparan...' : '🔴 Merekam animasi & audio...');
     }
   }
 
@@ -2809,6 +2842,61 @@
       if (e.target === recordResultModal) {
         recordResultModal.classList.add('hidden');
         if (previewRecordedVideo) previewRecordedVideo.pause();
+      }
+    });
+  }
+
+  // 3. Sakelar Ekspor Transparan (Format WEBM)
+  if (toggleTransparentExport) {
+    toggleTransparentExport.addEventListener('change', (e) => {
+      const isTransparent = e.target.checked;
+      if (isTransparent) {
+        if (exportBgMode) {
+          exportBgMode.dataset.prevVal = exportBgMode.value;
+          exportBgMode.value = 'transparent';
+          exportBgMode.disabled = true;
+        }
+        if (exportFormat) {
+          exportFormat.dataset.prevVal = exportFormat.value;
+          exportFormat.value = 'webm';
+          exportFormat.disabled = true;
+        }
+        showToast('✨ Mode Ekspor Transparan Aktif (WebM VP9 Alpha)');
+      } else {
+        if (exportBgMode) {
+          exportBgMode.disabled = false;
+          exportBgMode.value = exportBgMode.dataset.prevVal || 'current';
+        }
+        if (exportFormat) {
+          exportFormat.disabled = false;
+          exportFormat.value = exportFormat.dataset.prevVal || 'mp4';
+        }
+        showToast('Mode latar belakang & format video normal dipulihkan.');
+      }
+    });
+  }
+
+  if (exportBgMode) {
+    exportBgMode.addEventListener('change', () => {
+      if (exportBgMode.value === 'transparent') {
+        if (toggleTransparentExport && !toggleTransparentExport.checked) {
+          toggleTransparentExport.checked = true;
+          if (exportFormat) {
+            exportFormat.dataset.prevVal = exportFormat.value;
+            exportFormat.value = 'webm';
+            exportFormat.disabled = true;
+          }
+          exportBgMode.disabled = true;
+          showToast('✨ Mode Ekspor Transparan Aktif (WebM VP9 Alpha)');
+        }
+      }
+    });
+  }
+
+  if (exportFormat) {
+    exportFormat.addEventListener('change', () => {
+      if (exportFormat.value === 'webm' && (!toggleTransparentExport || !toggleTransparentExport.checked)) {
+        showToast('💡 Format WebM dipilih. Aktifkan sakelar "Ekspor Transparan" untuk alpha channel murni!');
       }
     });
   }
