@@ -57,7 +57,7 @@
       dock_bg: 'Pilih Latar Belakang / Green Screen',
       dock_obs: 'Sembunyikan Menu untuk OBS (Hotkey: H)',
       dock_pure_green: 'Mode Layar Green Screen Murni (Prism Live / HP)',
-      dock_pip: 'Avatar Mengambang di Atas Aplikasi Lain (Picture-in-Picture)',
+      dock_camera: 'Kamera Langsung Handcam (Klik: Belakang / Depan / Mati)',
       dock_record: 'Mulai / Hentikan Rekam Video Transparan',
       dock_emotions: 'Kelola atau ganti emosi',
       dock_motion: 'Animasi Melayang Canva & Gerak',
@@ -159,8 +159,8 @@
       btn_restore_controls: '⚙️ Tampilkan Toolbar',
       btn_pure_green: '🟩 Layar Penuh Green Screen Murni (#00FF00)',
       desc_pure_green: 'Sembunyikan semua menu & ubah layar jadi hijau solid #00FF00. Siap untuk chroma key langsung di Prism Live / HP.',
-      btn_pip: '📺 Aktifkan Avatar Mengambang (PiP)',
-      desc_pip: 'Tampilkan avatar melayang di atas game atau aplikasi gambar lain saat membuka aplikasi berbeda di HP / Tablet / PC.',
+      btn_quick_camera: '📷 Aktifkan Kamera Langsung (Handcam)',
+      desc_quick_camera: 'Sorot meja, tangan, atau kegiatan live di HP. Avatar melayang di atas kamera secara live untuk langsung dipakai ngonten!',
       btn_restore_green: '⚙️ Keluar Green Screen',
       modal_rec_title: '🎉 Rekaman Berhasil Dibuat!',
       meta_duration: 'Durasi:',
@@ -195,7 +195,7 @@
       dock_bg: '背景選択 / グリーンスクリーン',
       dock_obs: 'OBS用メニュー非表示 (ホットキー: H)',
       dock_pure_green: '純粋グリーンスクリーンモード (スマホ配信/Prism Live)',
-      dock_pip: '他アプリ上にアバターを浮遊表示 (Picture-in-Picture)',
+      dock_camera: '手元/背景カメラ (クリック: 背面 / 前面 / オフ)',
       dock_record: '透過動画の録画開始 / 停止',
       dock_emotions: '表情の管理・切り替え',
       dock_motion: 'Canva浮遊＆揺れアニメーション',
@@ -297,8 +297,8 @@
       btn_restore_controls: '⚙️ ツールバーを表示',
       btn_pure_green: '🟩 全画面純粋グリーンスクリーン (#00FF00)',
       desc_pure_green: 'すべてのメニューを隠し画面を純粋な#00FF00グリーンにします。Prism Liveやスマホ配信アプリのクロマキーに最適です。',
-      btn_pip: '📺 アバター浮遊表示を有効化 (PiP)',
-      desc_pip: '他のゲームやイラストアプリを開いている間も、アバターを画面上に重ねて浮遊表示させます。',
+      btn_quick_camera: '📷 カメラ配信を有効化 (手元/自撮り)',
+      desc_quick_camera: '手元や作業風景をリアルタイム撮影。アバターを重ねて即配信＆動画作成！',
       btn_restore_green: '⚙️ グリーンスクリーン解除',
       modal_rec_title: '🎉 録画が完了しました！',
       meta_duration: '再生時間:',
@@ -333,7 +333,7 @@
       dock_bg: '选择背景 / 绿幕',
       dock_obs: '隐藏菜单进入OBS模式 (快捷键: H)',
       dock_pure_green: '纯净全屏绿幕模式 (手机推流/Prism Live)',
-      dock_pip: '在其他应用上方悬浮形象 (画中画 PiP)',
+      dock_camera: '实景摄像头 (点击切换: 后置 / 前置 / 关闭)',
       dock_record: '开始 / 停止录制透明视频',
       dock_emotions: '管理或切换表情',
       dock_motion: 'Canva微风呼吸浮动动画',
@@ -435,8 +435,8 @@
       btn_restore_controls: '⚙️ 显示工具栏',
       btn_pure_green: '🟩 全屏纯净绿幕模式 (#00FF00)',
       desc_pure_green: '隐藏所有菜单并将屏幕变为纯绿色#00FF00。完美适配手机推流应用 (如Prism Live) 的色度键抠图。',
-      btn_pip: '📺 开启形象悬浮画中画 (PiP)',
-      desc_pip: '在手机/平板/电脑上打开游戏或绘画应用时，让虚拟形象保持悬浮在最上层。',
+      btn_quick_camera: '📷 开启实时摄像头 (手部/自拍)',
+      desc_quick_camera: '实时拍摄桌面、手绘过程或自拍，形象悬浮于视频上方直接开录！',
       btn_restore_green: '⚙️ 退出绿幕',
       modal_rec_title: '🎉 录制成功完成！',
       meta_duration: '时长:',
@@ -471,7 +471,7 @@
       dock_bg: 'Select Background / Green Screen',
       dock_obs: 'Hide Menus for OBS (Hotkey: H)',
       dock_pure_green: 'Pure Green Screen Mode (Prism Live / Mobile Stream)',
-      dock_pip: 'Floating Avatar Over Other Apps (Picture-in-Picture)',
+      dock_camera: 'Live Handcam / Camera (Click: Rear / Front / Off)',
       dock_record: 'Start / Stop Transparent Video Recording',
       dock_emotions: 'Manage or switch emotions',
       dock_motion: 'Canva Floating & Breathing Animation',
@@ -573,8 +573,8 @@
       btn_restore_controls: '⚙️ Show Toolbar',
       btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
       desc_pure_green: 'Hides all menus and turns the background into solid #00FF00 green. Ready for chroma key in mobile streaming apps like Prism Live.',
-      btn_pip: '📺 Enable Floating Avatar (PiP)',
-      desc_pip: 'Keep your avatar floating on top while playing games or drawing in other apps on Mobile / Tablet / PC.',
+      btn_quick_camera: '📷 Turn On Live Camera (Handcam)',
+      desc_quick_camera: 'Stream or record your desk, hands, or face live. Avatar floats on top ready for content creation!',
       btn_restore_green: '⚙️ Exit Green Screen',
       modal_rec_title: '🎉 Video Recorded Successfully!',
       meta_duration: 'Duration:',
@@ -608,6 +608,8 @@
       dock_audio: 'Audio Calibration & Hang Time',
       dock_bg: 'Select Background / Green Screen',
       dock_obs: 'Hide Menus for OBS (Hotkey: H)',
+      dock_pure_green: 'Pure Green Screen Mode (Prism Live / Mobile Stream)',
+      dock_camera: 'Live Handcam / Camera (Click: Rear / Front / Off)',
       dock_record: 'Start / Stop Transparent Video Recording',
       dock_emotions: 'Manage or switch emotions',
       dock_motion: 'Canva Floating & Breathing Animation',
@@ -707,6 +709,11 @@
       status_record_ready: 'Ready to record voice-reactive animation.',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
+      btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
+      desc_pure_green: 'Hides all menus and turns the background into solid #00FF00 green. Ready for chroma key in mobile streaming apps like Prism Live.',
+      btn_quick_camera: '📷 Turn On Live Camera (Handcam)',
+      desc_quick_camera: 'Stream or record your desk, hands, or face live. Avatar floats on top ready for content creation!',
+      btn_restore_green: '⚙️ Exit Green Screen',
       modal_rec_title: '🎉 Video Recorded Successfully!',
       meta_duration: 'Duration:',
       meta_size: 'Size:',
@@ -1028,9 +1035,10 @@
   const quickMuteIcon = document.getElementById('quickMuteIcon');
   const btnToggleObs = document.getElementById('btnToggleObs');
   const btnDockGreenScreen = document.getElementById('btnDockGreenScreen');
-  const btnDockPip = document.getElementById('btnDockPip');
+  const btnDockCamera = document.getElementById('btnDockCamera');
+  const dockCameraIcon = document.getElementById('dockCameraIcon');
   const btnPureGreenScreen = document.getElementById('btnPureGreenScreen');
-  const btnFlyoutPip = document.getElementById('btnFlyoutPip');
+  const btnQuickCameraToggle = document.getElementById('btnQuickCameraToggle');
   const btnRestorePureGreen = document.getElementById('btnRestorePureGreen');
   const btnQuickRecord = document.getElementById('btnQuickRecord');
   const recTimer = document.getElementById('recTimer');
@@ -1904,10 +1912,10 @@
       return;
     }
 
-    // Hotkey Picture-in-Picture Floating Avatar (Tombol P)
-    if (pressed === 'p') {
+    // Hotkey Kamera Langsung Handcam (Tombol C)
+    if (pressed === 'c') {
       e.preventDefault();
-      togglePictureInPicture();
+      toggleCameraQuick();
       return;
     }
 
@@ -3129,10 +3137,30 @@
       if (facing === 'environment') {
         if (btnCameraBack) btnCameraBack.classList.add('is-active');
         if (btnCameraFront) btnCameraFront.classList.remove('is-active');
+        if (btnDockCamera) {
+          btnDockCamera.classList.add('is-active');
+          if (dockCameraIcon) dockCameraIcon.textContent = '📷';
+          btnDockCamera.title = 'Kamera Belakang Aktif (Klik untuk ganti Kamera Depan)';
+        }
+        if (btnQuickCameraToggle) {
+          btnQuickCameraToggle.classList.add('btn-primary');
+          btnQuickCameraToggle.classList.remove('btn-secondary');
+          btnQuickCameraToggle.textContent = '⏹️ Matikan Kamera HP (Sedang Aktif)';
+        }
         showToast('📷 Kamera Belakang aktif! (Sorot meja/kegiatan)');
       } else {
         if (btnCameraFront) btnCameraFront.classList.add('is-active');
         if (btnCameraBack) btnCameraBack.classList.remove('is-active');
+        if (btnDockCamera) {
+          btnDockCamera.classList.add('is-active');
+          if (dockCameraIcon) dockCameraIcon.textContent = '🤳';
+          btnDockCamera.title = 'Kamera Depan Aktif (Klik untuk matikan kamera)';
+        }
+        if (btnQuickCameraToggle) {
+          btnQuickCameraToggle.classList.add('btn-primary');
+          btnQuickCameraToggle.classList.remove('btn-secondary');
+          btnQuickCameraToggle.textContent = '⏹️ Matikan Kamera HP (Sedang Aktif)';
+        }
         showToast('🤳 Kamera Depan aktif!');
       }
     } catch (err) {
@@ -3159,6 +3187,17 @@
     if (cameraFitToggleGroup) cameraFitToggleGroup.classList.add('hidden');
     if (btnCameraBack) btnCameraBack.classList.remove('is-active');
     if (btnCameraFront) btnCameraFront.classList.remove('is-active');
+
+    if (btnDockCamera) {
+      btnDockCamera.classList.remove('is-active');
+      if (dockCameraIcon) dockCameraIcon.textContent = '📷';
+      btnDockCamera.title = 'Kamera Langsung Handcam (Klik: Belakang / Depan / Mati)';
+    }
+    if (btnQuickCameraToggle) {
+      btnQuickCameraToggle.classList.remove('btn-primary');
+      btnQuickCameraToggle.classList.add('btn-secondary');
+      btnQuickCameraToggle.textContent = '📷 Aktifkan Kamera Langsung (Handcam)';
+    }
 
     if (document.body.classList.contains('bg-pure-transparent')) {
       document.body.classList.remove('bg-pure-transparent');
@@ -3266,7 +3305,7 @@
   btnToggleObs.addEventListener('click', () => toggleObsMode(true));
   btnRestoreControls.addEventListener('click', () => toggleObsMode(false));
 
-  // --- 10B. MODE GREEN SCREEN MURNI (#00FF00) & PICTURE-IN-PICTURE (PIP) ENGINE ---
+  // --- 10B. MODE GREEN SCREEN MURNI (#00FF00) & QUICK LIVE CAMERA CONTROLS ---
   let isPureGreenMode = false;
 
   function togglePureGreenMode(enable) {
@@ -3300,165 +3339,31 @@
     btnRestorePureGreen.addEventListener('click', () => togglePureGreenMode(false));
   }
 
-  // --- Picture-in-Picture (PiP) Floating Canvas Engine ---
-  let isPipActive = false;
-  let pipRafId = null;
-  let pipCanvas = null;
-  let pipCtx = null;
-  let pipVideo = null;
-
-  function isPictureInPictureSupported() {
-    return (
-      ('pictureInPictureEnabled' in document && document.pictureInPictureEnabled) ||
-      (typeof HTMLVideoElement !== 'undefined' && typeof HTMLVideoElement.prototype.requestPictureInPicture === 'function')
-    );
-  }
-
-  function renderPipFrame() {
-    if (!isPipActive || !pipCanvas || !pipCtx) return;
-
-    const w = pipCanvas.width;
-    const h = pipCanvas.height;
-
-    // Background: Solid Green Screen #00FF00 untuk kemudahan chroma-keying di aplikasi lain
-    pipCtx.fillStyle = '#00FF00';
-    pipCtx.fillRect(0, 0, w, h);
-
-    const emo = getActiveEmotion();
-    let currentSrc = lastAppliedSpriteSrc || (emo && emo.sprites ? (isSpeaking ? emo.sprites.open : emo.sprites.closed) : '');
-    let currentImg = currentSrc ? getImageObject(currentSrc) : null;
-
-    if (!currentImg || !currentImg.complete || currentImg.naturalWidth === 0) {
-      if (avatarImage && avatarImage.complete && avatarImage.naturalWidth > 0) {
-        currentImg = avatarImage;
-      }
-    }
-
-    if (currentImg && currentImg.complete && currentImg.naturalWidth > 0) {
-      pipCtx.save();
-
-      const nowSec = performance.now() / 1000;
-      const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
-      const currentFloatOffset = floatSine * (floatIntensity * 0.8);
-      const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
-      const currentBounce = isSpeaking ? Math.max(8, bounceIntensity) : 0;
-
-      const cx = w / 2;
-      const cy = (h / 2) - currentFloatOffset - currentBounce;
-
-      pipCtx.translate(cx, cy);
-      pipCtx.scale(currentFloatScale, currentFloatScale);
-
-      const baseDrawHeight = h * 0.82;
-      const aspect = currentImg.naturalWidth / currentImg.naturalHeight;
-      const drawWidth = baseDrawHeight * aspect;
-
-      pipCtx.drawImage(
-        currentImg,
-        -drawWidth / 2,
-        -baseDrawHeight / 2,
-        drawWidth,
-        baseDrawHeight
-      );
-
-      pipCtx.restore();
-    }
-
-    pipRafId = requestAnimationFrame(renderPipFrame);
-  }
-
-  async function togglePictureInPicture() {
-    if (!isPictureInPictureSupported() || typeof HTMLCanvasElement.prototype.captureStream !== 'function') {
-      showToast('⚠️ Picture-in-Picture canvas tidak didukung di browser ini. Disarankan Chrome atau Safari.');
-      return;
-    }
-
-    // Jika sedang PiP, keluar dari PiP
-    if (document.pictureInPictureElement) {
-      try {
-        await document.exitPictureInPicture();
-      } catch (e) {}
-      return;
-    }
-
-    try {
-      if (!pipCanvas) {
-        pipCanvas = document.createElement('canvas');
-        pipCanvas.width = 512;
-        pipCanvas.height = 512;
-        pipCtx = pipCanvas.getContext('2d');
-      }
-
-      if (!pipVideo) {
-        pipVideo = document.createElement('video');
-        pipVideo.id = 'pipAvatarVideo';
-        pipVideo.muted = true;
-        pipVideo.playsInline = true;
-        pipVideo.autoplay = true;
-        pipVideo.style.position = 'fixed';
-        pipVideo.style.width = '1px';
-        pipVideo.style.height = '1px';
-        pipVideo.style.opacity = '0.001';
-        pipVideo.style.pointerEvents = 'none';
-        pipVideo.style.top = '-9999px';
-        pipVideo.style.left = '-9999px';
-        document.body.appendChild(pipVideo);
-
-        pipVideo.addEventListener('leavepictureinpicture', () => {
-          isPipActive = false;
-          if (pipRafId) cancelAnimationFrame(pipRafId);
-          updatePipUI(false);
-          showToast('Jendela melayang (PiP) ditutup');
-        });
-
-        pipVideo.addEventListener('enterpictureinpicture', () => {
-          isPipActive = true;
-          updatePipUI(true);
-          showToast('📺 Avatar melayang aktif di atas aplikasi lain!');
-        });
-      }
-
-      isPipActive = true;
-      renderPipFrame();
-
-      const stream = pipCanvas.captureStream(30);
-      pipVideo.srcObject = stream;
-      await pipVideo.play();
-      await pipVideo.requestPictureInPicture();
-    } catch (err) {
-      console.warn('PiP error:', err);
-      isPipActive = false;
-      if (pipRafId) cancelAnimationFrame(pipRafId);
-      updatePipUI(false);
-      if (err.name !== 'AbortError') {
-        showToast('⚠️ Gagal membuka PiP: ' + (err.message || 'Izin ditolak'));
-      }
+  // --- Quick Camera Toggle (Handcam / Facecam) ---
+  function toggleCameraQuick() {
+    if (!cameraStream) {
+      // 1st click: Kamera Belakang (Handcam / Sorot meja kerja/konten)
+      startCameraBackground('environment');
+    } else if (activeCameraFacing === 'environment') {
+      // 2nd click: Kamera Depan (Facecam / Selfie)
+      startCameraBackground('user');
+    } else {
+      // 3rd click: Matikan kamera
+      stopCameraBackground(true);
     }
   }
 
-  function updatePipUI(active) {
-    if (btnDockPip) {
-      if (active) btnDockPip.classList.add('is-active');
-      else btnDockPip.classList.remove('is-active');
-    }
-    if (btnFlyoutPip) {
-      if (active) {
-        btnFlyoutPip.classList.add('btn-primary');
-        btnFlyoutPip.classList.remove('btn-secondary');
-        btnFlyoutPip.textContent = '📺 Tutup Avatar Melayang (PiP)';
+  if (btnDockCamera) {
+    btnDockCamera.addEventListener('click', toggleCameraQuick);
+  }
+  if (btnQuickCameraToggle) {
+    btnQuickCameraToggle.addEventListener('click', () => {
+      if (cameraStream) {
+        stopCameraBackground(true);
       } else {
-        btnFlyoutPip.classList.remove('btn-primary');
-        btnFlyoutPip.classList.add('btn-secondary');
-        btnFlyoutPip.textContent = '📺 Aktifkan Avatar Melayang (PiP)';
+        startCameraBackground('environment');
       }
-    }
-  }
-
-  if (btnDockPip) {
-    btnDockPip.addEventListener('click', togglePictureInPicture);
-  }
-  if (btnFlyoutPip) {
-    btnFlyoutPip.addEventListener('click', togglePictureInPicture);
+    });
   }
 
   // --- 11. HOTKEYS SETUP ---

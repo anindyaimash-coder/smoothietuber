@@ -108,9 +108,9 @@
       <span class="dock-icon">🟩</span>
     </button>
 
-    <!-- Tombol Picture-in-Picture (Avatar Mengambang di Atas Aplikasi Lain) -->
-    <button id="btnDockPip" class="dock-btn" type="button" title="Avatar Mengambang di Atas Aplikasi Lain (Picture-in-Picture)" data-i18n-title="dock_pip">
-      <span class="dock-icon">📺</span>
+    <!-- Tombol Kamera Langsung Handcam (Pengganti PiP untuk Langsung Ngonten) -->
+    <button id="btnDockCamera" class="dock-btn" type="button" title="Kamera Langsung Handcam (Klik: Belakang / Depan / Mati)" data-i18n-title="dock_camera">
+      <span id="dockCameraIcon" class="dock-icon">📷</span>
     </button>
 
     <!-- Tombol Rekam Cepat Video -->
@@ -259,7 +259,7 @@
         <button type="button" class="btn-bg-choice" data-bg="bg-dark" data-i18n="bg_dark">⬛ Studio Gelap</button>
       </div>
 
-      <!-- Mode Layar Tumpang Khusus HP / Tablet (Green Screen Murni & PiP) -->
+      <!-- Mode Layar Tumpang Khusus HP / Tablet (Green Screen Murni & Kamera Handcam) -->
       <div class="overlay-mode-card" style="margin-top: 8px; padding: 10px; background: rgba(0, 200, 83, 0.08); border: 1.5px solid #00c853; border-radius: var(--radius-btn);">
         <div style="font-weight: 700; font-size: 11.5px; margin-bottom: 6px; color: #00796b; display: flex; align-items: center; gap: 5px;">
           <span>📱 Mode Layar Tumpang (Mobile/Tablet)</span>
@@ -270,11 +270,11 @@
         <p class="section-desc" style="font-size: 10.5px; margin-top: 4px; margin-bottom: 8px; color: var(--text-muted); line-height: 1.35;" data-i18n="desc_pure_green">
           Sembunyikan semua menu &amp; ubah layar jadi hijau solid #00FF00. Siap untuk chroma key langsung di Prism Live / HP.
         </p>
-        <button id="btnFlyoutPip" class="btn btn-secondary btn-block" type="button" style="font-size: 11.5px; padding: 7px; display: flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="btn_pip">
-          📺 Aktifkan Avatar Mengambang (PiP)
+        <button id="btnQuickCameraToggle" class="btn btn-secondary btn-block" type="button" style="font-size: 11.5px; padding: 7px; display: flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="btn_quick_camera">
+          📷 Aktifkan Kamera Langsung (Handcam)
         </button>
-        <p class="section-desc" style="font-size: 10.5px; margin-top: 4px; color: var(--text-muted); line-height: 1.35;" data-i18n="desc_pip">
-          Tampilkan avatar melayang di atas game atau aplikasi gambar lain saat membuka aplikasi berbeda di HP / Tablet / PC.
+        <p class="section-desc" style="font-size: 10.5px; margin-top: 4px; color: var(--text-muted); line-height: 1.35;" data-i18n="desc_quick_camera">
+          Sorot meja, tangan, atau kegiatan live di HP. Avatar melayang di atas kamera secara live untuk langsung dipakai ngonten!
         </p>
       </div>
       <div class="custom-bg-box">
