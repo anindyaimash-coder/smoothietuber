@@ -1037,8 +1037,6 @@
   const btnDockGreenScreen = document.getElementById('btnDockGreenScreen');
   const btnDockCamera = document.getElementById('btnDockCamera');
   const dockCameraIcon = document.getElementById('dockCameraIcon');
-  const btnPureGreenScreen = document.getElementById('btnPureGreenScreen');
-  const btnQuickCameraToggle = document.getElementById('btnQuickCameraToggle');
   const btnRestorePureGreen = document.getElementById('btnRestorePureGreen');
   const btnQuickRecord = document.getElementById('btnQuickRecord');
   const recTimer = document.getElementById('recTimer');
@@ -3142,11 +3140,6 @@
           if (dockCameraIcon) dockCameraIcon.textContent = '📷';
           btnDockCamera.title = 'Kamera Belakang Aktif (Klik untuk ganti Kamera Depan)';
         }
-        if (btnQuickCameraToggle) {
-          btnQuickCameraToggle.classList.add('btn-primary');
-          btnQuickCameraToggle.classList.remove('btn-secondary');
-          btnQuickCameraToggle.textContent = '⏹️ Matikan Kamera HP (Sedang Aktif)';
-        }
         showToast('📷 Kamera Belakang aktif! (Sorot meja/kegiatan)');
       } else {
         if (btnCameraFront) btnCameraFront.classList.add('is-active');
@@ -3155,11 +3148,6 @@
           btnDockCamera.classList.add('is-active');
           if (dockCameraIcon) dockCameraIcon.textContent = '🤳';
           btnDockCamera.title = 'Kamera Depan Aktif (Klik untuk matikan kamera)';
-        }
-        if (btnQuickCameraToggle) {
-          btnQuickCameraToggle.classList.add('btn-primary');
-          btnQuickCameraToggle.classList.remove('btn-secondary');
-          btnQuickCameraToggle.textContent = '⏹️ Matikan Kamera HP (Sedang Aktif)';
         }
         showToast('🤳 Kamera Depan aktif!');
       }
@@ -3192,11 +3180,6 @@
       btnDockCamera.classList.remove('is-active');
       if (dockCameraIcon) dockCameraIcon.textContent = '📷';
       btnDockCamera.title = 'Kamera Langsung Handcam (Klik: Belakang / Depan / Mati)';
-    }
-    if (btnQuickCameraToggle) {
-      btnQuickCameraToggle.classList.remove('btn-primary');
-      btnQuickCameraToggle.classList.add('btn-secondary');
-      btnQuickCameraToggle.textContent = '📷 Aktifkan Kamera Langsung (Handcam)';
     }
 
     if (document.body.classList.contains('bg-pure-transparent')) {
@@ -3332,9 +3315,6 @@
   if (btnDockGreenScreen) {
     btnDockGreenScreen.addEventListener('click', () => togglePureGreenMode(!isPureGreenMode));
   }
-  if (btnPureGreenScreen) {
-    btnPureGreenScreen.addEventListener('click', () => togglePureGreenMode(true));
-  }
   if (btnRestorePureGreen) {
     btnRestorePureGreen.addEventListener('click', () => togglePureGreenMode(false));
   }
@@ -3355,15 +3335,6 @@
 
   if (btnDockCamera) {
     btnDockCamera.addEventListener('click', toggleCameraQuick);
-  }
-  if (btnQuickCameraToggle) {
-    btnQuickCameraToggle.addEventListener('click', () => {
-      if (cameraStream) {
-        stopCameraBackground(true);
-      } else {
-        startCameraBackground('environment');
-      }
-    });
   }
 
   // --- 11. HOTKEYS SETUP ---
