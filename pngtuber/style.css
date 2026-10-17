@@ -135,20 +135,25 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   bottom: 0 !important;
   width: 100vw !important;
   height: 100dvh !important;
-  min-width: 100vw !important;
-  min-height: 100dvh !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  -webkit-object-fit: cover !important;
   object-fit: cover !important;
   object-position: center center !important;
   z-index: 1 !important; /* Di depan wallpaper kustom, tapi di belakang stage avatar */
   pointer-events: none !important;
-  background: #000000 !important;
+  background: transparent !important;
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
 }
 
 .camera-bg-layer.camera-fit-contain {
+  -webkit-object-fit: contain !important;
   object-fit: contain !important;
+  background: #000000 !important;
 }
 
 #btnCameraBack.is-active,

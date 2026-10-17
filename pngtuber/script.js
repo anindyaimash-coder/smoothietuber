@@ -976,8 +976,9 @@
   let micStream = null;
   let micSourceNode = null;
   let audioFileElement = null;
-  let audioFileSourceNode = null;
   let audioRecordDestination = null;
+  let recordGainNode = null;
+  let recordCompressorNode = null;
 
   let currentAudioSourceMode = 'mic'; // 'mic' | 'file'
   let isListening = false;
@@ -1993,6 +1994,20 @@
     if (!audioRecordDestination) {
       audioRecordDestination = audioContext.createMediaStreamDestination();
     }
+    if (!recordCompressorNode) {
+      recordCompressorNode = audioContext.createDynamicsCompressor();
+      recordCompressorNode.threshold.setValueAtTime(-24, audioContext.currentTime);
+      recordCompressorNode.knee.setValueAtTime(30, audioContext.currentTime);
+      recordCompressorNode.ratio.setValueAtTime(8, audioContext.currentTime);
+      recordCompressorNode.attack.setValueAtTime(0.003, audioContext.currentTime);
+      recordCompressorNode.release.setValueAtTime(0.25, audioContext.currentTime);
+      recordCompressorNode.connect(audioRecordDestination);
+    }
+    if (!recordGainNode) {
+      recordGainNode = audioContext.createGain();
+      recordGainNode.gain.value = 2.4; // Pre-amp boost (+7.6 dB) agar suara mikrofon & musik rekaman terdengar lantang di hasil video
+      recordGainNode.connect(recordCompressorNode);
+    }
     if (audioContext.state === 'suspended') {
       audioContext.resume().catch(() => {});
     }
@@ -2005,11 +2020,13 @@
     if (!mediaElement) return null;
     initAudioContext();
 
+    const targetRecordNode = recordGainNode || audioRecordDestination;
+
     if (connectedMediaElements.has(mediaElement)) {
       const existingNode = connectedMediaElements.get(mediaElement);
-      if (audioRecordDestination) {
+      if (targetRecordNode) {
         try {
-          existingNode.connect(audioRecordDestination);
+          existingNode.connect(targetRecordNode);
         } catch (e) {}
       }
       return existingNode;
@@ -2025,9 +2042,9 @@
       // 3. Arahkan output ke audioContext.destination agar suara tetap terdengar di speaker
       sourceNode.connect(audioContext.destination);
 
-      // 4. Arahkan ke audioRecordDestination agar suara rekaman tersimpan saat proses ekspor video
-      if (audioRecordDestination) {
-        sourceNode.connect(audioRecordDestination);
+      // 4. Arahkan ke targetRecordNode (dengan penguat gain + kompresor) agar suara rekaman tersimpan lantang
+      if (targetRecordNode) {
+        sourceNode.connect(targetRecordNode);
       }
 
       connectedMediaElements.set(mediaElement, sourceNode);
@@ -2115,9 +2132,9 @@
       const constraints = {
         audio: {
           deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
         }
       };
 
@@ -2128,7 +2145,10 @@
       micSourceNode = audioContext.createMediaStreamSource(micStream);
 
       micSourceNode.connect(analyser);
-      micSourceNode.connect(audioRecordDestination);
+      const targetRecordNode = recordGainNode || audioRecordDestination;
+      if (targetRecordNode) {
+        micSourceNode.connect(targetRecordNode);
+      }
 
       currentAudioSourceMode = 'mic';
       isListening = true;
@@ -3073,11 +3093,15 @@
   function applyCameraFitStyle() {
     if (!cameraBgVideo) return;
     if (isCameraCoverFit) {
+      cameraBgVideo.style.setProperty('-webkit-object-fit', 'cover', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'cover', 'important');
+      cameraBgVideo.style.setProperty('background', 'transparent', 'important');
       cameraBgVideo.classList.remove('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = '📐 Tampilan: Penuh Layar (Cover)';
     } else {
+      cameraBgVideo.style.setProperty('-webkit-object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'contain', 'important');
+      cameraBgVideo.style.setProperty('background', '#000000', 'important');
       cameraBgVideo.classList.add('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = '📐 Tampilan: Pas Sensor (Fit/Contain)';
     }
@@ -3092,12 +3116,14 @@
         return;
       }
 
+      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280) agar tidak gepeng atau bergaris hitam
+      const isPortrait = window.innerHeight >= window.innerWidth;
       const constraints = {
         audio: false, // Audio mic dikelola oleh Web Audio API
         video: {
           facingMode: { ideal: facing },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: isPortrait ? 720 : 1280 },
+          height: { ideal: isPortrait ? 1280 : 720 }
         }
       };
 
@@ -3118,7 +3144,7 @@
         cameraBgVideo.playsInline = true;
         cameraBgVideo.setAttribute('playsinline', '');
         cameraBgVideo.setAttribute('webkit-playsinline', '');
-        cameraBgVideo.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100dvh !important; min-width: 100vw !important; min-height: 100dvh !important; object-position: center center !important; z-index: 1 !important; pointer-events: none !important; margin: 0 !important; padding: 0 !important; border: none !important; background: #000000 !important;' + (isCameraCoverFit ? 'object-fit: cover !important;' : 'object-fit: contain !important;');
+        applyCameraFitStyle();
         await cameraBgVideo.play().catch(() => {});
         applyCameraFitStyle();
       }
@@ -3210,16 +3236,13 @@
 
   if (cameraBgVideo) {
     cameraBgVideo.addEventListener('loadedmetadata', () => {
-      cameraBgVideo.style.width = '100vw';
-      cameraBgVideo.style.height = '100dvh';
       applyCameraFitStyle();
     });
   }
 
   window.addEventListener('resize', () => {
     if (cameraStream && cameraBgVideo) {
-      cameraBgVideo.style.width = '100vw';
-      cameraBgVideo.style.height = '100dvh';
+      applyCameraFitStyle();
     }
   });
 
