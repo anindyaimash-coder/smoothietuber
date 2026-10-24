@@ -154,7 +154,7 @@
       opt_res_16_9: '🖥️ 16:9 Horizontal (1920 × 1080 - YouTube / PC)',
       btn_record_start: 'Mulai Merekam Video',
       btn_record_stop: 'Hentikan Rekaman Video',
-      status_record_ready: 'Siap merekam animasi reaktif audio.',
+      status_record_ready: 'Siap merekam animasi reaktif audio (60 FPS CFR • 8 Mbps).',
       status_recording: 'Sedang merekam...',
       btn_restore_controls: '⚙️ Tampilkan Toolbar',
       btn_pure_green: '🟩 Layar Penuh Green Screen Murni (#00FF00)',
@@ -292,7 +292,7 @@
       opt_res_16_9: '🖥️ 16:9 横型 (1920 × 1080 - YouTube / PC)',
       btn_record_start: '録画を開始',
       btn_record_stop: '録画を停止',
-      status_record_ready: '音声反応アニメーションの録画準備完了',
+      status_record_ready: '音声反応アニメーションの録画準備完了 (60 FPS CFR • 8 Mbps)',
       status_recording: '録画中...',
       btn_restore_controls: '⚙️ ツールバーを表示',
       btn_pure_green: '🟩 全画面純粋グリーンスクリーン (#00FF00)',
@@ -430,7 +430,7 @@
       opt_res_16_9: '🖥️ 16:9 横屏 (1920 × 1080 - B站/YouTube/PC)',
       btn_record_start: '开始录制视频',
       btn_record_stop: '停止视频录制',
-      status_record_ready: '已就绪，随时可开始录制声音感应动画。',
+      status_record_ready: '已就绪，随时可开始录制声音感应动画 (60 FPS CFR • 8 Mbps)。',
       status_recording: '正在录制中...',
       btn_restore_controls: '⚙️ 显示工具栏',
       btn_pure_green: '🟩 全屏纯净绿幕模式 (#00FF00)',
@@ -568,7 +568,7 @@
       opt_res_16_9: '🖥️ 16:9 Landscape (1920 × 1080 - YouTube / PC)',
       btn_record_start: 'Start Video Recording',
       btn_record_stop: 'Stop Video Recording',
-      status_record_ready: 'Ready to record voice-reactive animation.',
+      status_record_ready: 'Ready to record voice-reactive animation (60 FPS CFR • 8 Mbps).',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
       btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
@@ -706,7 +706,7 @@
       opt_res_16_9: '🖥️ 16:9 Landscape (1920 × 1080 - YouTube / PC)',
       btn_record_start: 'Start Video Recording',
       btn_record_stop: 'Stop Video Recording',
-      status_record_ready: 'Ready to record voice-reactive animation.',
+      status_record_ready: 'Ready to record voice-reactive animation (60 FPS CFR • 8 Mbps).',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
       btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
@@ -2469,7 +2469,9 @@
   let customBgImageObj = null;
   let lastValidRecordedImg = null;
 
-  function renderExportFrame() {
+  function renderExportFrame(timestamp) {
+    if (!isRecordingVideo) return;
+
     const w = exportCanvas.width;
     const h = exportCanvas.height;
     const isTransparentMode = (toggleTransparentExport && toggleTransparentExport.checked) || (exportBgMode && exportBgMode.value === 'transparent');
@@ -2478,6 +2480,8 @@
 
     // Bersihkan seluruh bidang canvas agar murni transparan (alpha channel = 0)
     exportCtx.clearRect(0, 0, w, h);
+    exportCtx.imageSmoothingEnabled = true;
+    exportCtx.imageSmoothingQuality = 'high';
 
     if (isTransparentMode || bgMode === 'transparent') {
       // JANGAN beri warna solid/fill rect pada latar belakang saat direkam (biarkan clearRect agar alpha channel tetap terjaga)
@@ -2535,7 +2539,7 @@
       lastValidRecordedImg = currentImg;
       exportCtx.save();
 
-      const nowSec = performance.now() / 1000;
+      const nowSec = (timestamp || performance.now()) / 1000;
       const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
       const currentFloatOffset = floatSine * floatIntensity;
       const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
@@ -2614,6 +2618,12 @@
       await startMicrophone();
     }
 
+    // Pastikan tidak ada loop RAF ganda yang sedang berjalan
+    if (currentRenderRaf) {
+      cancelAnimationFrame(currentRenderRaf);
+      currentRenderRaf = null;
+    }
+
     // Pastikan avatar mulai dari keadaan mata terbuka & sprite sudah siap (cegah kedipan terpotong)
     isBlinking = false;
     updateAvatarSprite();
@@ -2623,9 +2633,18 @@
     isRecordingVideo = true;
     recordedChunks = [];
 
+    // Jalankan render loop 60fps untuk perekaman
     renderExportFrame();
 
-    const canvasStream = exportCanvas.captureStream(30);
+    // 1. Paksa Constant Frame Rate (CFR) pada Canvas Capture: 60 FPS
+    const canvasStream = exportCanvas.captureStream(60);
+    const videoTracks = canvasStream.getVideoTracks();
+    if (videoTracks && videoTracks[0] && videoTracks[0].applyConstraints) {
+      videoTracks[0].applyConstraints({
+        frameRate: { ideal: 60, min: 60 }
+      }).catch(() => {});
+    }
+
     const audioTracks = (audioRecordDestination && audioRecordDestination.stream) 
       ? audioRecordDestination.stream.getAudioTracks() 
       : [];
@@ -2672,16 +2691,44 @@
       }
     }
 
+    // 2. Tingkatkan Video Bitrate ke minimal 8 Mbps (8000000 bps) untuk mencegah kompresi brutal & ramah editor CapCut
+    const TARGET_VIDEO_BITRATE = 8000000; // 8 Mbps high-quality CFR
+    const TARGET_AUDIO_BITRATE = 128000;  // 128 kbps audio
+
+    const recorderOptions = {
+      videoBitsPerSecond: TARGET_VIDEO_BITRATE,
+      audioBitsPerSecond: TARGET_AUDIO_BITRATE
+    };
+    if (selectedMime) {
+      recorderOptions.mimeType = selectedMime;
+    }
+
     try {
-      mediaRecorder = new MediaRecorder(combinedStream, selectedMime ? { mimeType: selectedMime } : {});
+      mediaRecorder = new MediaRecorder(combinedStream, recorderOptions);
     } catch (err) {
+      console.warn('MediaRecorder with videoBitsPerSecond failed, trying fallback options:', err);
       try {
-        mediaRecorder = new MediaRecorder(combinedStream);
-      } catch (e2) {
-        console.error('MediaRecorder init failed:', e2);
-        showToast('⚠️ Perekaman video tidak didukung di browser ini.');
-        isRecordingVideo = false;
-        return;
+        mediaRecorder = new MediaRecorder(combinedStream, {
+          ...(selectedMime ? { mimeType: selectedMime } : {}),
+          videoBitsPerSecond: TARGET_VIDEO_BITRATE
+        });
+      } catch (err2) {
+        try {
+          mediaRecorder = new MediaRecorder(combinedStream, selectedMime ? { mimeType: selectedMime } : {});
+        } catch (err3) {
+          try {
+            mediaRecorder = new MediaRecorder(combinedStream);
+          } catch (e2) {
+            console.error('MediaRecorder init failed:', e2);
+            showToast('⚠️ Perekaman video tidak didukung di browser ini.');
+            isRecordingVideo = false;
+            if (currentRenderRaf) {
+              cancelAnimationFrame(currentRenderRaf);
+              currentRenderRaf = null;
+            }
+            return;
+          }
+        }
       }
     }
 
@@ -2690,7 +2737,10 @@
     };
 
     mediaRecorder.onstop = () => {
-      cancelAnimationFrame(currentRenderRaf);
+      if (currentRenderRaf) {
+        cancelAnimationFrame(currentRenderRaf);
+        currentRenderRaf = null;
+      }
       const isTransparentRecorded = isTransparentMode || (exportBgMode && exportBgMode.value === 'transparent');
       const actualFormat = isTransparentRecorded ? 'webm' : (exportFormat ? exportFormat.value : 'mp4');
       const actualMime = mediaRecorder.mimeType || (actualFormat === 'webm' ? 'video/webm' : 'video/mp4');
@@ -2782,7 +2832,7 @@
       showToast('🎉 Rekaman video siap disimpan!');
     };
 
-    mediaRecorder.start(250);
+    mediaRecorder.start(1000);
     recordStartTime = Date.now();
     setRecordingUI(true);
 
@@ -2805,15 +2855,19 @@
       if (btnPlayPauseAudio) {
         btnPlayPauseAudio.textContent = '⏸️';
       }
-      showToast(isTransparentMode ? '✨🔴 Merekam WebM Transparan & memutar audio...' : '🔴 Merekam & memutar audio rekaman...');
+      showToast(isTransparentMode ? '✨🔴 Merekam WebM Transparan (60 FPS CFR) & memutar audio...' : '🔴 Merekam 60 FPS CFR & memutar audio...');
     } else {
-      showToast(isTransparentMode ? '✨🔴 Merekam video WebM transparan...' : '🔴 Merekam animasi & audio...');
+      showToast(isTransparentMode ? '✨🔴 Merekam video WebM transparan (60 FPS CFR)...' : '🔴 Merekam video 60 FPS CFR (Kualitas Tinggi)...');
     }
   }
 
   function stopVideoRecording() {
     if (!isRecordingVideo || !mediaRecorder) return;
     isRecordingVideo = false;
+    if (currentRenderRaf) {
+      cancelAnimationFrame(currentRenderRaf);
+      currentRenderRaf = null;
+    }
     if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
     setRecordingUI(false);
 
