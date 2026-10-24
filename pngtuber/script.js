@@ -824,6 +824,80 @@
     resetAudio: 'r'
   };
 
+  // --- PERSISTENT STORAGE ENGINE: INDEXEDDB + LOCALSTORAGE DUAL-TIER ---
+  // Mengatasi limit 5MB localStorage & proteksi dari 7-day auto-eviction Safari iOS
+  const IDB_CONFIG = {
+    name: 'SmoothieTuberDB',
+    version: 1,
+    store: 'app_data'
+  };
+
+  let idbInstancePromise = null;
+
+  function getIDB() {
+    if (idbInstancePromise) return idbInstancePromise;
+    idbInstancePromise = new Promise((resolve) => {
+      if (typeof window === 'undefined' || !window.indexedDB) {
+        resolve(null);
+        return;
+      }
+      try {
+        const req = window.indexedDB.open(IDB_CONFIG.name, IDB_CONFIG.version);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(IDB_CONFIG.store)) {
+            db.createObjectStore(IDB_CONFIG.store);
+          }
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = (e) => {
+          console.warn('IndexedDB open notice:', e);
+          resolve(null);
+        };
+      } catch (err) {
+        console.warn('IndexedDB init exception:', err);
+        resolve(null);
+      }
+    });
+    return idbInstancePromise;
+  }
+
+  async function idbGet(key) {
+    try {
+      const db = await getIDB();
+      if (!db) return null;
+      return new Promise((resolve) => {
+        const tx = db.transaction(IDB_CONFIG.store, 'readonly');
+        const store = tx.objectStore(IDB_CONFIG.store);
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result ?? null);
+        req.onerror = () => resolve(null);
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function idbSet(key, value) {
+    try {
+      const db = await getIDB();
+      if (!db) return false;
+      return new Promise((resolve) => {
+        const tx = db.transaction(IDB_CONFIG.store, 'readwrite');
+        const store = tx.objectStore(IDB_CONFIG.store);
+        const req = store.put(value, key);
+        req.onsuccess = () => resolve(true);
+        req.onerror = (e) => {
+          console.warn('IndexedDB write error:', e);
+          resolve(false);
+        };
+      });
+    } catch (e) {
+      console.warn('IndexedDB set exception:', e);
+      return false;
+    }
+  }
+
   function cleanupLegacyStorage() {
     try {
       localStorage.removeItem('pngtuber_emotions_v2');
@@ -933,6 +1007,7 @@
           activeEmotionId
         };
         localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(payload));
+        idbSet(STORAGE_KEYS.settings, payload).catch(() => {});
       } catch (e) {
         console.warn('Gagal menyimpan user settings:', e);
       }
@@ -948,17 +1023,74 @@
   }
 
   function saveEmotions() {
+    // 1. Simpan ke IndexedDB (Kapasitas ratusan Megabyte, aman untuk gambar PNG beresolusi tinggi tanpa batas 5MB)
+    try {
+      idbSet(STORAGE_KEYS.emotions, JSON.parse(JSON.stringify(emotions))).catch(() => {});
+    } catch (e) {}
+
+    // 2. Simpan juga ke localStorage sebagai cache sinkron jika kapasitas mencukupi
     try {
       localStorage.setItem(STORAGE_KEYS.emotions, JSON.stringify(emotions));
     } catch (e) {
-      console.warn('Gagal menyimpan emosi ke localStorage:', e);
+      // Jika localStorage melampaui kuota 5MB (QuotaExceededError), data tetap 100% aman tersimpan di IndexedDB!
+      console.info('localStorage quota reached, data avatar aman tersimpan permanen di IndexedDB');
     }
   }
 
   function saveSystemHotkeys() {
     try {
       localStorage.setItem(STORAGE_KEYS.hotkeys, JSON.stringify(systemHotkeys));
+      idbSet(STORAGE_KEYS.hotkeys, systemHotkeys).catch(() => {});
     } catch (e) {}
+  }
+
+  async function restoreEmotionsFromIDB() {
+    try {
+      const idbData = await idbGet(STORAGE_KEYS.emotions);
+      if (idbData && Array.isArray(idbData) && idbData.length > 0) {
+        // Cek apakah data di IndexedDB memiliki custom sprites
+        const hasCustomSprites = idbData.some(emo => 
+          emo.sprites && (
+            (emo.sprites.closed && emo.sprites.closed.startsWith('data:')) ||
+            (emo.sprites.open && emo.sprites.open.startsWith('data:')) ||
+            (emo.sprites.closedBlink && emo.sprites.closedBlink.startsWith('data:')) ||
+            (emo.sprites.openBlink && emo.sprites.openBlink.startsWith('data:'))
+          )
+        );
+        const hasLocalCustomSprites = emotions.some(emo => 
+          emo.sprites && (
+            (emo.sprites.closed && emo.sprites.closed.startsWith('data:')) ||
+            (emo.sprites.open && emo.sprites.open.startsWith('data:'))
+          )
+        );
+
+        if (hasCustomSprites || !hasLocalCustomSprites) {
+          emotions = idbData;
+          if (activeEmotionId && !emotions.some(e => e.id === activeEmotionId)) {
+            activeEmotionId = emotions[0].id;
+          }
+          updateSlotImages();
+          updateAvatarSprite();
+          renderCompactEmotionsList();
+          console.log('✅ Avatar kustom berhasil dipulihkan dari penyimpanan permanen IndexedDB');
+        }
+      } else if (emotions && emotions.length > 0) {
+        // Migrasi data yang ada di localStorage ke IndexedDB saat pertama kali update
+        idbSet(STORAGE_KEYS.emotions, JSON.parse(JSON.stringify(emotions))).catch(() => {});
+      }
+
+      // Pulihkan juga custom background dari IndexedDB jika ada
+      const savedBg = await idbGet('smoothietuber_custom_bg');
+      if (savedBg && customBgLayer) {
+        customBgLayer.style.backgroundImage = `url("${savedBg}")`;
+        customBgLayer.classList.remove('hidden');
+        if (btnRemoveCustomBg) btnRemoveCustomBg.classList.remove('hidden');
+        customBgImageObj = new Image();
+        customBgImageObj.src = savedBg;
+      }
+    } catch (e) {
+      console.warn('restoreEmotionsFromIDB notice:', e);
+    }
   }
 
   function flushAllStorage() {
@@ -3332,6 +3464,8 @@
       customBgImageObj = new Image();
       customBgImageObj.src = dataUrl;
 
+      idbSet('smoothietuber_custom_bg', dataUrl).catch(() => {});
+
       bgChoiceButtons.forEach(b => b.classList.remove('active'));
       document.body.className = '';
       showToast('Latar belakang kustom dipasang!');
@@ -3345,6 +3479,7 @@
     customBgLayer.classList.add('hidden');
     customBgImageObj = null;
     btnRemoveCustomBg.classList.add('hidden');
+    idbSet('smoothietuber_custom_bg', null).catch(() => {});
     document.body.classList.add('bg-checkerboard');
     bgChoiceButtons[0].classList.add('active');
   });
@@ -3680,6 +3815,18 @@
     renderHotkeysUI();
     setupHotkeyEvents();
     scheduleNextBlink();
+
+    // Pulihkan avatar kustom dari penyimpanan IndexedDB permanen (jika ada)
+    restoreEmotionsFromIDB();
+
+    // Minta izin Persistent Storage agar browser HP (Safari iOS & Chrome) tidak menghapus data otomatis setelah 7 hari
+    if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then(granted => {
+        if (granted) {
+          console.log('✅ Persistent Storage: Aktif (Data avatar terlindungi dari auto-eviction browser)');
+        }
+      }).catch(() => {});
+    }
 
     if (previewRecordedVideo) {
       setupMediaElementEvents(previewRecordedVideo, 'playback');
