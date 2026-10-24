@@ -796,12 +796,32 @@
 
   // --- 3. ROBUST STORAGE & NON-DESTRUCTIVE PERSISTENCE ENGINE ---
   const STORAGE_KEYS = {
-    settings: 'smoothietuber_user_settings_v4',
-    emotions: 'smoothietuber_emotions_v4',
-    hotkeys: 'smoothietuber_system_hotkeys',
+    settings: 'smoothietuber_master_settings',
+    emotions: 'smoothietuber_master_emotions',
+    snapshot: 'smoothietuber_master_snapshot',
+    hotkeys: 'smoothietuber_master_hotkeys',
     lang: 'smoothietuber_lang',
     vip: 'smoothietuber_vip_auth'
   };
+
+  const HISTORICAL_EMOTION_KEYS = [
+    'smoothietuber_master_emotions',
+    'smoothietuber_emotions_v4',
+    'smoothietuber_master_snapshot',
+    'smoothietuber_emotions_v3',
+    'pngtuber_emotions_v3',
+    'pngtuber_emotions_v2',
+    'smoothietuber_emotions',
+    'pngtuber_emotions'
+  ];
+
+  const HISTORICAL_SETTINGS_KEYS = [
+    'smoothietuber_master_settings',
+    'smoothietuber_user_settings_v4',
+    'smoothietuber_user_settings_v2',
+    'smoothietuber_user_settings_v1',
+    'pngtuber_user_settings'
+  ];
 
   const DEFAULT_SETTINGS = {
     threshold: 15.0,
@@ -823,6 +843,20 @@
     toggleObs: 'h',
     resetAudio: 'r'
   };
+
+  let isStorageHydrated = false;
+
+  // Helper untuk mengecek apakah sebuah list emosi memiliki custom sprite pengguna
+  function hasAnyCustomSprite(list) {
+    if (!Array.isArray(list) || list.length === 0) return false;
+    return list.some(emo => {
+      if (!emo || !emo.sprites) return false;
+      return Object.values(emo.sprites).some(src => {
+        if (typeof src !== 'string' || !src) return false;
+        return src.startsWith('data:') || src.startsWith('blob:') || (!src.includes('normal_') && !src.includes('happy_') && !src.includes('surprised_'));
+      });
+    });
+  }
 
   // --- PERSISTENT STORAGE ENGINE: INDEXEDDB + LOCALSTORAGE DUAL-TIER ---
   // Mengatasi limit 5MB localStorage & proteksi dari 7-day auto-eviction Safari iOS
@@ -849,7 +883,14 @@
             db.createObjectStore(IDB_CONFIG.store);
           }
         };
-        req.onsuccess = (e) => resolve(e.target.result);
+        req.onsuccess = (e) => {
+          const db = e.target.result;
+          db.onversionchange = () => {
+            try { db.close(); } catch (err) {}
+            idbInstancePromise = null;
+          };
+          resolve(db);
+        };
         req.onerror = (e) => {
           console.warn('IndexedDB open notice:', e);
           resolve(null);
@@ -878,6 +919,13 @@
     }
   }
 
+  function idbGetWithTimeout(key, timeoutMs = 800) {
+    return Promise.race([
+      idbGet(key),
+      new Promise(resolve => setTimeout(() => resolve(null), timeoutMs))
+    ]);
+  }
+
   async function idbSet(key, value) {
     try {
       const db = await getIDB();
@@ -885,12 +933,13 @@
       return new Promise((resolve) => {
         const tx = db.transaction(IDB_CONFIG.store, 'readwrite');
         const store = tx.objectStore(IDB_CONFIG.store);
-        const req = store.put(value, key);
-        req.onsuccess = () => resolve(true);
-        req.onerror = (e) => {
-          console.warn('IndexedDB write error:', e);
+        store.put(value, key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = (e) => {
+          console.warn('IndexedDB tx error:', e);
           resolve(false);
         };
+        tx.onabort = () => resolve(false);
       });
     } catch (e) {
       console.warn('IndexedDB set exception:', e);
@@ -898,34 +947,28 @@
     }
   }
 
-  function cleanupLegacyStorage() {
-    try {
-      localStorage.removeItem('pngtuber_emotions_v2');
-      localStorage.removeItem('pngtuber_emotions_v3');
-      localStorage.removeItem('smoothietuber_user_settings_v1');
-    } catch (e) {}
-  }
-
   function loadUserSettings() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.settings) || localStorage.getItem('smoothietuber_user_settings_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && typeof parsed === 'object') {
-          return {
-            threshold: (typeof parsed.threshold === 'number' && !isNaN(parsed.threshold) && parsed.threshold >= 0.1 && parsed.threshold <= 40.0) ? Math.round(parsed.threshold * 10) / 10 : DEFAULT_SETTINGS.threshold,
-            holdDelay: (typeof parsed.holdDelay === 'number' && !isNaN(parsed.holdDelay) && parsed.holdDelay >= 50 && parsed.holdDelay <= 500) ? parsed.holdDelay : DEFAULT_SETTINGS.holdDelay,
-            bounceIntensity: (typeof parsed.bounceIntensity === 'number' && !isNaN(parsed.bounceIntensity) && parsed.bounceIntensity >= 0 && parsed.bounceIntensity <= 30) ? parsed.bounceIntensity : DEFAULT_SETTINGS.bounceIntensity,
-            avatarScale: (typeof parsed.avatarScale === 'number' && !isNaN(parsed.avatarScale) && parsed.avatarScale >= 0.2 && parsed.avatarScale <= 2.5) ? parsed.avatarScale : DEFAULT_SETTINGS.avatarScale,
-            avatarPosX: (typeof parsed.avatarPosX === 'number' && !isNaN(parsed.avatarPosX) && parsed.avatarPosX >= -2000 && parsed.avatarPosX <= 2000) ? parsed.avatarPosX : DEFAULT_SETTINGS.avatarPosX,
-            avatarPosY: (typeof parsed.avatarPosY === 'number' && !isNaN(parsed.avatarPosY) && parsed.avatarPosY >= -2000 && parsed.avatarPosY <= 2000) ? parsed.avatarPosY : DEFAULT_SETTINGS.avatarPosY,
-            isFloatingEnabled: typeof parsed.isFloatingEnabled === 'boolean' ? parsed.isFloatingEnabled : DEFAULT_SETTINGS.isFloatingEnabled,
-            floatIntensity: (typeof parsed.floatIntensity === 'number' && !isNaN(parsed.floatIntensity) && parsed.floatIntensity >= 1 && parsed.floatIntensity <= 50) ? parsed.floatIntensity : DEFAULT_SETTINGS.floatIntensity,
-            floatDuration: (typeof parsed.floatDuration === 'number' && !isNaN(parsed.floatDuration) && parsed.floatDuration >= 0.1 && parsed.floatDuration <= 10.0) ? parsed.floatDuration : DEFAULT_SETTINGS.floatDuration,
-            blinkInterval: (typeof parsed.blinkInterval === 'number' && !isNaN(parsed.blinkInterval) && parsed.blinkInterval >= 800 && parsed.blinkInterval <= 15000) ? parsed.blinkInterval : DEFAULT_SETTINGS.blinkInterval,
-            blinkDuration: (typeof parsed.blinkDuration === 'number' && !isNaN(parsed.blinkDuration) && parsed.blinkDuration >= 50 && parsed.blinkDuration <= 600) ? parsed.blinkDuration : DEFAULT_SETTINGS.blinkDuration,
-            activeEmotionId: (typeof parsed.activeEmotionId === 'string' && parsed.activeEmotionId) ? parsed.activeEmotionId : DEFAULT_SETTINGS.activeEmotionId
-          };
+      for (const key of HISTORICAL_SETTINGS_KEYS) {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === 'object') {
+            return {
+              threshold: (typeof parsed.threshold === 'number' && !isNaN(parsed.threshold) && parsed.threshold >= 0.1 && parsed.threshold <= 40.0) ? Math.round(parsed.threshold * 10) / 10 : DEFAULT_SETTINGS.threshold,
+              holdDelay: (typeof parsed.holdDelay === 'number' && !isNaN(parsed.holdDelay) && parsed.holdDelay >= 50 && parsed.holdDelay <= 500) ? parsed.holdDelay : DEFAULT_SETTINGS.holdDelay,
+              bounceIntensity: (typeof parsed.bounceIntensity === 'number' && !isNaN(parsed.bounceIntensity) && parsed.bounceIntensity >= 0 && parsed.bounceIntensity <= 30) ? parsed.bounceIntensity : DEFAULT_SETTINGS.bounceIntensity,
+              avatarScale: (typeof parsed.avatarScale === 'number' && !isNaN(parsed.avatarScale) && parsed.avatarScale >= 0.2 && parsed.avatarScale <= 2.5) ? parsed.avatarScale : DEFAULT_SETTINGS.avatarScale,
+              avatarPosX: (typeof parsed.avatarPosX === 'number' && !isNaN(parsed.avatarPosX) && parsed.avatarPosX >= -2000 && parsed.avatarPosX <= 2000) ? parsed.avatarPosX : DEFAULT_SETTINGS.avatarPosX,
+              avatarPosY: (typeof parsed.avatarPosY === 'number' && !isNaN(parsed.avatarPosY) && parsed.avatarPosY >= -2000 && parsed.avatarPosY <= 2000) ? parsed.avatarPosY : DEFAULT_SETTINGS.avatarPosY,
+              isFloatingEnabled: typeof parsed.isFloatingEnabled === 'boolean' ? parsed.isFloatingEnabled : DEFAULT_SETTINGS.isFloatingEnabled,
+              floatIntensity: (typeof parsed.floatIntensity === 'number' && !isNaN(parsed.floatIntensity) && parsed.floatIntensity >= 1 && parsed.floatIntensity <= 50) ? parsed.floatIntensity : DEFAULT_SETTINGS.floatIntensity,
+              floatDuration: (typeof parsed.floatDuration === 'number' && !isNaN(parsed.floatDuration) && parsed.floatDuration >= 0.1 && parsed.floatDuration <= 10.0) ? parsed.floatDuration : DEFAULT_SETTINGS.floatDuration,
+              blinkInterval: (typeof parsed.blinkInterval === 'number' && !isNaN(parsed.blinkInterval) && parsed.blinkInterval >= 800 && parsed.blinkInterval <= 15000) ? parsed.blinkInterval : DEFAULT_SETTINGS.blinkInterval,
+              blinkDuration: (typeof parsed.blinkDuration === 'number' && !isNaN(parsed.blinkDuration) && parsed.blinkDuration >= 50 && parsed.blinkDuration <= 600) ? parsed.blinkDuration : DEFAULT_SETTINGS.blinkDuration,
+              activeEmotionId: (typeof parsed.activeEmotionId === 'string' && parsed.activeEmotionId) ? parsed.activeEmotionId : DEFAULT_SETTINGS.activeEmotionId
+            };
+          }
         }
       }
     } catch (e) {
@@ -934,32 +977,53 @@
     return { ...DEFAULT_SETTINGS };
   }
 
+  function validateEmotionsArray(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    const validated = arr.filter(item => item && typeof item === 'object' && item.id && item.sprites);
+    if (validated.length === 0) return null;
+    validated.forEach((emo, i) => {
+      if (typeof emo.name !== 'string' || !emo.name.trim()) emo.name = `Emosi ${i + 1}`;
+      if (typeof emo.hotkey !== 'string' || !emo.hotkey.trim()) emo.hotkey = String((i % 9) + 1);
+      emo.sprites = emo.sprites || {};
+      emo.sprites.closed = emo.sprites.closed || 'assets/normal_closed.png';
+      emo.sprites.closedBlink = emo.sprites.closedBlink || 'assets/normal_closed_blink.png';
+      emo.sprites.open = emo.sprites.open || 'assets/normal_open.png';
+      emo.sprites.openBlink = emo.sprites.openBlink || 'assets/normal_open_blink.png';
+    });
+    DEFAULT_EMOTIONS.forEach(defEmo => {
+      if (!validated.some(e => e.id === defEmo.id)) {
+        validated.push(JSON.parse(JSON.stringify(defEmo)));
+      }
+    });
+    return validated;
+  }
+
   function loadEmotions() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.emotions) || localStorage.getItem('pngtuber_emotions_v3') || localStorage.getItem('pngtuber_emotions_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const validated = parsed.filter(item => item && typeof item === 'object' && item.id && item.sprites);
-          if (validated.length > 0) {
-            validated.forEach((emo, i) => {
-              if (typeof emo.name !== 'string' || !emo.name.trim()) emo.name = `Emosi ${i + 1}`;
-              if (typeof emo.hotkey !== 'string' || !emo.hotkey.trim()) emo.hotkey = String((i % 9) + 1);
-              emo.sprites = emo.sprites || {};
-              emo.sprites.closed = emo.sprites.closed || 'assets/normal_closed.png';
-              emo.sprites.closedBlink = emo.sprites.closedBlink || 'assets/normal_closed_blink.png';
-              emo.sprites.open = emo.sprites.open || 'assets/normal_open.png';
-              emo.sprites.openBlink = emo.sprites.openBlink || 'assets/normal_open_blink.png';
-            });
-            DEFAULT_EMOTIONS.forEach(defEmo => {
-              if (!validated.some(e => e.id === defEmo.id)) {
-                validated.push(JSON.parse(JSON.stringify(defEmo)));
+      // Cek semua key historis di localStorage, prioritaskan yang menyimpan custom sprites pengguna
+      let candidateWithCustom = null;
+      let candidateDefault = null;
+
+      for (const key of HISTORICAL_EMOTION_KEYS) {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            const validated = validateEmotionsArray(parsed);
+            if (validated) {
+              if (hasAnyCustomSprite(validated)) {
+                candidateWithCustom = validated;
+                break;
+              } else if (!candidateDefault) {
+                candidateDefault = validated;
               }
-            });
-            return validated;
-          }
+            }
+          } catch (err) {}
         }
       }
+
+      if (candidateWithCustom) return candidateWithCustom;
+      if (candidateDefault) return candidateDefault;
     } catch (e) {
       console.warn('Gagal memuat emosi tersimpan, menggunakan default:', e);
     }
@@ -968,7 +1032,7 @@
 
   function loadSystemHotkeys() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.hotkeys);
+      const saved = localStorage.getItem(STORAGE_KEYS.hotkeys) || localStorage.getItem('smoothietuber_system_hotkeys');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object') {
@@ -1007,6 +1071,8 @@
           activeEmotionId
         };
         localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(payload));
+        localStorage.setItem('smoothietuber_user_settings_v4', JSON.stringify(payload));
+        localStorage.setItem('smoothietuber_user_settings_v2', JSON.stringify(payload));
         idbSet(STORAGE_KEYS.settings, payload).catch(() => {});
       } catch (e) {
         console.warn('Gagal menyimpan user settings:', e);
@@ -1023,64 +1089,92 @@
   }
 
   function saveEmotions() {
-    // 1. Simpan ke IndexedDB (Kapasitas ratusan Megabyte, aman untuk gambar PNG beresolusi tinggi tanpa batas 5MB)
-    try {
-      idbSet(STORAGE_KEYS.emotions, JSON.parse(JSON.stringify(emotions))).catch(() => {});
-    } catch (e) {}
+    if (!isStorageHydrated) {
+      console.warn('saveEmotions ditunda: Menunggu hydration IndexedDB selesai');
+      return;
+    }
 
-    // 2. Simpan juga ke localStorage sebagai cache sinkron jika kapasitas mencukupi
+    const payload = JSON.parse(JSON.stringify(emotions));
+
+    // 1. Simpan ke IndexedDB (Kapasitas ratusan Megabyte, aman tanpa batas 5MB)
+    idbSet(STORAGE_KEYS.emotions, payload).catch((e) => console.warn('idbSet emotions error:', e));
+    idbSet('smoothietuber_emotions_v4', payload).catch(() => {});
+    idbSet(STORAGE_KEYS.snapshot, payload).catch(() => {});
+
+    // 2. Simpan juga ke localStorage sebagai cache sinkron
     try {
-      localStorage.setItem(STORAGE_KEYS.emotions, JSON.stringify(emotions));
+      const json = JSON.stringify(payload);
+      localStorage.setItem(STORAGE_KEYS.emotions, json);
+      localStorage.setItem('smoothietuber_emotions_v4', json);
+      localStorage.setItem(STORAGE_KEYS.snapshot, json);
     } catch (e) {
       // Jika localStorage melampaui kuota 5MB (QuotaExceededError), data tetap 100% aman tersimpan di IndexedDB!
-      console.info('localStorage quota reached, data avatar aman tersimpan permanen di IndexedDB');
+      console.info('localStorage quota reached, data avatar aman permanen di IndexedDB');
     }
   }
 
   function saveSystemHotkeys() {
     try {
       localStorage.setItem(STORAGE_KEYS.hotkeys, JSON.stringify(systemHotkeys));
+      localStorage.setItem('smoothietuber_system_hotkeys', JSON.stringify(systemHotkeys));
       idbSet(STORAGE_KEYS.hotkeys, systemHotkeys).catch(() => {});
     } catch (e) {}
   }
 
   async function restoreEmotionsFromIDB() {
     try {
-      const idbData = await idbGet(STORAGE_KEYS.emotions);
-      if (idbData && Array.isArray(idbData) && idbData.length > 0) {
-        // Cek apakah data di IndexedDB memiliki custom sprites
-        const hasCustomSprites = idbData.some(emo => 
-          emo.sprites && (
-            (emo.sprites.closed && emo.sprites.closed.startsWith('data:')) ||
-            (emo.sprites.open && emo.sprites.open.startsWith('data:')) ||
-            (emo.sprites.closedBlink && emo.sprites.closedBlink.startsWith('data:')) ||
-            (emo.sprites.openBlink && emo.sprites.openBlink.startsWith('data:'))
-          )
-        );
-        const hasLocalCustomSprites = emotions.some(emo => 
-          emo.sprites && (
-            (emo.sprites.closed && emo.sprites.closed.startsWith('data:')) ||
-            (emo.sprites.open && emo.sprites.open.startsWith('data:'))
-          )
-        );
-
-        if (hasCustomSprites || !hasLocalCustomSprites) {
-          emotions = idbData;
-          if (activeEmotionId && !emotions.some(e => e.id === activeEmotionId)) {
-            activeEmotionId = emotions[0].id;
-          }
-          updateSlotImages();
-          updateAvatarSprite();
-          renderCompactEmotionsList();
-          console.log('✅ Avatar kustom berhasil dipulihkan dari penyimpanan permanen IndexedDB');
-        }
-      } else if (emotions && emotions.length > 0) {
-        // Migrasi data yang ada di localStorage ke IndexedDB saat pertama kali update
-        idbSet(STORAGE_KEYS.emotions, JSON.parse(JSON.stringify(emotions))).catch(() => {});
+      // 1. Periksa data dari IndexedDB (Cek master key, v4, dan snapshot)
+      let idbData = await idbGetWithTimeout(STORAGE_KEYS.emotions, 800);
+      if (!idbData || !hasAnyCustomSprite(idbData)) {
+        const v4Data = await idbGetWithTimeout('smoothietuber_emotions_v4', 400);
+        if (v4Data && hasAnyCustomSprite(v4Data)) idbData = v4Data;
+      }
+      if (!idbData || !hasAnyCustomSprite(idbData)) {
+        const snapData = await idbGetWithTimeout(STORAGE_KEYS.snapshot, 400);
+        if (snapData && hasAnyCustomSprite(snapData)) idbData = snapData;
       }
 
-      // Pulihkan juga custom background dari IndexedDB jika ada
-      const savedBg = await idbGet('smoothietuber_custom_bg');
+      if (idbData && Array.isArray(idbData) && idbData.length > 0) {
+        const validatedIDB = validateEmotionsArray(idbData);
+        if (validatedIDB) {
+          const hasCustom = hasAnyCustomSprite(validatedIDB);
+          const currentHasCustom = hasAnyCustomSprite(emotions);
+
+          if (hasCustom || !currentHasCustom) {
+            emotions = validatedIDB;
+            if (activeEmotionId && !emotions.some(e => e.id === activeEmotionId)) {
+              activeEmotionId = emotions[0].id;
+            }
+            console.log('✅ Avatar kustom berhasil dipulihkan dari penyimpanan permanen IndexedDB');
+          }
+        }
+      } else {
+        // Jika IndexedDB kosong, tapi ada custom sprites di memory/localStorage, migrasikan ke IndexedDB sekarang!
+        if (hasAnyCustomSprite(emotions)) {
+          const payload = JSON.parse(JSON.stringify(emotions));
+          idbSet(STORAGE_KEYS.emotions, payload).catch(() => {});
+          idbSet(STORAGE_KEYS.snapshot, payload).catch(() => {});
+          console.log('✅ Data avatar kustom dimigrasikan ke IndexedDB permanen');
+        }
+      }
+
+      // 2. Pulihkan userSettings dari IndexedDB jika ada
+      try {
+        const idbSettings = await idbGetWithTimeout(STORAGE_KEYS.settings, 400);
+        if (idbSettings && typeof idbSettings === 'object') {
+          if (typeof idbSettings.threshold === 'number') threshold = idbSettings.threshold;
+          if (typeof idbSettings.avatarScale === 'number') avatarScale = idbSettings.avatarScale;
+          if (typeof idbSettings.avatarPosX === 'number') avatarPosX = idbSettings.avatarPosX;
+          if (typeof idbSettings.avatarPosY === 'number') avatarPosY = idbSettings.avatarPosY;
+          if (typeof idbSettings.bounceIntensity === 'number') bounceIntensity = idbSettings.bounceIntensity;
+          if (typeof idbSettings.activeEmotionId === 'string' && emotions.some(e => e.id === idbSettings.activeEmotionId)) {
+            activeEmotionId = idbSettings.activeEmotionId;
+          }
+        }
+      } catch (err) {}
+
+      // 3. Pulihkan juga custom background dari IndexedDB jika ada
+      const savedBg = await idbGetWithTimeout('smoothietuber_custom_bg', 400);
       if (savedBg && customBgLayer) {
         customBgLayer.style.backgroundImage = `url("${savedBg}")`;
         customBgLayer.classList.remove('hidden');
@@ -1094,6 +1188,7 @@
   }
 
   function flushAllStorage() {
+    if (!isStorageHydrated) return;
     saveUserSettings(true);
     saveEmotions();
     saveSystemHotkeys();
@@ -1454,17 +1549,13 @@
     showToast(`Emosi aktif: ${emo.name} [${emo.hotkey.toUpperCase()}]`);
   }
 
-  // Helper untuk mengecilkan gambar besar pengguna ke 1280px agar aman di localStorage & tidak crash
-  function optimizeImageFile(file, maxWidth = 1280, maxHeight = 1280) {
+  // Helper untuk mengecilkan gambar besar pengguna ke 1080px & kompresi WebP/PNG transparan
+  function optimizeImageFile(file, maxWidth = 1080, maxHeight = 1080) {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (loadEvt) => {
         const dataUrl = loadEvt.target.result;
         if (!file.type || !file.type.startsWith('image/')) {
-          resolve(dataUrl);
-          return;
-        }
-        if (file.size < 180 * 1024) {
           resolve(dataUrl);
           return;
         }
@@ -1474,7 +1565,8 @@
           let w = img.naturalWidth || img.width;
           let h = img.naturalHeight || img.height;
 
-          if (w <= maxWidth && h <= maxHeight && file.size < 350 * 1024) {
+          // Jika ukuran sudah kecil dan dimensi w/h pas, langsung gunakan
+          if (w <= maxWidth && h <= maxHeight && file.size < 160 * 1024) {
             resolve(dataUrl);
             return;
           }
@@ -1491,7 +1583,16 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
 
-          // Simpan dengan transparansi PNG penuh
+          // Coba WebP 0.92 dengan alpha (80% lebih hemat ukuran dari PNG uncompressed)
+          try {
+            const webpUrl = canvas.toDataURL('image/webp', 0.92);
+            if (webpUrl && webpUrl.startsWith('data:image/webp') && webpUrl.length < dataUrl.length) {
+              resolve(webpUrl);
+              return;
+            }
+          } catch (e) {}
+
+          // Fallback PNG transparan penuh
           const optimized = canvas.toDataURL('image/png');
           resolve(optimized);
         };
@@ -1587,7 +1688,7 @@
     updateSpriteSlotsHighlight();
   }
 
-  // Setup click-to-upload on the 4 vertical slots dengan optimasi aman
+  // Setup click-to-upload on the 4 vertical slots dengan optimasi aman & simpan permanen
   document.querySelectorAll('input[data-sprite-slot]').forEach(input => {
     input.addEventListener('change', async (e) => {
       const file = e.target.files && e.target.files[0];
@@ -1601,9 +1702,10 @@
       if (optimizedUrl) {
         emo.sprites[slotKey] = optimizedUrl;
         saveEmotions();
+        lastAppliedSpriteSrc = '';
         updateSlotImages();
         updateAvatarSprite();
-        showToast(`Sprite "${slotKey}" untuk "${emo.name}" tersimpan aman!`);
+        showToast(`💾 Sprite "${slotKey}" untuk "${emo.name}" tersimpan permanen di HP!`);
       }
     });
   });
@@ -3635,14 +3737,17 @@
         }
       };
 
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const jsonStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
       const downloadAnchor = document.createElement('a');
       const nowStr = new Date().toISOString().slice(0, 10);
-      downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', `SmoothieTuber-Profile-${nowStr}.json`);
+      downloadAnchor.href = blobUrl;
+      downloadAnchor.download = `SmoothieTuber-Profile-${nowStr}.json`;
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
 
       showToast('💾 Profil avatar & pengaturan berhasil dicadangkan!');
     } catch (err) {
@@ -3663,6 +3768,7 @@
 
         // Terapkan daftar emosi & sprite
         emotions = imported.emotions;
+        isStorageHydrated = true;
         saveEmotions();
 
         if (imported.activeEmotionId && emotions.some(em => em.id === imported.activeEmotionId)) {
@@ -3727,6 +3833,7 @@
           saveUserSettings();
         }
 
+        lastAppliedSpriteSrc = '';
         updateSlotImages();
         updateAvatarSprite();
         renderCompactEmotionsList();
@@ -3742,8 +3849,7 @@
   }
 
   // --- 12. INITIALIZATION ---
-  function init() {
-    cleanupLegacyStorage();
+  async function init() {
     setupVipGateEvents();
     initLanguageFlow();
     const isUnlocked = checkVipGate();
@@ -3809,15 +3915,17 @@
       });
     }
 
+    // Pulihkan avatar kustom dari penyimpanan IndexedDB permanen secara aman (AWAIT sebelum first paint)
+    await restoreEmotionsFromIDB();
+    isStorageHydrated = true;
+
+    lastAppliedSpriteSrc = '';
     updateSlotImages();
     updateAvatarSprite();
     renderCompactEmotionsList();
     renderHotkeysUI();
     setupHotkeyEvents();
     scheduleNextBlink();
-
-    // Pulihkan avatar kustom dari penyimpanan IndexedDB permanen (jika ada)
-    restoreEmotionsFromIDB();
 
     // Minta izin Persistent Storage agar browser HP (Safari iOS & Chrome) tidak menghapus data otomatis setelah 7 hari
     if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.persist) {
