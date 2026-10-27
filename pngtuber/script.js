@@ -183,7 +183,41 @@
       vip_btn_submit: 'Buka Aplikasi ✨',
       vip_footer_note: '💡 Memiliki kode tester? Masukkan sekali dan kode akan otomatis tersimpan di HP/perangkat kamu.',
       toast_lang_switched: '🌐 Bahasa diubah ke Bahasa Indonesia',
-      toast_emotion_renamed: '✏️ Nama emosi berhasil disimpan!'
+      toast_emotion_renamed: '✏️ Nama emosi berhasil disimpan!',
+      badge_active: '✓ Aktif',
+      desc_active_emotion: 'Ekspresi tampil di avatar',
+      desc_switch_emotion: 'Tekan hotkey untuk beralih',
+      btn_change_hotkey_title: 'Klik untuk ubah hotkey emosi ini',
+      label_status_prefix: 'Status: ',
+      status_mic_disconnected: 'Terputus',
+      status_mic_connecting: 'Meminta Izin Mic...',
+      status_mic_active: 'Aktif & Mendengarkan',
+      status_mic_https: 'Butuh HTTPS / Local Server',
+      status_mic_denied: 'Izin Ditolak',
+      status_mic_error: 'Gagal Mengakses',
+      btn_download_webm: '✨ Unduh WebM Transparan (.webm)',
+      title_hotkey_mute: 'Klik untuk ubah hotkey mute',
+      title_hotkey_obs: 'Klik untuk ubah hotkey OBS',
+      title_hotkey_reset: 'Klik untuk ubah hotkey reset audio',
+      err_camera_unsupported: 'Kamera tidak didukung di browser ini.',
+      err_camera_denied: 'Izin kamera ditolak. Berikan izin di browser HP.',
+      err_camera_failed: 'Gagal menyalakan kamera',
+      dock_camera_back_active: 'Kamera Belakang Aktif (Klik untuk ganti Kamera Depan)',
+      dock_camera_front_active: 'Kamera Depan Aktif (Klik untuk matikan kamera)',
+      toast_camera_back_active: '📷 Kamera Belakang aktif! (Sorot meja/kegiatan)',
+      toast_camera_front_active: '🤳 Kamera Depan aktif!',
+      toast_camera_stopped: 'Kamera dimatikan',
+      toast_camera_fit_cover: '📐 Mode: Kamera Penuh Layar (Cover)',
+      toast_camera_fit_contain: '📐 Mode: Kamera Pas Sensor (Fit)',
+      toast_mic_active: '🎙️ Mikrofon aktif & mendengarkan suara!',
+      toast_mic_muted: '🔇 Mikrofon Dimute',
+      toast_mic_unmuted: '🎙️ Mikrofon Di-unmute (Aktif)',
+      toast_recording_ready: '🎉 Rekaman video siap disimpan!',
+      toast_video_downloading: '⬇️ Mengunduh video...',
+      toast_video_shared: '✅ Berhasil dibagikan / disimpan ke Galeri!',
+      toast_audio_reset: '🔄 Audio berhasil direkalibrasi & direset!',
+      toast_press_hotkey_prefix: '⌨️ Tekan tombol baru untuk ',
+      toast_press_hotkey_suffix: ' (Esc untuk batal)'
     },
     'ja': {
       app_title: 'SmoothieTuber 🥤 - 落書き風2D手描きPNGTuber',
@@ -321,7 +355,41 @@
       vip_btn_submit: 'アプリを起動 ✨',
       vip_footer_note: '💡 一度入力すると、次回以降はお使いの端末に自動保存されます。',
       toast_lang_switched: '🌐 言語を日本語に切り替えました',
-      toast_emotion_renamed: '✏️ 表情の名前を保存しました！'
+      toast_emotion_renamed: '✏️ 表情の名前を保存しました！',
+      badge_active: '✓ 有効',
+      desc_active_emotion: '現在アバターに表示中',
+      desc_switch_emotion: 'キーを押して切り替え',
+      btn_change_hotkey_title: 'クリックしてこの表情のホットキーを変更',
+      label_status_prefix: '状態: ',
+      status_mic_disconnected: '未接続',
+      status_mic_connecting: 'マイク許可をリクエスト中...',
+      status_mic_active: 'アクティブ＆待機中',
+      status_mic_https: 'HTTPS / ローカルサーバーが必要',
+      status_mic_denied: 'マイクの許可が拒否されました',
+      status_mic_error: 'アクセス失敗',
+      btn_download_webm: '✨ 透過WebMをダウンロード (.webm)',
+      title_hotkey_mute: 'クリックしてミュートホットキーを変更',
+      title_hotkey_obs: 'クリックしてOBSモードホットキーを変更',
+      title_hotkey_reset: 'クリックして音声リセットホットキーを変更',
+      err_camera_unsupported: 'このブラウザではカメラがサポートされていません。',
+      err_camera_denied: 'カメラの許可が拒否されました。設定で許可してください。',
+      err_camera_failed: 'カメラの起動に失敗しました',
+      dock_camera_back_active: '背面カメラ有効 (クリックして前面カメラに切替)',
+      dock_camera_front_active: '前面カメラ有効 (クリックしてカメラをオフ)',
+      toast_camera_back_active: '📷 背面カメラが有効になりました！(手元/作業を撮影)',
+      toast_camera_front_active: '🤳 前面カメラが有効になりました！',
+      toast_camera_stopped: 'カメラをオフにしました',
+      toast_camera_fit_cover: '📐 モード: 全画面カメラ (Cover)',
+      toast_camera_fit_contain: '📐 モード: 縦横比維持カメラ (Fit)',
+      toast_mic_active: '🎙️ マイクが有効になりました！',
+      toast_mic_muted: '🔇 マイクをミュートしました',
+      toast_mic_unmuted: '🎙️ マイクのミュートを解除しました (アクティブ)',
+      toast_recording_ready: '🎉 録画が完了しました！',
+      toast_video_downloading: '⬇️ 動画をダウンロード中...',
+      toast_video_shared: '✅ 共有 / カメラロールへの保存が完了しました！',
+      toast_audio_reset: '🔄 音声エンジンをリセット＆再調整しました！',
+      toast_press_hotkey_prefix: '⌨️ 新しいキーを押してください: ',
+      toast_press_hotkey_suffix: ' (Escでキャンセル)'
     },
     'zh': {
       app_title: 'SmoothieTuber 🥤 - 涂鸦风格2D手绘PNGTuber',
@@ -459,7 +527,41 @@
       vip_btn_submit: '立即进入 ✨',
       vip_footer_note: '💡 拥有邀请码？输入一次即可永久保存在本设备中。',
       toast_lang_switched: '🌐 已将语言切换为中文 (简体)',
-      toast_emotion_renamed: '✏️ 表情名称已更新保存！'
+      toast_emotion_renamed: '✏️ 表情名称已更新保存！',
+      badge_active: '✓ 当前激活',
+      desc_active_emotion: '当前在虚拟形象上显示',
+      desc_switch_emotion: '按快捷键切换',
+      btn_change_hotkey_title: '点击更改此表情快捷键',
+      label_status_prefix: '状态: ',
+      status_mic_disconnected: '已断开',
+      status_mic_connecting: '正在请求麦克风权限...',
+      status_mic_active: '工作中 (监听声音)',
+      status_mic_https: '需要 HTTPS / 本地服务',
+      status_mic_denied: '麦克风权限被拒绝',
+      status_mic_error: '麦克风访问失败',
+      btn_download_webm: '✨ 下载透明WebM (.webm)',
+      title_hotkey_mute: '点击更改静音快捷键',
+      title_hotkey_obs: '点击更改OBS快捷键',
+      title_hotkey_reset: '点击更改音频重置快捷键',
+      err_camera_unsupported: '此浏览器不支持摄像头。',
+      err_camera_denied: '摄像头权限被拒绝，请在浏览器中开启权限。',
+      err_camera_failed: '无法启动摄像头',
+      dock_camera_back_active: '后置摄像头已激活 (点击切换为前置)',
+      dock_camera_front_active: '前置摄像头已激活 (点击关闭摄像头)',
+      toast_camera_back_active: '📷 后置摄像头已激活！(拍摄桌面/手绘过程)',
+      toast_camera_front_active: '🤳 前置摄像头已激活！',
+      toast_camera_stopped: '摄像头已关闭',
+      toast_camera_fit_cover: '📐 画面模式: 全屏填充 (Cover)',
+      toast_camera_fit_contain: '📐 画面模式: 等比完整 (Fit)',
+      toast_mic_active: '🎙️ 麦克风已激活并开始监听！',
+      toast_mic_muted: '🔇 麦克风已静音',
+      toast_mic_unmuted: '🎙️ 麦克风已取消静音 (已激活)',
+      toast_recording_ready: '🎉 视频录制完成！',
+      toast_video_downloading: '⬇️ 正在下载视频...',
+      toast_video_shared: '✅ 已成功分享 / 保存至手机相册！',
+      toast_audio_reset: '🔄 音频引擎已重置并重新校准！',
+      toast_press_hotkey_prefix: '⌨️ 请按下新的按键: ',
+      toast_press_hotkey_suffix: ' (按 Esc 取消)'
     },
     'en-US': {
       app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
@@ -597,7 +699,41 @@
       vip_btn_submit: 'Launch App ✨',
       vip_footer_note: '💡 Tester code is saved permanently in your browser.',
       toast_lang_switched: '🌐 Language switched to English (US)',
-      toast_emotion_renamed: '✏️ Emotion name saved!'
+      toast_emotion_renamed: '✏️ Emotion name saved!',
+      badge_active: '✓ Active',
+      desc_active_emotion: 'Active expression on avatar',
+      desc_switch_emotion: 'Press hotkey to switch',
+      btn_change_hotkey_title: 'Click to change this emotion hotkey',
+      label_status_prefix: 'Status: ',
+      status_mic_disconnected: 'Disconnected',
+      status_mic_connecting: 'Requesting Mic Access...',
+      status_mic_active: 'Active & Listening',
+      status_mic_https: 'HTTPS / Local Server Required',
+      status_mic_denied: 'Permission Denied',
+      status_mic_error: 'Access Failed',
+      btn_download_webm: '✨ Download Transparent WebM (.webm)',
+      title_hotkey_mute: 'Click to change mute hotkey',
+      title_hotkey_obs: 'Click to change OBS hotkey',
+      title_hotkey_reset: 'Click to change audio reset hotkey',
+      err_camera_unsupported: 'Camera is not supported in this browser.',
+      err_camera_denied: 'Camera permission denied. Please allow camera access in browser settings.',
+      err_camera_failed: 'Failed to start camera',
+      dock_camera_back_active: 'Rear Camera Active (Click to switch to Front)',
+      dock_camera_front_active: 'Front Camera Active (Click to turn off camera)',
+      toast_camera_back_active: '📷 Rear camera active! (Showing desk/hands)',
+      toast_camera_front_active: '🤳 Front camera active!',
+      toast_camera_stopped: 'Camera turned off',
+      toast_camera_fit_cover: '📐 Mode: Full Screen Camera (Cover)',
+      toast_camera_fit_contain: '📐 Mode: Proportional Camera (Fit)',
+      toast_mic_active: '🎙️ Microphone active & listening!',
+      toast_mic_muted: '🔇 Microphone Muted',
+      toast_mic_unmuted: '🎙️ Microphone Unmuted (Active)',
+      toast_recording_ready: '🎉 Video ready to save!',
+      toast_video_downloading: '⬇️ Downloading video...',
+      toast_video_shared: '✅ Saved to camera roll / shared!',
+      toast_audio_reset: '🔄 Audio engine reset & recalibrated!',
+      toast_press_hotkey_prefix: '⌨️ Press a new key for ',
+      toast_press_hotkey_suffix: ' (Esc to cancel)'
     },
     'en-GB': {
       app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
@@ -735,7 +871,41 @@
       vip_btn_submit: 'Launch App ✨',
       vip_footer_note: '💡 Tester code is saved permanently in your browser.',
       toast_lang_switched: '🌐 Language switched to English (UK)',
-      toast_emotion_renamed: '✏️ Emotion name saved!'
+      toast_emotion_renamed: '✏️ Emotion name saved!',
+      badge_active: '✓ Active',
+      desc_active_emotion: 'Active expression on avatar',
+      desc_switch_emotion: 'Press hotkey to switch',
+      btn_change_hotkey_title: 'Click to change this emotion hotkey',
+      label_status_prefix: 'Status: ',
+      status_mic_disconnected: 'Disconnected',
+      status_mic_connecting: 'Requesting Mic Access...',
+      status_mic_active: 'Active & Listening',
+      status_mic_https: 'HTTPS / Local Server Required',
+      status_mic_denied: 'Permission Denied',
+      status_mic_error: 'Access Failed',
+      btn_download_webm: '✨ Download Transparent WebM (.webm)',
+      title_hotkey_mute: 'Click to change mute hotkey',
+      title_hotkey_obs: 'Click to change OBS hotkey',
+      title_hotkey_reset: 'Click to change audio reset hotkey',
+      err_camera_unsupported: 'Camera is not supported in this browser.',
+      err_camera_denied: 'Camera permission denied. Please allow camera access in browser settings.',
+      err_camera_failed: 'Failed to start camera',
+      dock_camera_back_active: 'Rear Camera Active (Click to switch to Front)',
+      dock_camera_front_active: 'Front Camera Active (Click to turn off camera)',
+      toast_camera_back_active: '📷 Rear camera active! (Showing desk/hands)',
+      toast_camera_front_active: '🤳 Front camera active!',
+      toast_camera_stopped: 'Camera turned off',
+      toast_camera_fit_cover: '📐 Mode: Full Screen Camera (Cover)',
+      toast_camera_fit_contain: '📐 Mode: Proportional Camera (Fit)',
+      toast_mic_active: '🎙️ Microphone active & listening!',
+      toast_mic_muted: '🔇 Microphone Muted',
+      toast_mic_unmuted: '🎙️ Microphone Unmuted (Active)',
+      toast_recording_ready: '🎉 Video ready to save!',
+      toast_video_downloading: '⬇️ Downloading video...',
+      toast_video_shared: '✅ Saved to camera roll / shared!',
+      toast_audio_reset: '🔄 Audio engine reset & recalibrated!',
+      toast_press_hotkey_prefix: '⌨️ Press a new key for ',
+      toast_press_hotkey_suffix: ' (Esc to cancel)'
     }
   };
 
@@ -792,6 +962,15 @@
 
     renderCompactEmotionsList();
     renderHotkeysUI();
+    if (typeof setMicStatus === 'function') {
+      setMicStatus();
+    }
+    if (typeof applyCameraFitStyle === 'function') {
+      applyCameraFitStyle();
+    }
+    if (typeof updateRecordModalTranslations === 'function') {
+      updateRecordModalTranslations();
+    }
   }
 
   // --- 3. ROBUST STORAGE & NON-DESTRUCTIVE PERSISTENCE ENGINE ---
@@ -1968,12 +2147,12 @@
             <div class="hotkey-meta">
               <div class="hotkey-name">
                 ${emo.name}
-                ${isCurrentActive ? '<span class="badge-active-pill">✓ Aktif</span>' : ''}
+                ${isCurrentActive ? `<span class="badge-active-pill">${t('badge_active')}</span>` : ''}
               </div>
-              <div class="hotkey-desc">${isCurrentActive ? 'Ekspresi tampil di avatar' : 'Tekan hotkey untuk beralih'}</div>
+              <div class="hotkey-desc">${isCurrentActive ? t('desc_active_emotion') : t('desc_switch_emotion')}</div>
             </div>
           </div>
-          <button type="button" class="btn-hotkey-rebind btn-emo-hotkey-rebind ${isRec ? 'is-recording-key' : ''}" data-emotion-id="${emo.id}" title="Klik untuk ubah hotkey emosi ini">
+          <button type="button" class="btn-hotkey-rebind btn-emo-hotkey-rebind ${isRec ? 'is-recording-key' : ''}" data-emotion-id="${emo.id}" title="${t('btn_change_hotkey_title')}">
             ${isRec ? '⌨️ ...' : `<span class="key-display">${displayKey}</span>`}
           </button>
         `;
@@ -1986,7 +2165,7 @@
           renderHotkeysUI();
           renderCompactEmotionsList();
           if (isRecordingHotkeyForId) {
-            showToast(`⌨️ Tekan tombol baru untuk "${emo.name}" (Esc untuk batal)`);
+            showToast(t('toast_press_hotkey_prefix') + `"${emo.name}"` + t('toast_press_hotkey_suffix'));
           }
         });
 
@@ -2013,9 +2192,9 @@
         setSpeakingState(false);
         updateVolumeMeter(0);
       }
-      showToast('🔇 Mikrofon Dimute');
+      showToast(t('toast_mic_muted'));
     } else {
-      showToast('🎙️ Mikrofon Di-unmute (Aktif)');
+      showToast(t('toast_mic_unmuted'));
     }
 
     updateMuteUI();
@@ -2042,7 +2221,7 @@
       audioContext.resume().catch(() => {});
     }
 
-    showToast('🔄 Audio berhasil direkalibrasi & direset!');
+    showToast(t('toast_audio_reset'));
   }
 
   // Global Keydown Handler
@@ -2353,9 +2532,12 @@
     });
   }
 
+  let currentMicState = 'disconnected';
+  let currentMicStateKey = 'status_mic_disconnected';
+
   async function startMicrophone() {
     initAudioContext();
-    setMicStatus('connecting', 'Meminta Izin Mic...');
+    setMicStatus('connecting', 'status_mic_connecting');
 
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -2386,22 +2568,22 @@
 
       currentAudioSourceMode = 'mic';
       isListening = true;
-      setMicStatus('active', 'Aktif & Mendengarkan');
+      setMicStatus('active', 'status_mic_active');
       populateAudioDevices();
       startAudioLoop();
-      showToast('🎙️ Mikrofon aktif & mendengarkan suara!');
+      showToast(t('toast_mic_active'));
     } catch (err) {
       console.error('Gagal mic:', err);
       isListening = false;
       if (err.message === 'SECURE_CONTEXT_REQUIRED' || (typeof window !== 'undefined' && !window.isSecureContext)) {
-        setMicStatus('error', 'Butuh HTTPS/Server');
-        showToast('🔒 Mic di Android butuh HTTPS atau Local Server (bukan file:// langsung)');
+        setMicStatus('error', 'status_mic_https');
+        showToast('🔒 ' + t('status_mic_https'));
       } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setMicStatus('error', 'Izin Ditolak');
-        showToast('⚠️ Izin mikrofon ditolak. Izinkan akses mic di pengaturan browser HP');
+        setMicStatus('error', 'status_mic_denied');
+        showToast('⚠️ ' + t('status_mic_denied'));
       } else {
-        setMicStatus('error', 'Izin Gagal');
-        showToast('⚠️ Mikrofon tidak dapat diakses: ' + (err.message || 'Error'));
+        setMicStatus('error', 'status_mic_error');
+        showToast('⚠️ ' + t('status_mic_error') + ': ' + (err.message || 'Error'));
       }
     }
   }
@@ -2415,37 +2597,43 @@
       micSourceNode.disconnect();
       micSourceNode = null;
     }
-    setMicStatus('disconnected', 'Terputus');
+    setMicStatus('disconnected', 'status_mic_disconnected');
     if (currentAudioSourceMode === 'mic' && !isAnyMediaPlaying()) {
       isListening = false;
       stopAudioLoop();
       updateVolumeMeter(0);
       setSpeakingState(false);
     }
-    showToast('Mikrofon dinonaktifkan');
+    showToast(t('toast_mic_muted'));
   }
 
-  function setMicStatus(state, label) {
+  function setMicStatus(state, key) {
+    if (state) currentMicState = state;
+    if (key) currentMicStateKey = key;
+    else if (state) currentMicStateKey = 'status_mic_' + state;
+
     if (statusLed) {
       statusLed.className = 'status-led-dot';
-      if (state === 'active') {
+      if (currentMicState === 'active') {
         statusLed.classList.add('led-active');
-      } else if (state === 'connecting') {
+      } else if (currentMicState === 'connecting') {
         statusLed.classList.add('led-connecting');
-      } else if (state === 'error') {
+      } else if (currentMicState === 'error') {
         statusLed.classList.add('led-error');
       } else {
         statusLed.classList.add('led-disconnected');
       }
     }
     if (btnToggleMic) {
-      if (state === 'active') {
+      if (currentMicState === 'active') {
         btnToggleMic.classList.add('is-active');
       } else {
         btnToggleMic.classList.remove('is-active');
       }
     }
-    if (statusText) statusText.textContent = label;
+    if (statusText) {
+      statusText.textContent = t(currentMicStateKey);
+    }
   }
 
   async function populateAudioDevices() {
@@ -2995,21 +3183,24 @@
       const sizeMb = (blob.size / (1024 * 1024)).toFixed(2);
       const baseFilename = isTransparentRecorded ? `smoothietuber_transparan_${Date.now()}` : `smoothietuber_${Date.now()}`;
 
-      metaDuration.textContent = `Durasi: ${formatTime(durationSec)}`;
-      metaSize.textContent = `Ukuran: ${sizeMb} MB`;
-      metaFormat.textContent = isTransparentRecorded 
-        ? `Format: WEBM TRANSPARAN (${actualMime.split(';')[0]})` 
-        : `Format: ${actualFormat.toUpperCase()} (${actualMime.split(';')[0]})`;
+      lastRecordInfo = {
+        durationSec,
+        sizeMb,
+        actualFormat,
+        actualMime,
+        isTransparentRecorded,
+        baseFilename
+      };
+
+      updateRecordModalTranslations();
 
       // 1. Primary Download button (.mp4 / .webm)
       if (btnDownloadVideo) {
         btnDownloadVideo.href = videoUrl;
         if (actualFormat === 'webm' || isTransparentRecorded) {
           btnDownloadVideo.download = `${baseFilename}.webm`;
-          btnDownloadVideo.textContent = '✨ Unduh WebM Transparan (.webm)';
         } else {
           btnDownloadVideo.download = `${baseFilename}.mp4`;
-          btnDownloadVideo.textContent = '⬇️ Unduh MP4 (.mp4)';
         }
       }
 
@@ -3035,14 +3226,14 @@
             if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
               await navigator.share({
                 title: 'SmoothieTuber Video',
-                text: 'Video rekaman dari SmoothieTuber',
+                text: 'SmoothieTuber Video',
                 files: [shareFile]
               });
-              showToast('✅ Berhasil dibagikan / disimpan ke Galeri!');
+              showToast(t('toast_video_shared'));
             } else if (navigator.share) {
               await navigator.share({
                 title: 'SmoothieTuber Video',
-                text: 'Unduh video SmoothieTuber',
+                text: 'SmoothieTuber Video',
                 url: videoUrl
               });
             } else {
@@ -3050,7 +3241,7 @@
               a.href = videoUrl;
               a.download = `${baseFilename}.${ext}`;
               a.click();
-              showToast('⬇️ Mengunduh video...');
+              showToast(t('toast_video_downloading'));
             }
           } catch (shareErr) {
             if (shareErr.name !== 'AbortError') {
@@ -3063,7 +3254,7 @@
 
       recordResultModal.classList.remove('hidden');
       setRecordingUI(false);
-      showToast('🎉 Rekaman video siap disimpan!');
+      showToast(t('toast_recording_ready'));
     };
 
     mediaRecorder.start(1000);
@@ -3113,11 +3304,41 @@
     }
   }
 
+  let lastRecordInfo = null;
+
+  function updateRecordModalTranslations() {
+    if (lastRecordInfo) {
+      if (metaDuration) {
+        metaDuration.textContent = `${t('meta_duration')} ${formatTime(lastRecordInfo.durationSec)}`;
+      }
+      if (metaSize) {
+        metaSize.textContent = `${t('meta_size')} ${lastRecordInfo.sizeMb} MB`;
+      }
+      if (metaFormat) {
+        metaFormat.textContent = lastRecordInfo.isTransparentRecorded 
+          ? `${t('meta_format')} WEBM TRANSPARAN (${lastRecordInfo.actualMime.split(';')[0]})` 
+          : `${t('meta_format')} ${lastRecordInfo.actualFormat.toUpperCase()} (${lastRecordInfo.actualMime.split(';')[0]})`;
+      }
+      if (btnDownloadVideo) {
+        if (lastRecordInfo.actualFormat === 'webm' || lastRecordInfo.isTransparentRecorded) {
+          btnDownloadVideo.textContent = t('btn_download_webm');
+        } else {
+          btnDownloadVideo.textContent = t('btn_download_mp4');
+        }
+      }
+    } else {
+      if (metaDuration) metaDuration.textContent = `${t('meta_duration')} 00:00`;
+      if (metaSize) metaSize.textContent = `${t('meta_size')} 0 MB`;
+      if (metaFormat) metaFormat.textContent = `${t('meta_format')} MP4`;
+      if (btnDownloadVideo) btnDownloadVideo.textContent = t('btn_download_mp4');
+    }
+  }
+
   function setRecordingUI(recording) {
     if (recording) {
       btnQuickRecord.classList.add('is-recording');
       btnMainRecord.classList.add('is-recording');
-      btnMainRecordText.textContent = 'Hentikan Rekaman Video';
+      btnMainRecordText.textContent = t('btn_record_stop');
       recTimer.classList.remove('hidden');
 
       recordTimerInterval = setInterval(() => {
@@ -3127,7 +3348,7 @@
     } else {
       btnQuickRecord.classList.remove('is-recording');
       btnMainRecord.classList.remove('is-recording');
-      btnMainRecordText.textContent = 'Mulai Merekam Video';
+      btnMainRecordText.textContent = t('btn_record_start');
       recTimer.classList.add('hidden');
       clearInterval(recordTimerInterval);
     }
@@ -3385,13 +3606,13 @@
       cameraBgVideo.style.setProperty('object-fit', 'cover', 'important');
       cameraBgVideo.style.setProperty('background', 'transparent', 'important');
       cameraBgVideo.classList.remove('camera-fit-contain');
-      if (btnToggleCameraFit) btnToggleCameraFit.textContent = '📐 Tampilan: Penuh Layar (Cover)';
+      if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_cover');
     } else {
       cameraBgVideo.style.setProperty('-webkit-object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('background', '#000000', 'important');
       cameraBgVideo.classList.add('camera-fit-contain');
-      if (btnToggleCameraFit) btnToggleCameraFit.textContent = '📐 Tampilan: Pas Sensor (Fit/Contain)';
+      if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_contain');
     }
   }
 
@@ -3400,26 +3621,35 @@
 
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast('⚠️ Kamera tidak didukung di browser ini.');
+        showToast('⚠️ ' + t('err_camera_unsupported'));
         return;
       }
 
-      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280) agar tidak gepeng atau bergaris hitam
+      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280)
       const isPortrait = window.innerHeight >= window.innerWidth;
-      const constraints = {
-        audio: false, // Audio mic dikelola oleh Web Audio API
-        video: {
-          facingMode: { ideal: facing },
-          width: { ideal: isPortrait ? 720 : 1280 },
-          height: { ideal: isPortrait ? 1280 : 720 }
-        }
-      };
+      let stream = null;
 
-      let stream;
+      // 3-Stage Graceful Fallback (Omit audio:false to prevent "Invalid constraint" exceptions)
       try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: facing },
+            width: { ideal: isPortrait ? 720 : 1280 },
+            height: { ideal: isPortrait ? 1280 : 720 }
+          }
+        });
       } catch (e1) {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+        console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: facing }
+          });
+        } catch (e2) {
+          console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true
+          });
+        }
       }
 
       cameraStream = stream;
@@ -3452,25 +3682,25 @@
         if (btnDockCamera) {
           btnDockCamera.classList.add('is-active');
           if (dockCameraIcon) dockCameraIcon.textContent = '📷';
-          btnDockCamera.title = 'Kamera Belakang Aktif (Klik untuk ganti Kamera Depan)';
+          btnDockCamera.title = t('dock_camera_back_active');
         }
-        showToast('📷 Kamera Belakang aktif! (Sorot meja/kegiatan)');
+        showToast(t('toast_camera_back_active'));
       } else {
         if (btnCameraFront) btnCameraFront.classList.add('is-active');
         if (btnCameraBack) btnCameraBack.classList.remove('is-active');
         if (btnDockCamera) {
           btnDockCamera.classList.add('is-active');
           if (dockCameraIcon) dockCameraIcon.textContent = '🤳';
-          btnDockCamera.title = 'Kamera Depan Aktif (Klik untuk matikan kamera)';
+          btnDockCamera.title = t('dock_camera_front_active');
         }
-        showToast('🤳 Kamera Depan aktif!');
+        showToast(t('toast_camera_front_active'));
       }
     } catch (err) {
       console.error('Kamera error:', err);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        showToast('⚠️ Izin kamera ditolak. Berikan izin di browser HP.');
+        showToast('⚠️ ' + t('err_camera_denied'));
       } else {
-        showToast('⚠️ Gagal menyalakan kamera: ' + (err.message || 'Error'));
+        showToast('⚠️ ' + t('err_camera_failed') + (err.message ? ': ' + err.message : ''));
       }
     }
   }
@@ -3493,7 +3723,7 @@
     if (btnDockCamera) {
       btnDockCamera.classList.remove('is-active');
       if (dockCameraIcon) dockCameraIcon.textContent = '📷';
-      btnDockCamera.title = 'Kamera Langsung Handcam (Klik: Belakang / Depan / Mati)';
+      btnDockCamera.title = t('dock_camera');
     }
 
     if (document.body.classList.contains('bg-pure-transparent')) {
@@ -3502,7 +3732,7 @@
       if (bgChoiceButtons && bgChoiceButtons[0]) bgChoiceButtons[0].classList.add('active');
     }
 
-    if (notify) showToast('Kamera HP dinonaktifkan');
+    if (notify) showToast(t('toast_camera_stopped'));
   }
 
   if (btnCameraBack) {
@@ -3518,7 +3748,7 @@
     btnToggleCameraFit.addEventListener('click', () => {
       isCameraCoverFit = !isCameraCoverFit;
       applyCameraFitStyle();
-      showToast(isCameraCoverFit ? '📐 Mode: Kamera Penuh Layar (Cover)' : '📐 Mode: Kamera Pas Sensor (Fit)');
+      showToast(isCameraCoverFit ? t('toast_camera_fit_cover') : t('toast_camera_fit_contain'));
     });
   }
 

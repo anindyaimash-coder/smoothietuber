@@ -215,7 +215,7 @@
     </div>
     <div class="flyout-body">
       <div class="flyout-status-row">
-        <span>Status: <strong id="statusText">Terputus</strong></span>
+        <span><span data-i18n="label_status_prefix">Status: </span><strong id="statusText">Terputus</strong></span>
         <span>Vol: <strong id="volumeValue">0.0</strong> / <strong id="thresholdValueDisplay" class="text-accent">15.0</strong></span>
       </div>
       <div class="input-group">
@@ -425,7 +425,7 @@
             <div class="hotkey-name" data-i18n="name_mute">🎙️ Mute / Unmute</div>
             <div class="hotkey-desc" data-i18n="desc_mute">Bungkam / buka suara instan</div>
           </div>
-          <button id="btnHotkeyMute" class="btn-hotkey-rebind" type="button" data-system-action="toggleMute" title="Klik untuk ubah hotkey mute">
+          <button id="btnHotkeyMute" class="btn-hotkey-rebind" type="button" data-system-action="toggleMute" title="Klik untuk ubah hotkey mute" data-i18n-title="title_hotkey_mute">
             <span class="key-display">M</span>
           </button>
         </div>
@@ -434,7 +434,7 @@
             <div class="hotkey-name" data-i18n="name_obs">👁️ Sembunyikan Menu (OBS)</div>
             <div class="hotkey-desc" data-i18n="desc_obs">Mode tampilan bersih transparan</div>
           </div>
-          <button id="btnHotkeyObs" class="btn-hotkey-rebind" type="button" data-system-action="toggleObs" title="Klik untuk ubah hotkey OBS">
+          <button id="btnHotkeyObs" class="btn-hotkey-rebind" type="button" data-system-action="toggleObs" title="Klik untuk ubah hotkey OBS" data-i18n-title="title_hotkey_obs">
             <span class="key-display">H</span>
           </button>
         </div>
@@ -443,7 +443,7 @@
             <div class="hotkey-name" data-i18n="name_reset">🔄 Reset Audio</div>
             <div class="hotkey-desc" data-i18n="desc_reset">Normalkan volume & buffer</div>
           </div>
-          <button id="btnHotkeyResetAudio" class="btn-hotkey-rebind" type="button" data-system-action="resetAudio" title="Klik untuk ubah hotkey reset audio">
+          <button id="btnHotkeyResetAudio" class="btn-hotkey-rebind" type="button" data-system-action="resetAudio" title="Klik untuk ubah hotkey reset audio" data-i18n-title="title_hotkey_reset">
             <span class="key-display">R</span>
           </button>
         </div>
@@ -722,6 +722,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=4.1"></script>
+  <script src="script.js?v=4.3"></script>
 </body>
 </html>
