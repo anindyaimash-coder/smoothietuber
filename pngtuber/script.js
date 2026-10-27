@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * SmoothieTuber 🥤 - Veadotube Style Sleek Dual Dock Engine
+ * SmoothieTuber - Veadotube Style Sleek Dual Dock Engine
  * Pure Vanilla JavaScript & Web Audio API
  * ============================================================================
  */
@@ -48,7 +48,7 @@
   // --- 2. MULTI-LANGUAGE I18N SYSTEM ---
   const I18N = {
     'id': {
-      app_title: 'SmoothieTuber 🥤 - Doodle Avatar 2D Reaktif Suara',
+      app_title: 'SmoothieTuber - Doodle Avatar 2D Reaktif Suara',
       brand_badge: '2D PNGTuber',
       brand_tagline: 'Whimsical Sketchy Line-Art & Voice Reactive Studio',
       pill_live_audio: 'Live Reactive Audio',
@@ -261,7 +261,7 @@
       toast_new_emotion: 'Emosi baru ditambahkan!'
     },
     'ja': {
-      app_title: 'SmoothieTuber 🥤 - 落書き風2D手描きPNGTuber',
+      app_title: 'SmoothieTuber - 落書き風2D手描きPNGTuber',
       brand_badge: '2D PNGTuber',
       brand_tagline: '落書き風手描きラインアート＆音声反応スタジオ',
       pill_live_audio: 'リアルタイム音声反応',
@@ -474,7 +474,7 @@
       toast_new_emotion: '新しい表情が追加されました！'
     },
     'zh': {
-      app_title: 'SmoothieTuber 🥤 - 涂鸦风格2D手绘PNGTuber',
+      app_title: 'SmoothieTuber - 涂鸦风格2D手绘PNGTuber',
       brand_badge: '2D PNGTuber',
       brand_tagline: '手绘涂鸦线条风格·声音感应虚拟形象工作室',
       pill_live_audio: '实时声音响应',
@@ -687,7 +687,7 @@
       toast_new_emotion: '已添加新表情！'
     },
     'en-US': {
-      app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
+      app_title: 'SmoothieTuber - 2D Doodle PNGTuber Studio',
       brand_badge: '2D PNGTuber',
       brand_tagline: 'Whimsical Sketchy Line-Art & Voice Reactive Studio',
       pill_live_audio: 'Live Reactive Audio',
@@ -900,7 +900,7 @@
       toast_new_emotion: 'New emotion added!'
     },
     'en-GB': {
-      app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
+      app_title: 'SmoothieTuber - 2D Doodle PNGTuber Studio',
       brand_badge: '2D PNGTuber',
       brand_tagline: 'Whimsical Sketchy Line-Art & Voice Reactive Studio',
       pill_live_audio: 'Live Reactive Audio',
@@ -3201,14 +3201,37 @@
       lastValidRecordedImg = currentImg;
       exportCtx.save();
 
-      const nowSec = (timestamp || performance.now()) / 1000;
-      const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
-      const currentFloatOffset = floatSine * floatIntensity;
-      const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
-      const currentBounce = isSpeaking ? bounceIntensity : 0;
-
       const winW = window.innerWidth || 1;
       const winH = window.innerHeight || 1;
+      // Skala adaptif resolusi canvas agar efek visual pantulan & melayang sama proporsinya di semua resolusi ekspor
+      const canvasScaleY = h / Math.max(winH, 400);
+
+      const nowSec = (timestamp || performance.now()) / 1000;
+      const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
+      const currentFloatOffset = floatSine * (floatIntensity * canvasScaleY);
+      const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
+
+      // Animasi Hop-Hop / Pantulan Bicara Aktif (Playful Speech Hop & Squash-Stretch)
+      let currentBounce = 0;
+      let bounceScaleX = 1;
+      let bounceScaleY = 1;
+
+      if (isSpeaking) {
+        // Siklus pantulan bicara (Hop-Hop Animation)
+        const hopPeriod = 0.28; // ~3.5 pantulan per detik saat berbicara
+        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) ke 1 (puncak lompatan)
+        const arc = Math.pow(hopPhase, 0.75); // Kurva pantulan gravitasi yang lentur
+
+        // Base lift + animated extra hop yang sangat kentara di resolusi canvas
+        const baseBounce = Math.max(bounceIntensity, 12) * canvasScaleY;
+        const extraHop = Math.max(bounceIntensity * 1.2, 16) * canvasScaleY * arc;
+        currentBounce = baseBounce + extraHop;
+
+        // Efek lentur Squash & Stretch (khas animasi kartun / Veadotube)
+        bounceScaleX = 1.04 - (0.07 * arc);
+        bounceScaleY = 0.96 + (0.08 * arc);
+      }
+
       const normX = avatarPosX / winW;
       const normY = avatarPosY / winH;
 
@@ -3216,7 +3239,10 @@
       const cy = (h / 2) + (normY * h) - currentFloatOffset - currentBounce;
 
       exportCtx.translate(cx, cy);
-      exportCtx.scale(avatarScale * currentFloatScale, avatarScale * currentFloatScale);
+      exportCtx.scale(
+        avatarScale * currentFloatScale * bounceScaleX,
+        avatarScale * currentFloatScale * bounceScaleY
+      );
 
       // Ukuran dasar avatar mengikuti dimensi terkecil agar proporsional di semua rasio (9:16, 3:2, 1:1, 16:9)
       const baseDimension = Math.min(w, h);
@@ -3238,12 +3264,39 @@
       exportCtx.save();
       const winW = window.innerWidth || 1;
       const winH = window.innerHeight || 1;
+      const canvasScaleY = h / Math.max(winH, 400);
+
+      const nowSec = (timestamp || performance.now()) / 1000;
+      const floatSine = isFloatingEnabled ? Math.sin((nowSec * 2 * Math.PI) / floatDuration) : 0;
+      const currentFloatOffset = floatSine * (floatIntensity * canvasScaleY);
+      const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
+
+      let currentBounce = 0;
+      let bounceScaleX = 1;
+      let bounceScaleY = 1;
+
+      if (isSpeaking) {
+        const hopPeriod = 0.28;
+        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod));
+        const arc = Math.pow(hopPhase, 0.75);
+        const baseBounce = Math.max(bounceIntensity, 12) * canvasScaleY;
+        const extraHop = Math.max(bounceIntensity * 1.2, 16) * canvasScaleY * arc;
+        currentBounce = baseBounce + extraHop;
+        bounceScaleX = 1.04 - (0.07 * arc);
+        bounceScaleY = 0.96 + (0.08 * arc);
+      }
+
       const normX = avatarPosX / winW;
       const normY = avatarPosY / winH;
       const cx = (w / 2) + (normX * w);
-      const cy = (h / 2) + (normY * h);
+      const cy = (h / 2) + (normY * h) - currentFloatOffset - currentBounce;
+
       exportCtx.translate(cx, cy);
-      exportCtx.scale(avatarScale, avatarScale);
+      exportCtx.scale(
+        avatarScale * currentFloatScale * bounceScaleX,
+        avatarScale * currentFloatScale * bounceScaleY
+      );
+
       const baseDimension = Math.min(w, h);
       const baseDrawHeight = baseDimension * 0.72;
       const aspect = lastValidRecordedImg.naturalWidth / lastValidRecordedImg.naturalHeight;

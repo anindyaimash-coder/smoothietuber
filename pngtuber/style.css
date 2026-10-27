@@ -482,15 +482,15 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 .avatar-image.state-speaking {
   transform: translateY(calc(-1 * var(--bounce-offset, 12px)));
   filter: drop-shadow(4px 10px 0px rgba(43, 43, 43, 0.25));
-  animation: speechHop 0.22s ease-in-out infinite alternate;
+  animation: speechHop 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) infinite alternate;
 }
 
 @keyframes speechHop {
   0% {
-    transform: translateY(calc(-1 * var(--bounce-offset, 12px))) scaleX(1.02) scaleY(0.98);
+    transform: translateY(calc(-1 * var(--bounce-offset, 12px))) scaleX(1.04) scaleY(0.96);
   }
   100% {
-    transform: translateY(calc(-1 * var(--bounce-offset, 12px) - 5px)) scaleX(0.99) scaleY(1.025);
+    transform: translateY(calc(-1 * var(--bounce-offset, 12px) - 16px)) scaleX(0.97) scaleY(1.04);
   }
 }
 
