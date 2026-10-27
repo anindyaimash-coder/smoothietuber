@@ -217,7 +217,41 @@
       toast_video_shared: '✅ Berhasil dibagikan / disimpan ke Galeri!',
       toast_audio_reset: '🔄 Audio berhasil direkalibrasi & direset!',
       toast_press_hotkey_prefix: '⌨️ Tekan tombol baru untuk ',
-      toast_press_hotkey_suffix: ' (Esc untuk batal)'
+      toast_press_hotkey_suffix: ' (Esc untuk batal)',
+      toast_green_screen_active: '🟩 Mode Green Screen Murni (#00FF00) Aktif (Prism Live Ready)',
+      toast_green_screen_exit: 'Kembali ke tampilan editor',
+      toast_obs_active: 'Mode OBS aktif (Tekan H untuk kembali)',
+      toast_rec_start_cfr: '🔴 Merekam video 60 FPS CFR (Kualitas Tinggi)...',
+      toast_rec_start_cfr_audio: '🔴 Merekam 60 FPS CFR & memutar audio...',
+      toast_rec_start_transparent: '✨🔴 Merekam video WebM transparan (60 FPS CFR)...',
+      toast_rec_start_transparent_audio: '✨🔴 Merekam WebM Transparan (60 FPS CFR) & memutar audio...',
+      toast_rec_unsupported: '⚠️ Perekaman video tidak didukung di browser ini.',
+      toast_transparent_export_active: '✨ Mode Ekspor Transparan Aktif (WebM VP9 Alpha)',
+      toast_normal_export_restored: 'Mode latar belakang & format video normal dipulihkan.',
+      toast_webm_transparent_hint: '💡 Format WebM dipilih. Aktifkan sakelar "Ekspor Transparan" untuk alpha channel murni!',
+      toast_floating_enabled: 'Efek melayang Canva aktif',
+      toast_floating_disabled: 'Efek melayang Canva dimatikan',
+      toast_pos_bottom_right: '📍 Avatar dipindah ke Kanan Bawah',
+      toast_pos_bottom_left: '📍 Avatar dipindah ke Kiri Bawah',
+      toast_pos_top_right: '📍 Avatar dipindah ke Kanan Atas',
+      toast_pos_top_left: '📍 Avatar dipindah ke Kiri Atas',
+      toast_pos_center: '📍 Avatar dipindah ke Tengah Layar',
+      toast_custom_bg_set: 'Latar belakang kustom dipasang!',
+      toast_reset_sys_keys: 'Hotkey dikembalikan ke default: M, H, R!',
+      toast_reset_emo_keys: 'Hotkey emosi dikembalikan ke default: [1], [2], [3]...',
+      toast_profile_saved: '💾 Profil avatar & pengaturan berhasil dicadangkan!',
+      toast_profile_export_failed: '⚠️ Gagal mengekspor profil',
+      toast_profile_restored: '🎉 Profil avatar berhasil dipulihkan!',
+      toast_profile_import_failed: '⚠️ Gagal membaca file backup: Format tidak sesuai',
+      toast_hotkey_cancel: 'Batal mengubah pintasan',
+      toast_hotkey_set: 'Pintasan diset ke: ',
+      toast_active_emotion: 'Emosi aktif: ',
+      toast_return_to: 'Kembali ke: ',
+      toast_sprite_saved: '💾 Sprite tersimpan permanen di HP!',
+      toast_audio_file_ready: 'File audio siap dideteksi!',
+      toast_audio_file_removed: 'File audio dihapus. Kembali ke mikrofon live.',
+      toast_processing_sprite: 'Memproses gambar sprite...',
+      toast_new_emotion: 'Emosi baru ditambahkan!'
     },
     'ja': {
       app_title: 'SmoothieTuber 🥤 - 落書き風2D手描きPNGTuber',
@@ -389,7 +423,41 @@
       toast_video_shared: '✅ 共有 / カメラロールへの保存が完了しました！',
       toast_audio_reset: '🔄 音声エンジンをリセット＆再調整しました！',
       toast_press_hotkey_prefix: '⌨️ 新しいキーを押してください: ',
-      toast_press_hotkey_suffix: ' (Escでキャンセル)'
+      toast_press_hotkey_suffix: ' (Escでキャンセル)',
+      toast_green_screen_active: '🟩 純粋グリーンスクリーン (#00FF00) が有効になりました',
+      toast_green_screen_exit: 'エディター画面に戻りました',
+      toast_obs_active: 'OBSモードが有効になりました (Hキーで戻る)',
+      toast_rec_start_cfr: '🔴 60 FPS CFR（高画質）で動画を録画中...',
+      toast_rec_start_cfr_audio: '🔴 60 FPS CFR で録画＆音声を再生中...',
+      toast_rec_start_transparent: '✨🔴 透過WebM動画（60 FPS CFR）を録画中...',
+      toast_rec_start_transparent_audio: '✨🔴 透過WebM（60 FPS CFR）を録画＆音声を再生中...',
+      toast_rec_unsupported: '⚠️ このブラウザでは動画の録画がサポートされていません。',
+      toast_transparent_export_active: '✨ 透過書き出しモードが有効になりました (WebM VP9 Alpha)',
+      toast_normal_export_restored: '通常の背景と動画形式に戻りました。',
+      toast_webm_transparent_hint: '💡 WebM形式が選択されました。純粋な透過にするには「透過エクスポート」を有効にしてください！',
+      toast_floating_enabled: 'Canva浮遊効果を有効にしました',
+      toast_floating_disabled: 'Canva浮遊効果をオフにしました',
+      toast_pos_bottom_right: '📍 アバターを右下に移動しました',
+      toast_pos_bottom_left: '📍 アバターを左下に移動しました',
+      toast_pos_top_right: '📍 アバターを右上に移動しました',
+      toast_pos_top_left: '📍 アバターを左上に移動しました',
+      toast_pos_center: '📍 アバターを画面中央に移動しました',
+      toast_custom_bg_set: 'カスタム壁紙を設定しました！',
+      toast_reset_sys_keys: 'システムホットキーを初期化しました: M, H, R！',
+      toast_reset_emo_keys: '表情ホットキーを初期化しました: [1], [2], [3]...',
+      toast_profile_saved: '💾 アバタープロファイルと設定をバックアップしました！',
+      toast_profile_export_failed: '⚠️ プロファイルの書き出しに失敗しました',
+      toast_profile_restored: '🎉 アバタープロファイルが復元されました！',
+      toast_profile_import_failed: '⚠️ バックアップの読み込みに失敗しました: ファイル形式が無効です',
+      toast_hotkey_cancel: 'ショートカットの変更をキャンセルしました',
+      toast_hotkey_set: 'ショートカットを設定しました: ',
+      toast_active_emotion: '使用中の表情: ',
+      toast_return_to: '復帰: ',
+      toast_sprite_saved: '💾 画像スプライトが端末に保存されました！',
+      toast_audio_file_ready: '音声ファイルの読み込みが完了しました！',
+      toast_audio_file_removed: '音声ファイルを解除しました。マイク入力に戻ります。',
+      toast_processing_sprite: '画像スプライトを処理中...',
+      toast_new_emotion: '新しい表情が追加されました！'
     },
     'zh': {
       app_title: 'SmoothieTuber 🥤 - 涂鸦风格2D手绘PNGTuber',
@@ -561,7 +629,41 @@
       toast_video_shared: '✅ 已成功分享 / 保存至手机相册！',
       toast_audio_reset: '🔄 音频引擎已重置并重新校准！',
       toast_press_hotkey_prefix: '⌨️ 请按下新的按键: ',
-      toast_press_hotkey_suffix: ' (按 Esc 取消)'
+      toast_press_hotkey_suffix: ' (按 Esc 取消)',
+      toast_green_screen_active: '🟩 纯净全屏绿幕模式 (#00FF00) 已激活',
+      toast_green_screen_exit: '已退出绿幕，返回编辑模式',
+      toast_obs_active: 'OBS模式已激活 (按 H 键恢复)',
+      toast_rec_start_cfr: '🔴 正在以 60 FPS CFR 高画质录制视频...',
+      toast_rec_start_cfr_audio: '🔴 正在以 60 FPS CFR 录制并播放音频...',
+      toast_rec_start_transparent: '✨🔴 正在录制透明通道 WebM 视频 (60 FPS CFR)...',
+      toast_rec_start_transparent_audio: '✨🔴 正在录制透明 WebM (60 FPS CFR) 并播放音频...',
+      toast_rec_unsupported: '⚠️ 此浏览器不支持视频录制功能。',
+      toast_transparent_export_active: '✨ 透明通道导出模式已激活 (WebM VP9 Alpha)',
+      toast_normal_export_restored: '已恢复默认背景和视频格式。',
+      toast_webm_transparent_hint: '💡 已选择WebM格式。开启“透明通道导出”开关即可获得纯透明Alpha通道！',
+      toast_floating_enabled: 'Canva呼吸浮动效果已开启',
+      toast_floating_disabled: 'Canva呼吸浮动效果已关闭',
+      toast_pos_bottom_right: '📍 形象已移动至右下角',
+      toast_pos_bottom_left: '📍 形象已移动至左下角',
+      toast_pos_top_right: '📍 形象已移动至右上角',
+      toast_pos_top_left: '📍 形象已移动至左上角',
+      toast_pos_center: '📍 形象已移动至屏幕中央',
+      toast_custom_bg_set: '自定义背景壁纸已应用！',
+      toast_reset_sys_keys: '系统快捷键已恢复默认: M, H, R！',
+      toast_reset_emo_keys: '表情快捷键已恢复默认: [1], [2], [3]...',
+      toast_profile_saved: '💾 形象素材与配置已成功备份！',
+      toast_profile_export_failed: '⚠️ 导出形象档案失败',
+      toast_profile_restored: '🎉 形象素材与配置已成功恢复！',
+      toast_profile_import_failed: '⚠️ 无法读取备份文件: 格式无效',
+      toast_hotkey_cancel: '已取消更改快捷键',
+      toast_hotkey_set: '快捷键已绑定为: ',
+      toast_active_emotion: '当前表情: ',
+      toast_return_to: '返回: ',
+      toast_sprite_saved: '💾 形象图层已永久保存至本地！',
+      toast_audio_file_ready: '音频文件已准备就绪！',
+      toast_audio_file_removed: '音频文件已移除，恢复为实时麦克风感应。',
+      toast_processing_sprite: '正在处理形象图层...',
+      toast_new_emotion: '已添加新表情！'
     },
     'en-US': {
       app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
@@ -733,7 +835,41 @@
       toast_video_shared: '✅ Saved to camera roll / shared!',
       toast_audio_reset: '🔄 Audio engine reset & recalibrated!',
       toast_press_hotkey_prefix: '⌨️ Press a new key for ',
-      toast_press_hotkey_suffix: ' (Esc to cancel)'
+      toast_press_hotkey_suffix: ' (Esc to cancel)',
+      toast_green_screen_active: '🟩 Pure Green Screen (#00FF00) Mode Active (Prism Live Ready)',
+      toast_green_screen_exit: 'Returned to editor view',
+      toast_obs_active: 'OBS mode active (Press H to return)',
+      toast_rec_start_cfr: '🔴 Recording video at 60 FPS CFR (High Quality)...',
+      toast_rec_start_cfr_audio: '🔴 Recording 60 FPS CFR & playing audio...',
+      toast_rec_start_transparent: '✨🔴 Recording transparent WebM video (60 FPS CFR)...',
+      toast_rec_start_transparent_audio: '✨🔴 Recording Transparent WebM (60 FPS CFR) & playing audio...',
+      toast_rec_unsupported: '⚠️ Video recording is not supported in this browser.',
+      toast_transparent_export_active: '✨ Transparent Export Mode Active (WebM VP9 Alpha)',
+      toast_normal_export_restored: 'Normal background and video format restored.',
+      toast_webm_transparent_hint: '💡 WebM selected. Enable "Transparent Export" for pure alpha transparency!',
+      toast_floating_enabled: 'Canva floating effect enabled',
+      toast_floating_disabled: 'Canva floating effect disabled',
+      toast_pos_bottom_right: '📍 Avatar moved to Bottom Right',
+      toast_pos_bottom_left: '📍 Avatar moved to Bottom Left',
+      toast_pos_top_right: '📍 Avatar moved to Top Right',
+      toast_pos_top_left: '📍 Avatar moved to Top Left',
+      toast_pos_center: '📍 Avatar moved to Center Stage',
+      toast_custom_bg_set: 'Custom background applied!',
+      toast_reset_sys_keys: 'System hotkeys reset to default: M, H, R!',
+      toast_reset_emo_keys: 'Emotion hotkeys reset to default: [1], [2], [3]...',
+      toast_profile_saved: '💾 Avatar profile & settings backed up successfully!',
+      toast_profile_export_failed: '⚠️ Failed to export profile',
+      toast_profile_restored: '🎉 Avatar profile restored successfully!',
+      toast_profile_import_failed: '⚠️ Failed to import backup: Invalid file format',
+      toast_hotkey_cancel: 'Shortcut rebind cancelled',
+      toast_hotkey_set: 'Shortcut set to: ',
+      toast_active_emotion: 'Active emotion: ',
+      toast_return_to: 'Returned to: ',
+      toast_sprite_saved: '💾 Sprite saved permanently!',
+      toast_audio_file_ready: 'Audio file ready for voice detection!',
+      toast_audio_file_removed: 'Audio file removed. Returned to live microphone.',
+      toast_processing_sprite: 'Processing sprite image...',
+      toast_new_emotion: 'New emotion added!'
     },
     'en-GB': {
       app_title: 'SmoothieTuber 🥤 - 2D Doodle PNGTuber Studio',
@@ -905,7 +1041,41 @@
       toast_video_shared: '✅ Saved to camera roll / shared!',
       toast_audio_reset: '🔄 Audio engine reset & recalibrated!',
       toast_press_hotkey_prefix: '⌨️ Press a new key for ',
-      toast_press_hotkey_suffix: ' (Esc to cancel)'
+      toast_press_hotkey_suffix: ' (Esc to cancel)',
+      toast_green_screen_active: '🟩 Pure Green Screen (#00FF00) Mode Active (Prism Live Ready)',
+      toast_green_screen_exit: 'Returned to editor view',
+      toast_obs_active: 'OBS mode active (Press H to return)',
+      toast_rec_start_cfr: '🔴 Recording video at 60 FPS CFR (High Quality)...',
+      toast_rec_start_cfr_audio: '🔴 Recording 60 FPS CFR & playing audio...',
+      toast_rec_start_transparent: '✨🔴 Recording transparent WebM video (60 FPS CFR)...',
+      toast_rec_start_transparent_audio: '✨🔴 Recording Transparent WebM (60 FPS CFR) & playing audio...',
+      toast_rec_unsupported: '⚠️ Video recording is not supported in this browser.',
+      toast_transparent_export_active: '✨ Transparent Export Mode Active (WebM VP9 Alpha)',
+      toast_normal_export_restored: 'Normal background and video format restored.',
+      toast_webm_transparent_hint: '💡 WebM selected. Enable "Transparent Export" for pure alpha transparency!',
+      toast_floating_enabled: 'Canva floating effect enabled',
+      toast_floating_disabled: 'Canva floating effect disabled',
+      toast_pos_bottom_right: '📍 Avatar moved to Bottom Right',
+      toast_pos_bottom_left: '📍 Avatar moved to Bottom Left',
+      toast_pos_top_right: '📍 Avatar moved to Top Right',
+      toast_pos_top_left: '📍 Avatar moved to Top Left',
+      toast_pos_center: '📍 Avatar moved to Centre Stage',
+      toast_custom_bg_set: 'Custom background applied!',
+      toast_reset_sys_keys: 'System hotkeys reset to default: M, H, R!',
+      toast_reset_emo_keys: 'Emotion hotkeys reset to default: [1], [2], [3]...',
+      toast_profile_saved: '💾 Avatar profile & settings backed up successfully!',
+      toast_profile_export_failed: '⚠️ Failed to export profile',
+      toast_profile_restored: '🎉 Avatar profile restored successfully!',
+      toast_profile_import_failed: '⚠️ Failed to import backup: Invalid file format',
+      toast_hotkey_cancel: 'Shortcut rebind cancelled',
+      toast_hotkey_set: 'Shortcut set to: ',
+      toast_active_emotion: 'Active emotion: ',
+      toast_return_to: 'Returned to: ',
+      toast_sprite_saved: '💾 Sprite saved permanently!',
+      toast_audio_file_ready: 'Audio file ready for voice detection!',
+      toast_audio_file_removed: 'Audio file removed. Returned to live microphone.',
+      toast_processing_sprite: 'Processing sprite image...',
+      toast_new_emotion: 'New emotion added!'
     }
   };
 
@@ -1725,7 +1895,7 @@
     renderHotkeysUI();
     saveUserSettings(); // Simpan emosi aktif ke pengaturan persisten!
     const emo = getActiveEmotion();
-    showToast(`Emosi aktif: ${emo.name} [${emo.hotkey.toUpperCase()}]`);
+    showToast(`${t('toast_active_emotion')} ${emo.name} [${emo.hotkey.toUpperCase()}]`);
   }
 
   // Helper untuk mengecilkan gambar besar pengguna ke 1080px & kompresi WebP/PNG transparan
@@ -1876,7 +2046,7 @@
       const emo = getActiveEmotion();
       if (!emo) return;
 
-      showToast('Memproses sprite...');
+      showToast(t('toast_processing_sprite'));
       const optimizedUrl = await optimizeImageFile(file);
       if (optimizedUrl) {
         emo.sprites[slotKey] = optimizedUrl;
@@ -1884,7 +2054,7 @@
         lastAppliedSpriteSrc = '';
         updateSlotImages();
         updateAvatarSprite();
-        showToast(`💾 Sprite "${slotKey}" untuk "${emo.name}" tersimpan permanen di HP!`);
+        showToast(t('toast_sprite_saved'));
       }
     });
   });
@@ -2012,7 +2182,7 @@
     setActiveEmotion(newId);
     renderCompactEmotionsList();
     renderHotkeysUI();
-    showToast(`Emosi baru ditambahkan! Hotkey: [${defaultKey.toUpperCase()}]`);
+    showToast(`${t('toast_new_emotion')} [${defaultKey.toUpperCase()}]`);
   });
 
   // --- 3. FLYOUT SYSTEM (POPOVERS RINGKAS DI SAMPING DOCK) ---
@@ -2245,7 +2415,7 @@
       if (e.key === 'Escape') {
         isRecordingSystemHotkey = null;
         renderHotkeysUI();
-        showToast('Batal mengubah pintasan');
+        showToast(t('toast_hotkey_cancel'));
         return;
       }
 
@@ -2254,7 +2424,7 @@
 
       systemHotkeys[isRecordingSystemHotkey] = chosenKey;
       saveSystemHotkeys();
-      showToast(`Pintasan diset ke: [ ${chosenKey.toUpperCase()} ]`);
+      showToast(`${t('toast_hotkey_set')}[ ${chosenKey.toUpperCase()} ]`);
 
       isRecordingSystemHotkey = null;
       renderHotkeysUI();
@@ -2268,7 +2438,7 @@
         isRecordingHotkeyForId = null;
         renderCompactEmotionsList();
         renderHotkeysUI();
-        showToast('Batal mengubah hotkey emosi');
+        showToast(t('toast_hotkey_cancel'));
         return;
       }
       const targetEmo = emotions.find(em => em.id === isRecordingHotkeyForId);
@@ -2280,9 +2450,9 @@
         const conflictEmo = emotions.find(em => em.id !== targetEmo.id && em.hotkey.toLowerCase() === chosenKey);
         if (conflictEmo) {
           conflictEmo.hotkey = targetEmo.hotkey;
-          showToast(`Hotkey [${chosenKey.toUpperCase()}] ditukar dengan "${conflictEmo.name}"`);
+          showToast(`[${chosenKey.toUpperCase()}] ⇄ "${conflictEmo.name}"`);
         } else {
-          showToast(`Hotkey "${targetEmo.name}" diset ke: [ ${chosenKey.toUpperCase()} ]`);
+          showToast(`"${targetEmo.name}": [ ${chosenKey.toUpperCase()} ]`);
         }
 
         targetEmo.hotkey = chosenKey;
@@ -2350,7 +2520,7 @@
         const defaultEmo = emotions[0];
         if (defaultEmo && defaultEmo.id !== matchedEmotion.id) {
           setActiveEmotion(defaultEmo.id);
-          showToast(`Kembali ke: ${defaultEmo.name} [${defaultEmo.hotkey.toUpperCase()}]`);
+          showToast(`${t('toast_return_to')} ${defaultEmo.name} [${defaultEmo.hotkey.toUpperCase()}]`);
           return;
         }
       }
@@ -2798,7 +2968,7 @@
       if (isRecordingVideo) stopVideoRecording();
     };
 
-    showToast(`File audio "${file.name}" siap dideteksi!`);
+    showToast(`"${file.name}": ` + t('toast_audio_file_ready'));
   });
 
   if (btnRemoveAudioFile) {
@@ -2817,7 +2987,7 @@
       audioTotalDuration.textContent = '00:00';
       currentAudioSourceMode = 'mic';
       checkActiveAudioPlaybackState();
-      showToast('File audio dihapus. Kembali ke mikrofon live.');
+      showToast(t('toast_audio_file_removed'));
     });
   }
 
@@ -3142,7 +3312,7 @@
             mediaRecorder = new MediaRecorder(combinedStream);
           } catch (e2) {
             console.error('MediaRecorder init failed:', e2);
-            showToast('⚠️ Perekaman video tidak didukung di browser ini.');
+            showToast(t('toast_rec_unsupported'));
             isRecordingVideo = false;
             if (currentRenderRaf) {
               cancelAnimationFrame(currentRenderRaf);
@@ -3280,9 +3450,9 @@
       if (btnPlayPauseAudio) {
         btnPlayPauseAudio.textContent = '⏸️';
       }
-      showToast(isTransparentMode ? '✨🔴 Merekam WebM Transparan (60 FPS CFR) & memutar audio...' : '🔴 Merekam 60 FPS CFR & memutar audio...');
+      showToast(isTransparentMode ? t('toast_rec_start_transparent_audio') : t('toast_rec_start_cfr_audio'));
     } else {
-      showToast(isTransparentMode ? '✨🔴 Merekam video WebM transparan (60 FPS CFR)...' : '🔴 Merekam video 60 FPS CFR (Kualitas Tinggi)...');
+      showToast(isTransparentMode ? t('toast_rec_start_transparent') : t('toast_rec_start_cfr'));
     }
   }
 
@@ -3396,7 +3566,7 @@
           exportFormat.value = 'webm';
           exportFormat.disabled = true;
         }
-        showToast('✨ Mode Ekspor Transparan Aktif (WebM VP9 Alpha)');
+        showToast(t('toast_transparent_export_active'));
       } else {
         if (exportBgMode) {
           exportBgMode.disabled = false;
@@ -3406,7 +3576,7 @@
           exportFormat.disabled = false;
           exportFormat.value = exportFormat.dataset.prevVal || 'mp4';
         }
-        showToast('Mode latar belakang & format video normal dipulihkan.');
+        showToast(t('toast_normal_export_restored'));
       }
     });
   }
@@ -3422,7 +3592,7 @@
             exportFormat.disabled = true;
           }
           exportBgMode.disabled = true;
-          showToast('✨ Mode Ekspor Transparan Aktif (WebM VP9 Alpha)');
+          showToast(t('toast_transparent_export_active'));
         }
       }
     });
@@ -3431,7 +3601,7 @@
   if (exportFormat) {
     exportFormat.addEventListener('change', () => {
       if (exportFormat.value === 'webm' && (!toggleTransparentExport || !toggleTransparentExport.checked)) {
-        showToast('💡 Format WebM dipilih. Aktifkan sakelar "Ekspor Transparan" untuk alpha channel murni!');
+        showToast(t('toast_webm_transparent_hint'));
       }
     });
   }
@@ -3441,10 +3611,10 @@
     isFloatingEnabled = e.target.checked;
     if (isFloatingEnabled) {
       avatarWrapper.classList.add('floating-enabled');
-      showToast('Efek melayang Canva aktif');
+      showToast(t('toast_floating_enabled'));
     } else {
       avatarWrapper.classList.remove('floating-enabled');
-      showToast('Efek melayang Canva dimatikan');
+      showToast(t('toast_floating_disabled'));
     }
     saveUserSettings();
   });
@@ -3524,28 +3694,28 @@
       case 'bottom-right':
         setAvatarPosition(xDist, yDist);
         setAvatarScaleValue(65);
-        showToast('📍 Avatar dipindah ke Kanan Bawah');
+        showToast(t('toast_pos_bottom_right'));
         break;
       case 'bottom-left':
         setAvatarPosition(-xDist, yDist);
         setAvatarScaleValue(65);
-        showToast('📍 Avatar dipindah ke Kiri Bawah');
+        showToast(t('toast_pos_bottom_left'));
         break;
       case 'top-right':
         setAvatarPosition(xDist, -yDist);
         setAvatarScaleValue(65);
-        showToast('📍 Avatar dipindah ke Kanan Atas');
+        showToast(t('toast_pos_top_right'));
         break;
       case 'top-left':
         setAvatarPosition(-xDist, -yDist);
         setAvatarScaleValue(65);
-        showToast('📍 Avatar dipindah ke Kiri Atas');
+        showToast(t('toast_pos_top_left'));
         break;
       case 'center':
       default:
         setAvatarPosition(0, 0);
         setAvatarScaleValue(100);
-        showToast('📍 Avatar dipindah ke Tengah Layar');
+        showToast(t('toast_pos_center'));
         break;
     }
   }
@@ -3800,7 +3970,7 @@
 
       bgChoiceButtons.forEach(b => b.classList.remove('active'));
       document.body.className = '';
-      showToast('Latar belakang kustom dipasang!');
+      showToast(t('toast_custom_bg_set'));
     };
     reader.readAsDataURL(file);
   });
@@ -3822,7 +3992,7 @@
       document.body.classList.add('obs-mode');
       closeAllFlyouts();
       btnRestoreControls.classList.remove('hidden');
-      showToast('Mode OBS aktif (Tekan H untuk kembali)');
+      showToast(t('toast_obs_active'));
     } else {
       document.body.classList.remove('obs-mode');
       btnRestoreControls.classList.add('hidden');
@@ -3847,12 +4017,12 @@
       closeAllFlyouts();
       if (btnRestorePureGreen) btnRestorePureGreen.classList.remove('hidden');
       if (btnDockGreenScreen) btnDockGreenScreen.classList.add('is-active');
-      showToast('🟩 Mode Green Screen Murni (#00FF00) Aktif (Prism Live Ready)');
+      showToast(t('toast_green_screen_active'));
     } else {
       document.body.classList.remove('pure-green-mode');
       if (btnRestorePureGreen) btnRestorePureGreen.classList.add('hidden');
       if (btnDockGreenScreen) btnDockGreenScreen.classList.remove('is-active');
-      showToast('Kembali ke tampilan editor');
+      showToast(t('toast_green_screen_exit'));
     }
   }
 
@@ -3913,7 +4083,7 @@
         saveSystemHotkeys();
         isRecordingSystemHotkey = null;
         renderHotkeysUI();
-        showToast('Hotkey dikembalikan ke default: M, H, R!');
+        showToast(t('toast_reset_sys_keys'));
       });
     }
 
@@ -3927,7 +4097,7 @@
         renderHotkeysUI();
         renderCompactEmotionsList();
         updateSlotImages();
-        showToast('Hotkey emosi dikembalikan ke default: [1], [2], [3]...');
+        showToast(t('toast_reset_emo_keys'));
       });
     }
   }
@@ -3979,10 +4149,10 @@
       downloadAnchor.remove();
       setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
 
-      showToast('💾 Profil avatar & pengaturan berhasil dicadangkan!');
+      showToast(t('toast_profile_saved'));
     } catch (err) {
       console.error('Gagal ekspor profil:', err);
-      showToast('⚠️ Gagal mengekspor profil');
+      showToast(t('toast_profile_export_failed'));
     }
   }
 
@@ -4069,10 +4239,10 @@
         renderCompactEmotionsList();
         renderHotkeysUI();
 
-        showToast('🎉 Profil avatar berhasil dipulihkan!');
+        showToast(t('toast_profile_restored'));
       } catch (err) {
         console.error('Gagal impor profil:', err);
-        showToast('⚠️ Gagal membaca file backup: Format tidak sesuai');
+        showToast(t('toast_profile_import_failed'));
       }
     };
     reader.readAsText(file);
