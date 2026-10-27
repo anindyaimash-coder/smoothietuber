@@ -2020,6 +2020,17 @@
     return imageCache.get(url);
   }
 
+  // Format tampilan nama emosi khusus di dock pill: kata 'emosi' / 'emotion' diganti 🎭
+  function formatDockEmotionName(name) {
+    if (!name || typeof name !== 'string') return '🎭';
+    const trimmed = name.trim();
+    const formatted = trimmed
+      .replace(/(?:^|\b)emosi\s*/gi, '🎭 ')
+      .replace(/(?:^|\b)emotion\s*/gi, '🎭 ')
+      .trim();
+    return formatted || '🎭';
+  }
+
   // Update Slot Thumbnails to match active emotion
   function updateSlotImages() {
     const emo = getActiveEmotion();
@@ -2030,7 +2041,10 @@
     if (slotImgClosedBlink) slotImgClosedBlink.src = emo.sprites.closedBlink || emo.sprites.closed;
     if (slotImgOpenBlink) slotImgOpenBlink.src = emo.sprites.openBlink || emo.sprites.open;
 
-    if (curEmotionName) curEmotionName.textContent = emo.name;
+    if (curEmotionName) {
+      curEmotionName.textContent = formatDockEmotionName(emo.name);
+      curEmotionName.title = emo.name;
+    }
     if (curEmotionHotkey) curEmotionHotkey.textContent = `[${emo.hotkey.toUpperCase()}]`;
 
     // Preload
@@ -2155,7 +2169,8 @@
           emo.name = trimmed;
           saveEmotions();
           if (emo.id === activeEmotionId && curEmotionName) {
-            curEmotionName.textContent = emo.name;
+            curEmotionName.textContent = formatDockEmotionName(emo.name);
+            curEmotionName.title = emo.name;
           }
           renderHotkeysUI();
           showToast(t('toast_emotion_renamed') || '✏️ Nama emosi diperbarui!');
