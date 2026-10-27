@@ -22,7 +22,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=5.4">
+  <link rel="stylesheet" href="style.css?v=5.5">
 </head>
 <body class="bg-checkerboard">
 
@@ -429,12 +429,8 @@
       <!-- PILIHAN MODE ANIMASI AVATAR (ANIMATION BEHAVIOR TOGGLE) -->
       <div class="anim-behavior-box">
         <div class="slider-info">
-          <label for="avatarAnimModeSelect" class="slider-label" data-i18n="label_anim_behavior_mode">Mode Animasi Avatar (Respons Suara):</label>
+          <span class="slider-label" data-i18n="label_anim_behavior_mode">Mode Animasi Avatar (Respons Suara):</span>
         </div>
-        <select id="avatarAnimModeSelect" class="form-select doodle-select-mode" aria-label="Pilih Mode Animasi Avatar">
-          <option value="bounce" data-i18n="opt_anim_mode_bounce">Mode Pantulan (Bounce saat Bicara)</option>
-          <option value="scale" data-i18n="opt_anim_mode_scale">Mode Skala (Mengecil saat Diam - Membesar saat Bicara)</option>
-        </select>
         <div class="doodle-radio-mode-group" role="radiogroup" aria-label="Opsi Mode Animasi Avatar">
           <label class="doodle-radio-card active" data-mode-card="bounce">
             <input type="radio" name="avatarAnimModeRadio" value="bounce" checked>
@@ -901,6 +897,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=5.4"></script>
+  <script src="script.js?v=5.5"></script>
 </body>
 </html>
