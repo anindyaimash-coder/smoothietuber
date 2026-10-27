@@ -1652,12 +1652,12 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
 
 /* Custom Mascot Logo in VIP & Language Modals */
 .vip-logo-img, .lang-logo-img {
-  width: 62px;
-  height: 62px;
+  width: 74px;
+  height: 74px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 4px auto;
-  filter: drop-shadow(2px 2px 0px var(--crayon-yellow));
+  margin: 0 auto 6px auto;
+  filter: drop-shadow(2px 2px 0px rgba(244, 63, 94, 0.25));
   animation: floatSlow 4s ease-in-out infinite;
 }
 
