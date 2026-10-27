@@ -148,13 +148,20 @@
       opt_fmt_webm: '✨ WebM (Transparan / Alpha Channel untuk OBS)',
       label_export_resolution: 'Ukuran & Rasio Video:',
       opt_res_9_16: '📱 9:16 Vertikal (1080 × 1920 - TikTok, Reels, Shorts)',
+      opt_res_9_16_hd: '📱 9:16 HD Cepat & Mulus (720 × 1280 - Rekomendasi Medsos / HP)',
+      opt_res_9_16_fhd: '📱 9:16 Full HD (1080 × 1920 - Tajam / PC & HP Flagship)',
       opt_res_3_2: '📷 3:2 Kamera (1620 × 1080 - Rasio Kamera Standar)',
       opt_res_2_3: '📸 2:3 Potret (1080 × 1620 - Foto Vertikal)',
       opt_res_1_1: '⏹️ 1:1 Persegi (1080 × 1080 - Feed IG & Profil)',
       opt_res_16_9: '🖥️ 16:9 Horizontal (1920 × 1080 - YouTube / PC)',
+      opt_res_16_9_hd: '🖥️ 16:9 HD Cepat (1280 × 720 - YouTube HD)',
+      opt_res_16_9_fhd: '🖥️ 16:9 Full HD (1920 × 1080 - YouTube 1080p)',
+      label_export_fps: 'Kecepatan Bingkai (FPS):',
+      opt_fps_30: '⚡ 30 FPS (Rekomendasi Medsos - Super Mulus, Stabil, Anti-Lag di CapCut & IG)',
+      opt_fps_60: '🚀 60 FPS (Ultra Smooth - Butuh Perangkat Kuat)',
       btn_record_start: 'Mulai Merekam Video',
       btn_record_stop: 'Hentikan Rekaman Video',
-      status_record_ready: 'Siap merekam animasi reaktif audio (60 FPS CFR • 8 Mbps).',
+      status_record_ready: 'Siap merekam video avatar reaktif audio (CFR Mulus • Ramah CapCut & Medsos).',
       status_recording: 'Sedang merekam...',
       btn_restore_controls: '⚙️ Tampilkan Toolbar',
       btn_pure_green: '🟩 Layar Penuh Green Screen Murni (#00FF00)',
@@ -354,13 +361,20 @@
       opt_fmt_webm: '✨ WebM (透過アルファチャンネル対応 OBS用)',
       label_export_resolution: '動画サイズ＆比率:',
       opt_res_9_16: '📱 9:16 縦型 (1080 × 1920 - TikTok, Reels, Shorts)',
+      opt_res_9_16_hd: '📱 9:16 HD 高速・快適 (720 × 1280 - スマホ推奨, TikTok, Reels)',
+      opt_res_9_16_fhd: '📱 9:16 フルHD (1080 × 1920 - 高精細 / PC・フラグシップ)',
       opt_res_3_2: '📷 3:2 カメラ (1620 × 1080 - 標準カメラ比率)',
       opt_res_2_3: '📸 2:3 ポートレート (1080 × 1620 - 縦向き写真)',
       opt_res_1_1: '⏹️ 1:1 正方形 (1080 × 1080 - IGフィード・アイコン)',
       opt_res_16_9: '🖥️ 16:9 横型 (1920 × 1080 - YouTube / PC)',
+      opt_res_16_9_hd: '🖥️ 16:9 HD 高速 (1280 × 720 - YouTube HD)',
+      opt_res_16_9_fhd: '🖥️ 16:9 フルHD (1920 × 1080 - YouTube 1080p)',
+      label_export_fps: 'フレームレート (FPS):',
+      opt_fps_30: '⚡ 30 FPS (SNS推奨 - 超スムーズ・CapCut/IG安定)',
+      opt_fps_60: '🚀 60 FPS (ウルトラスムーズ - 高性能端末向け)',
       btn_record_start: '録画を開始',
       btn_record_stop: '録画を停止',
-      status_record_ready: '音声反応アニメーションの録画準備完了 (60 FPS CFR • 8 Mbps)',
+      status_record_ready: '音声反応アバター動画の録画準備完了 (CFRスムーズ・SNS/CapCut対応)',
       status_recording: '録画中...',
       btn_restore_controls: '⚙️ ツールバーを表示',
       btn_pure_green: '🟩 全画面純粋グリーンスクリーン (#00FF00)',
@@ -560,13 +574,20 @@
       opt_fmt_webm: '✨ WebM (透明通道 OBS专属)',
       label_export_resolution: '尺寸与画幅比例:',
       opt_res_9_16: '📱 9:16 竖屏 (1080 × 1920 - 抖音/快手/Shorts)',
+      opt_res_9_16_hd: '📱 9:16 HD 高速流畅 (720 × 1280 - 手机推荐·抖音/快手)',
+      opt_res_9_16_fhd: '📱 9:16 全高清 (1080 × 1920 - 高清画质 / 电脑与旗舰机)',
       opt_res_3_2: '📷 3:2 相机 (1620 × 1080 - 经典相机画幅)',
       opt_res_2_3: '📸 2:3 肖像 (1080 × 1620 - 竖向构图)',
       opt_res_1_1: '⏹️ 1:1 方形 (1080 × 1080 - 朋友圈/小红书/头像)',
       opt_res_16_9: '🖥️ 16:9 横屏 (1920 × 1080 - B站/YouTube/PC)',
+      opt_res_16_9_hd: '🖥️ 16:9 HD 高速 (1280 × 720 - B站/YouTube HD)',
+      opt_res_16_9_fhd: '🖥️ 16:9 全高清 (1920 × 1080 - B站/YouTube 1080p)',
+      label_export_fps: '帧率设置 (FPS):',
+      opt_fps_30: '⚡ 30 FPS (推荐社媒 - 超丝滑稳定·剪映/IG防卡顿)',
+      opt_fps_60: '🚀 60 FPS (极致流畅 - 需要高配置设备)',
       btn_record_start: '开始录制视频',
       btn_record_stop: '停止视频录制',
-      status_record_ready: '已就绪，随时可开始录制声音感应动画 (60 FPS CFR • 8 Mbps)。',
+      status_record_ready: '已就绪，随时可开始录制声音感应动画 (CFR流畅·剪映/社媒兼容)。',
       status_recording: '正在录制中...',
       btn_restore_controls: '⚙️ 显示工具栏',
       btn_pure_green: '🟩 全屏纯净绿幕模式 (#00FF00)',
@@ -766,13 +787,20 @@
       opt_fmt_webm: '✨ WebM (Transparent Alpha Channel for OBS)',
       label_export_resolution: 'Video Aspect Ratio & Size:',
       opt_res_9_16: '📱 9:16 Vertical (1080 × 1920 - TikTok, Reels, Shorts)',
+      opt_res_9_16_hd: '📱 9:16 HD Fast & Smooth (720 × 1280 - Recommended for Mobile)',
+      opt_res_9_16_fhd: '📱 9:16 Full HD (1080 × 1920 - Sharp / PC & Flagship)',
       opt_res_3_2: '📷 3:2 Camera (1620 × 1080 - Standard Camera Ratio)',
       opt_res_2_3: '📸 2:3 Portrait (1080 × 1620 - Vertical Photo)',
       opt_res_1_1: '⏹️ 1:1 Square (1080 × 1080 - IG Feed & Profile)',
       opt_res_16_9: '🖥️ 16:9 Landscape (1920 × 1080 - YouTube / PC)',
+      opt_res_16_9_hd: '🖥️ 16:9 HD Fast (1280 × 720 - YouTube HD)',
+      opt_res_16_9_fhd: '🖥️ 16:9 Full HD (1920 × 1080 - YouTube 1080p)',
+      label_export_fps: 'Frame Rate (FPS):',
+      opt_fps_30: '⚡ 30 FPS (Recommended - Smooth & Stable for CapCut/IG)',
+      opt_fps_60: '🚀 60 FPS (Ultra Smooth - High-End Devices)',
       btn_record_start: 'Start Video Recording',
       btn_record_stop: 'Stop Video Recording',
-      status_record_ready: 'Ready to record voice-reactive animation (60 FPS CFR • 8 Mbps).',
+      status_record_ready: 'Ready to record voice-reactive animation (Smooth CFR • Social Media/CapCut friendly).',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
       btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
@@ -972,13 +1000,20 @@
       opt_fmt_webm: '✨ WebM (Transparent Alpha Channel for OBS)',
       label_export_resolution: 'Video Aspect Ratio & Size:',
       opt_res_9_16: '📱 9:16 Vertical (1080 × 1920 - TikTok, Reels, Shorts)',
+      opt_res_9_16_hd: '📱 9:16 HD Fast & Smooth (720 × 1280 - Recommended for Mobile)',
+      opt_res_9_16_fhd: '📱 9:16 Full HD (1080 × 1920 - Sharp / PC & Flagship)',
       opt_res_3_2: '📷 3:2 Camera (1620 × 1080 - Standard Camera Ratio)',
       opt_res_2_3: '📸 2:3 Portrait (1080 × 1620 - Vertical Photo)',
       opt_res_1_1: '⏹️ 1:1 Square (1080 × 1080 - IG Feed & Profile)',
       opt_res_16_9: '🖥️ 16:9 Landscape (1920 × 1080 - YouTube / PC)',
+      opt_res_16_9_hd: '🖥️ 16:9 HD Fast (1280 × 720 - YouTube HD)',
+      opt_res_16_9_fhd: '🖥️ 16:9 Full HD (1920 × 1080 - YouTube 1080p)',
+      label_export_fps: 'Frame Rate (FPS):',
+      opt_fps_30: '⚡ 30 FPS (Recommended - Smooth & Stable for CapCut/IG)',
+      opt_fps_60: '🚀 60 FPS (Ultra Smooth - High-End Devices)',
       btn_record_start: 'Start Video Recording',
       btn_record_stop: 'Stop Video Recording',
-      status_record_ready: 'Ready to record voice-reactive animation (60 FPS CFR • 8 Mbps).',
+      status_record_ready: 'Ready to record voice-reactive animation (Smooth CFR • Social Media/CapCut friendly).',
       status_recording: 'Recording video...',
       btn_restore_controls: '⚙️ Show Toolbar',
       btn_pure_green: '🟩 Pure Green Screen Fullscreen (#00FF00)',
@@ -1172,6 +1207,8 @@
     'pngtuber_user_settings'
   ];
 
+  const isMobileDevice = typeof window !== 'undefined' && (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth && window.innerWidth < 768));
+
   const DEFAULT_SETTINGS = {
     threshold: 15.0,
     holdDelay: 160,
@@ -1184,7 +1221,9 @@
     floatDuration: 3.8,
     blinkInterval: 3500,
     blinkDuration: 160,
-    activeEmotionId: 'emotion_normal'
+    activeEmotionId: 'emotion_normal',
+    exportResolution: '720x1280',
+    exportFps: '30'
   };
 
   const DEFAULT_SYSTEM_HOTKEYS = {
@@ -1315,7 +1354,9 @@
               floatDuration: (typeof parsed.floatDuration === 'number' && !isNaN(parsed.floatDuration) && parsed.floatDuration >= 0.1 && parsed.floatDuration <= 10.0) ? parsed.floatDuration : DEFAULT_SETTINGS.floatDuration,
               blinkInterval: (typeof parsed.blinkInterval === 'number' && !isNaN(parsed.blinkInterval) && parsed.blinkInterval >= 800 && parsed.blinkInterval <= 15000) ? parsed.blinkInterval : DEFAULT_SETTINGS.blinkInterval,
               blinkDuration: (typeof parsed.blinkDuration === 'number' && !isNaN(parsed.blinkDuration) && parsed.blinkDuration >= 50 && parsed.blinkDuration <= 600) ? parsed.blinkDuration : DEFAULT_SETTINGS.blinkDuration,
-              activeEmotionId: (typeof parsed.activeEmotionId === 'string' && parsed.activeEmotionId) ? parsed.activeEmotionId : DEFAULT_SETTINGS.activeEmotionId
+              activeEmotionId: (typeof parsed.activeEmotionId === 'string' && parsed.activeEmotionId) ? parsed.activeEmotionId : DEFAULT_SETTINGS.activeEmotionId,
+              exportResolution: (typeof parsed.exportResolution === 'string' && parsed.exportResolution) ? parsed.exportResolution : DEFAULT_SETTINGS.exportResolution,
+              exportFps: (parsed.exportFps === '60') ? '60' : '30'
             };
           }
         }
@@ -1417,7 +1458,9 @@
           floatDuration,
           blinkInterval,
           blinkDuration,
-          activeEmotionId
+          activeEmotionId,
+          exportResolution: exportResolution ? exportResolution.value : '720x1280',
+          exportFps: exportFps ? exportFps.value : '30'
         };
         localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(payload));
         localStorage.setItem('smoothietuber_user_settings_v4', JSON.stringify(payload));
@@ -1706,6 +1749,7 @@
   const exportBgMode = document.getElementById('exportBgMode');
   const exportFormat = document.getElementById('exportFormat');
   const exportResolution = document.getElementById('exportResolution');
+  const exportFps = document.getElementById('exportFps');
   const recordingStatusNote = document.getElementById('recordingStatusNote');
   const recordResultModal = document.getElementById('recordResultModal');
   const previewRecordedVideo = document.getElementById('previewRecordedVideo');
@@ -3032,8 +3076,11 @@
 
   // --- 8. VIDEO EXPORT (CANVAS MEDIA RECORDER TRANSPARAN) ---
   function setupExportCanvasSize() {
-    const res = exportResolution ? exportResolution.value : '1080x1920';
-    if (res === '1080x1920') {
+    const res = exportResolution ? exportResolution.value : '720x1280';
+    if (res === '720x1280') {
+      exportCanvas.width = 720;
+      exportCanvas.height = 1280;
+    } else if (res === '1080x1920') {
       exportCanvas.width = 1080;
       exportCanvas.height = 1920;
     } else if (res === '1620x1080') {
@@ -3045,6 +3092,9 @@
     } else if (res === '1080x1080') {
       exportCanvas.width = 1080;
       exportCanvas.height = 1080;
+    } else if (res === '1280x720') {
+      exportCanvas.width = 1280;
+      exportCanvas.height = 720;
     } else if (res === '1920x1080') {
       exportCanvas.width = 1920;
       exportCanvas.height = 1080;
@@ -3052,17 +3102,37 @@
       exportCanvas.width = 800;
       exportCanvas.height = 800;
     } else {
-      // Bawaan default: 9:16 vertikal (1080 × 1920)
-      exportCanvas.width = 1080;
-      exportCanvas.height = 1920;
+      // Bawaan default: 9:16 vertikal (720 × 1280 - Rekomendasi Medsos HP)
+      exportCanvas.width = 720;
+      exportCanvas.height = 1280;
     }
   }
 
   let customBgImageObj = null;
   let lastValidRecordedImg = null;
+  let lastExportRenderTimestamp = 0;
 
   function renderExportFrame(timestamp) {
     if (!isRecordingVideo) return;
+
+    // Selalu jadwalkan frame berikutnya di awal loop
+    currentRenderRaf = requestAnimationFrame(renderExportFrame);
+
+    const targetFps = (exportFps && exportFps.value === '60') ? 60 : 30;
+    const frameIntervalMs = 1000 / targetFps;
+
+    if (timestamp) {
+      if (!lastExportRenderTimestamp) {
+        lastExportRenderTimestamp = timestamp;
+      }
+      const elapsed = timestamp - lastExportRenderTimestamp;
+      // Toleransi 2ms untuk fluktuasi timer internal browser
+      if (elapsed < frameIntervalMs - 2) {
+        // Lewati frame jika belum waktunya (mencegah bottleneck/overload pada layar 120Hz ProMotion & menjaga Constant Frame Rate CFR)
+        return;
+      }
+      lastExportRenderTimestamp = timestamp - (elapsed % frameIntervalMs);
+    }
 
     const w = exportCanvas.width;
     const h = exportCanvas.height;
@@ -3073,7 +3143,7 @@
     // Bersihkan seluruh bidang canvas agar murni transparan (alpha channel = 0)
     exportCtx.clearRect(0, 0, w, h);
     exportCtx.imageSmoothingEnabled = true;
-    exportCtx.imageSmoothingQuality = 'high';
+    exportCtx.imageSmoothingQuality = 'medium'; // 'medium' jauh lebih ringan dan mulus di mobile daripada 'high' yang menyebabkan frame dropping
 
     if (isTransparentMode || bgMode === 'transparent') {
       // JANGAN beri warna solid/fill rect pada latar belakang saat direkam (biarkan clearRect agar alpha channel tetap terjaga)
@@ -3181,10 +3251,6 @@
       exportCtx.drawImage(lastValidRecordedImg, -drawWidth / 2, -baseDrawHeight / 2, drawWidth, baseDrawHeight);
       exportCtx.restore();
     }
-
-    if (isRecordingVideo) {
-      currentRenderRaf = requestAnimationFrame(renderExportFrame);
-    }
   }
 
   async function startVideoRecording() {
@@ -3224,16 +3290,19 @@
     setupExportCanvasSize();
     isRecordingVideo = true;
     recordedChunks = [];
+    lastExportRenderTimestamp = 0;
 
-    // Jalankan render loop 60fps untuk perekaman
+    // Jalankan render loop CFR untuk perekaman
     renderExportFrame();
 
-    // 1. Paksa Constant Frame Rate (CFR) pada Canvas Capture: 60 FPS
-    const canvasStream = exportCanvas.captureStream(60);
+    const targetFps = (exportFps && exportFps.value === '60') ? 60 : 30;
+
+    // 1. Sinkronkan Constant Frame Rate (CFR) pada Canvas Capture sesuai target FPS
+    const canvasStream = exportCanvas.captureStream(targetFps);
     const videoTracks = canvasStream.getVideoTracks();
     if (videoTracks && videoTracks[0] && videoTracks[0].applyConstraints) {
       videoTracks[0].applyConstraints({
-        frameRate: { ideal: 60, min: 60 }
+        frameRate: { ideal: targetFps, min: targetFps, max: targetFps }
       }).catch(() => {});
     }
 
@@ -3283,12 +3352,22 @@
       }
     }
 
-    // 2. Tingkatkan Video Bitrate ke minimal 8 Mbps (8000000 bps) untuk mencegah kompresi brutal & ramah editor CapCut
-    const TARGET_VIDEO_BITRATE = 8000000; // 8 Mbps high-quality CFR
-    const TARGET_AUDIO_BITRATE = 128000;  // 128 kbps audio
+    // 2. Bitrate Optimal: Mencegah kompresi brutal sekaligus mencegah buffer encoder mobile tersedak (ramah CapCut & Instagram)
+    const isHighRes = (exportCanvas.width >= 1080 && exportCanvas.height >= 1600) || (exportCanvas.width >= 1600);
+    let targetVideoBitrate = 4500000; // 4.5 Mbps standar emas untuk Reels / TikTok / CapCut
+    if (isHighRes && targetFps === 60) {
+      targetVideoBitrate = 6500000; // 6.5 Mbps
+    } else if (isHighRes && targetFps === 30) {
+      targetVideoBitrate = 5000000; // 5 Mbps
+    } else if (!isHighRes && targetFps === 60) {
+      targetVideoBitrate = 4000000; // 4 Mbps
+    } else {
+      targetVideoBitrate = 3200000; // 3.2 Mbps (720p 30fps - super stabil & anti-drop)
+    }
+    const TARGET_AUDIO_BITRATE = 128000; // 128 kbps audio
 
     const recorderOptions = {
-      videoBitsPerSecond: TARGET_VIDEO_BITRATE,
+      videoBitsPerSecond: targetVideoBitrate,
       audioBitsPerSecond: TARGET_AUDIO_BITRATE
     };
     if (selectedMime) {
@@ -3302,7 +3381,7 @@
       try {
         mediaRecorder = new MediaRecorder(combinedStream, {
           ...(selectedMime ? { mimeType: selectedMime } : {}),
-          videoBitsPerSecond: TARGET_VIDEO_BITRATE
+          videoBitsPerSecond: targetVideoBitrate
         });
       } catch (err2) {
         try {
@@ -4302,6 +4381,24 @@
     if (blinkDurationSlider) {
       blinkDurationSlider.value = blinkDuration;
       if (blinkDurationBadge) blinkDurationBadge.textContent = `${blinkDuration} ms`;
+    }
+
+    // Pulihkan format, resolusi & FPS rekaman
+    if (exportResolution) {
+      if (userSettings.exportResolution) {
+        exportResolution.value = userSettings.exportResolution;
+      }
+      exportResolution.addEventListener('change', () => {
+        saveUserSettings();
+      });
+    }
+    if (exportFps) {
+      if (userSettings.exportFps) {
+        exportFps.value = userSettings.exportFps;
+      }
+      exportFps.addEventListener('change', () => {
+        saveUserSettings();
+      });
     }
 
     // Event listener Backup & Restore Profil

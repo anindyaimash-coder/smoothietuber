@@ -532,11 +532,20 @@
       <div class="input-group">
         <label for="exportResolution" class="input-label" data-i18n="label_export_resolution">Ukuran &amp; Rasio Video:</label>
         <select id="exportResolution" class="form-select">
-          <option value="1080x1920" selected data-i18n="opt_res_9_16">📱 9:16 Vertikal (1080 × 1920 - TikTok, Reels, Shorts)</option>
+          <option value="720x1280" selected data-i18n="opt_res_9_16_hd">📱 9:16 HD Cepat &amp; Mulus (720 × 1280 - Rekomendasi Medsos / HP)</option>
+          <option value="1080x1920" data-i18n="opt_res_9_16_fhd">📱 9:16 Full HD (1080 × 1920 - Tajam / PC &amp; HP Flagship)</option>
           <option value="1620x1080" data-i18n="opt_res_3_2">📷 3:2 Kamera (1620 × 1080 - Rasio Kamera Standar)</option>
           <option value="1080x1620" data-i18n="opt_res_2_3">📸 2:3 Potret (1080 × 1620 - Foto Vertikal)</option>
           <option value="1080x1080" data-i18n="opt_res_1_1">⏹️ 1:1 Persegi (1080 × 1080 - Feed IG &amp; Profil)</option>
-          <option value="1920x1080" data-i18n="opt_res_16_9">🖥️ 16:9 Horizontal (1920 × 1080 - YouTube / PC)</option>
+          <option value="1280x720" data-i18n="opt_res_16_9_hd">🖥️ 16:9 HD Cepat (1280 × 720 - YouTube HD)</option>
+          <option value="1920x1080" data-i18n="opt_res_16_9_fhd">🖥️ 16:9 Full HD (1920 × 1080 - YouTube 1080p)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="exportFps" class="input-label" data-i18n="label_export_fps">Kecepatan Bingkai (FPS):</label>
+        <select id="exportFps" class="form-select">
+          <option value="30" selected data-i18n="opt_fps_30">⚡ 30 FPS (Rekomendasi Medsos - Super Mulus, Stabil, Anti-Lag di CapCut &amp; IG)</option>
+          <option value="60" data-i18n="opt_fps_60">🚀 60 FPS (Ultra Smooth - Butuh Perangkat Kuat)</option>
         </select>
       </div>
       <button id="btnMainRecord" class="btn btn-record-big" type="button">
