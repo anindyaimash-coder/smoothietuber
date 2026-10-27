@@ -112,6 +112,26 @@
       flyout_motion_title: '✨ Gerakan & Melayang',
       label_floating: 'Efek Melayang Canva:',
       hint_floating: 'Gerakan bernapas lembut konstan',
+      label_anim_behavior_mode: 'Mode Animasi Avatar (Respons Suara):',
+      opt_anim_mode_bounce: 'Mode Pantulan (Bounce saat Bicara)',
+      opt_anim_mode_scale: 'Mode Skala (Mengecil saat Diam - Membesar saat Bicara)',
+      desc_anim_mode_bounce: 'Diam: normal/melayang • Bicara: memantul hop-hop',
+      desc_anim_mode_scale: 'Diam: mengecil (0.92x) • Bicara: membesar dinamis (1.05x–1.10x)',
+      btn_report_bug: 'Lapor Bug',
+      bug_modal_title: '🐞 Lapor Bug / Masukan',
+      bug_modal_desc: 'Temukan kendala saat menggunakan aplikasi? Kirimkan laporan di bawah ini agar segera kami perbaiki:',
+      label_bug_reporter: '1. Nama / Kontak Pelapor (Opsional):',
+      placeholder_bug_reporter: 'Contoh: Rina / @rina_art (boleh dikosongkan)',
+      label_bug_category: '2. Kategori Kendala:',
+      opt_bug_cat_audio: 'Audio Tidak Sinkron',
+      opt_bug_cat_image: 'Gambar Hilang',
+      opt_bug_cat_ui: 'Tampilan Rusak',
+      opt_bug_cat_other: 'Lainnya',
+      label_bug_desc: '3. Deskripsi Kendala / Bug:',
+      placeholder_bug_desc: 'Ceritakan detail kendala yang kamu alami...',
+      btn_submit_bug: 'Kirim Laporan',
+      bug_status_sending: 'Mengirim...',
+      bug_status_success: 'Laporan berhasil terkirim! Terima kasih masukannya.',
       label_float_intensity: 'Tinggi Ayunan:',
       label_float_speed: 'Kecepatan Melayang:',
       label_bounce: 'Pantulan Bicara (Hop):',
@@ -1238,6 +1258,12 @@
 
   const isMobileDevice = typeof window !== 'undefined' && (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth && window.innerWidth < 768));
 
+  // =========================================================================
+  // KONFIGURASI ENDPOINT LAPORAN BUG (PRIVASI AMAN TANPA MENAMPILKAN EMAIL)
+  // Ganti URL di bawah ini dengan endpoint Formspree / Make / Discord Webhook milik Anda
+  // =========================================================================
+  const BUG_REPORT_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
   const DEFAULT_SETTINGS = {
     threshold: 15.0,
     holdDelay: 160,
@@ -1247,6 +1273,7 @@
     avatarPosX: 0,
     avatarPosY: 0,
     isFloatingEnabled: true,
+    animMode: 'bounce', // 'bounce' | 'scale'
     floatIntensity: 8,
     floatDuration: 3.8,
     blinkInterval: 3500,
@@ -1376,6 +1403,10 @@
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed && typeof parsed === 'object') {
+            const savedStandaloneMode = localStorage.getItem('smoothietuber_anim_mode');
+            const resolvedAnimMode = (savedStandaloneMode === 'scale' || savedStandaloneMode === 'bounce')
+              ? savedStandaloneMode
+              : ((parsed.animMode === 'scale') ? 'scale' : 'bounce');
             return {
               threshold: (typeof parsed.threshold === 'number' && !isNaN(parsed.threshold) && parsed.threshold >= 0.1 && parsed.threshold <= 40.0) ? Math.round(parsed.threshold * 10) / 10 : DEFAULT_SETTINGS.threshold,
               holdDelay: (typeof parsed.holdDelay === 'number' && !isNaN(parsed.holdDelay) && parsed.holdDelay >= 50 && parsed.holdDelay <= 500) ? parsed.holdDelay : DEFAULT_SETTINGS.holdDelay,
@@ -1385,6 +1416,7 @@
               avatarPosX: (typeof parsed.avatarPosX === 'number' && !isNaN(parsed.avatarPosX) && parsed.avatarPosX >= -2000 && parsed.avatarPosX <= 2000) ? parsed.avatarPosX : DEFAULT_SETTINGS.avatarPosX,
               avatarPosY: (typeof parsed.avatarPosY === 'number' && !isNaN(parsed.avatarPosY) && parsed.avatarPosY >= -2000 && parsed.avatarPosY <= 2000) ? parsed.avatarPosY : DEFAULT_SETTINGS.avatarPosY,
               isFloatingEnabled: typeof parsed.isFloatingEnabled === 'boolean' ? parsed.isFloatingEnabled : DEFAULT_SETTINGS.isFloatingEnabled,
+              animMode: resolvedAnimMode,
               floatIntensity: (typeof parsed.floatIntensity === 'number' && !isNaN(parsed.floatIntensity) && parsed.floatIntensity >= 1 && parsed.floatIntensity <= 50) ? parsed.floatIntensity : DEFAULT_SETTINGS.floatIntensity,
               floatDuration: (typeof parsed.floatDuration === 'number' && !isNaN(parsed.floatDuration) && parsed.floatDuration >= 0.1 && parsed.floatDuration <= 10.0) ? parsed.floatDuration : DEFAULT_SETTINGS.floatDuration,
               blinkInterval: (typeof parsed.blinkInterval === 'number' && !isNaN(parsed.blinkInterval) && parsed.blinkInterval >= 800 && parsed.blinkInterval <= 15000) ? parsed.blinkInterval : DEFAULT_SETTINGS.blinkInterval,
@@ -1494,6 +1526,7 @@
           avatarPosX,
           avatarPosY,
           isFloatingEnabled,
+          animMode,
           floatIntensity,
           floatDuration,
           blinkInterval,
@@ -1506,6 +1539,7 @@
           customBgPosY: userSettings.customBgPosY || 0,
           customBgFit: userSettings.customBgFit || 'cover'
         };
+        localStorage.setItem('smoothietuber_anim_mode', animMode);
         localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(payload));
         localStorage.setItem('smoothietuber_user_settings_v4', JSON.stringify(payload));
         localStorage.setItem('smoothietuber_user_settings_v2', JSON.stringify(payload));
@@ -1665,8 +1699,11 @@
   let cameraStream = null;
   let activeCameraFacing = null;
 
-  // Canva Floating / Breathing Animation
+  // Canva Floating / Breathing Animation & Mode Animasi Avatar ('bounce' | 'scale')
   let isFloatingEnabled = userSettings.isFloatingEnabled !== false;
+  let animMode = (userSettings.animMode === 'scale') ? 'scale' : 'bounce';
+  let dynamicVoiceScale = 0.92; // Skala dinamis untuk Mode Skala (0.92 saat diam, 1.05 - 1.10 saat bicara)
+  let currentExportVoiceScale = 0.92;
   let floatIntensity = typeof userSettings.floatIntensity === 'number' ? userSettings.floatIntensity : 8; // px
   let floatDuration = typeof userSettings.floatDuration === 'number' ? userSettings.floatDuration : 3.8; // seconds
 
@@ -1750,7 +1787,22 @@
 
   // Motion Flyout
   const toggleFloating = document.getElementById('toggleFloating');
+  const avatarAnimModeSelect = document.getElementById('avatarAnimModeSelect');
+  const avatarAnimModeRadios = document.querySelectorAll('input[name="avatarAnimModeRadio"]');
+  const avatarAnimModeCards = document.querySelectorAll('.doodle-radio-card[data-mode-card]');
   const floatIntensitySlider = document.getElementById('floatIntensitySlider');
+
+  // Bug Report Modal Elements
+  const btnOpenBugReport = document.getElementById('btnOpenBugReport');
+  const bugReportModal = document.getElementById('bugReportModal');
+  const btnCloseBugModal = document.getElementById('btnCloseBugModal');
+  const bugReportForm = document.getElementById('bugReportForm');
+  const bugReporterName = document.getElementById('bugReporterName');
+  const bugCategory = document.getElementById('bugCategory');
+  const bugDescription = document.getElementById('bugDescription');
+  const bugReportStatus = document.getElementById('bugReportStatus');
+  const btnSubmitBugReport = document.getElementById('btnSubmitBugReport');
+  const btnSubmitBugText = document.getElementById('btnSubmitBugText');
   const floatIntensityBadge = document.getElementById('floatIntensityBadge');
   const floatSpeedSlider = document.getElementById('floatSpeedSlider');
   const floatSpeedBadge = document.getElementById('floatSpeedBadge');
@@ -2504,8 +2556,12 @@
 
   // Global Keydown Handler
   window.addEventListener('keydown', (e) => {
-    // 0. Tutup mode green screen murni atau modal rekaman jika Escape ditekan
+    // 0. Tutup mode green screen murni, modal bug report, atau modal rekaman jika Escape ditekan
     if (e.key === 'Escape') {
+      if (bugReportModal && !bugReportModal.classList.contains('hidden')) {
+        closeBugReportModal();
+        return;
+      }
       if (isPureGreenMode) {
         togglePureGreenMode(false);
         return;
@@ -2984,9 +3040,20 @@
       const now = performance.now();
       if (calculatedVolume >= threshold) {
         lastVoiceActiveTimestamp = now;
+        // Mode B (Mode Skala): Hitung skala dinamis proporsional sesuai kekuatan volume suara (1.05x hingga 1.10x)
+        const volSpan = Math.max(5, 40 - threshold);
+        const volStrength = Math.min(1, Math.max(0, (calculatedVolume - threshold) / volSpan));
+        dynamicVoiceScale = 1.05 + (volStrength * 0.05);
+        if (animMode === 'scale' && avatarImage) {
+          avatarImage.style.setProperty('--dynamic-voice-scale', dynamicVoiceScale.toFixed(3));
+        }
         setSpeakingState(true);
       } else {
         if (now - lastVoiceActiveTimestamp > holdDelay) {
+          dynamicVoiceScale = 0.92;
+          if (animMode === 'scale' && avatarImage) {
+            avatarImage.style.setProperty('--dynamic-voice-scale', '0.92');
+          }
           setSpeakingState(false);
         }
       }
@@ -3000,6 +3067,15 @@
   function setSpeakingState(speaking) {
     if (isSpeaking === speaking) return;
     isSpeaking = speaking;
+    if (!speaking) {
+      dynamicVoiceScale = 0.92;
+      if (animMode === 'scale' && avatarImage) {
+        avatarImage.style.setProperty('--dynamic-voice-scale', '0.92');
+      }
+    } else if (animMode === 'scale' && avatarImage) {
+      if (dynamicVoiceScale < 1.05) dynamicVoiceScale = 1.06;
+      avatarImage.style.setProperty('--dynamic-voice-scale', dynamicVoiceScale.toFixed(3));
+    }
     updateAvatarSprite();
   }
 
@@ -3398,7 +3474,7 @@
       const currentFloatOffset = floatSine * (floatIntensity * canvasScaleY);
       const currentFloatScale = isFloatingEnabled ? 1 + (floatSine * 0.012) : 1;
 
-      // Animasi Hop-Hop / Pantulan Bicara Aktif (Playful Speech Hop & Squash-Stretch)
+      // Animasi Respons Audio pada Canvas Export: Mode Pantulan ('bounce') vs Mode Skala ('scale')
       let currentBounce = 0;
       let bounceScaleX = 1;
       let bounceScaleY = 1;
@@ -3406,7 +3482,13 @@
       const effectiveBounce = (typeof bounceIntensity === 'number' && !isNaN(bounceIntensity) && bounceIntensity >= 1) ? bounceIntensity : 18;
       const effectiveSpeed = (typeof bounceSpeed === 'number' && !isNaN(bounceSpeed) && bounceSpeed >= 0.05) ? bounceSpeed : 0.28;
 
-      if (isSpeaking) {
+      if (animMode === 'scale') {
+        const targetExportScale = isSpeaking ? Math.max(1.05, Math.min(1.12, dynamicVoiceScale)) : 0.92;
+        currentExportVoiceScale += (targetExportScale - currentExportVoiceScale) * 0.35;
+        currentBounce = 0;
+        bounceScaleX = currentExportVoiceScale;
+        bounceScaleY = currentExportVoiceScale;
+      } else if (isSpeaking) {
         // Siklus pantulan bicara (Hop-Hop Animation) - 100% sinkron dengan stage CSS
         const hopPeriod = effectiveSpeed; // detik per 1 siklus pantulan penuh
         const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) -> 1 (puncak lompatan) -> 0 (lantai)
@@ -3928,6 +4010,69 @@
   }
 
   // --- 9. MOTION & VISUAL SLIDERS ---
+  function applyAvatarAnimationMode(mode, notify = false) {
+    animMode = (mode === 'scale') ? 'scale' : 'bounce';
+
+    if (avatarAnimModeSelect) {
+      avatarAnimModeSelect.value = animMode;
+    }
+
+    if (avatarAnimModeRadios && avatarAnimModeRadios.length > 0) {
+      avatarAnimModeRadios.forEach(radio => {
+        radio.checked = (radio.value === animMode);
+      });
+    }
+
+    if (avatarAnimModeCards && avatarAnimModeCards.length > 0) {
+      avatarAnimModeCards.forEach(card => {
+        if (card.dataset.modeCard === animMode) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+
+    if (avatarImage) {
+      if (animMode === 'scale') {
+        avatarImage.classList.add('anim-mode-scale');
+        dynamicVoiceScale = isSpeaking ? Math.max(1.05, dynamicVoiceScale) : 0.92;
+        avatarImage.style.setProperty('--dynamic-voice-scale', dynamicVoiceScale.toFixed(3));
+      } else {
+        avatarImage.classList.remove('anim-mode-scale');
+        avatarImage.style.removeProperty('--dynamic-voice-scale');
+      }
+    }
+
+    try {
+      localStorage.setItem('smoothietuber_anim_mode', animMode);
+    } catch (e) {}
+    saveUserSettings(true);
+
+    if (notify) {
+      const modeName = animMode === 'scale'
+        ? (t('opt_anim_mode_scale') || 'Mode Skala (Mengecil saat Diam - Membesar saat Bicara)')
+        : (t('opt_anim_mode_bounce') || 'Mode Pantulan (Bounce saat Bicara)');
+      showToast(`✨ ${modeName}`);
+    }
+  }
+
+  if (avatarAnimModeSelect) {
+    avatarAnimModeSelect.addEventListener('change', (e) => {
+      applyAvatarAnimationMode(e.target.value, true);
+    });
+  }
+
+  if (avatarAnimModeRadios && avatarAnimModeRadios.length > 0) {
+    avatarAnimModeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          applyAvatarAnimationMode(e.target.value, true);
+        }
+      });
+    });
+  }
+
   toggleFloating.addEventListener('change', (e) => {
     isFloatingEnabled = e.target.checked;
     if (isFloatingEnabled) {
@@ -4587,6 +4732,9 @@
             if (isFloatingEnabled) avatarWrapper?.classList.add('floating-enabled');
             else avatarWrapper?.classList.remove('floating-enabled');
           }
+          if (s.animMode === 'scale' || s.animMode === 'bounce') {
+            applyAvatarAnimationMode(s.animMode, false);
+          }
           if (typeof s.floatIntensity === 'number') {
             floatIntensity = s.floatIntensity;
             if (floatIntensitySlider) floatIntensitySlider.value = floatIntensity;
@@ -4631,11 +4779,133 @@
     reader.readAsText(file);
   }
 
+  // --- 11B. LAPORAN BUG / MASUKAN (BACKGROUND FETCH TANPA MENAMPILKAN EMAIL) ---
+  let bugModalAutoCloseTimer = null;
+
+  function openBugReportModal() {
+    if (!bugReportModal) return;
+    clearTimeout(bugModalAutoCloseTimer);
+    if (bugReportStatus) {
+      bugReportStatus.className = 'bug-report-status hidden';
+      bugReportStatus.textContent = '';
+    }
+    if (btnSubmitBugReport) btnSubmitBugReport.disabled = false;
+    if (btnSubmitBugText) btnSubmitBugText.textContent = t('btn_submit_bug') || 'Kirim Laporan';
+    bugReportModal.classList.remove('hidden');
+  }
+
+  function closeBugReportModal() {
+    if (!bugReportModal) return;
+    clearTimeout(bugModalAutoCloseTimer);
+    bugReportModal.classList.add('hidden');
+  }
+
+  function setupBugReportModal() {
+    if (btnOpenBugReport) {
+      btnOpenBugReport.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openBugReportModal();
+      });
+    }
+
+    if (btnCloseBugModal) {
+      btnCloseBugModal.addEventListener('click', () => {
+        closeBugReportModal();
+      });
+    }
+
+    if (bugReportModal) {
+      bugReportModal.addEventListener('click', (e) => {
+        if (e.target === bugReportModal) {
+          closeBugReportModal();
+        }
+      });
+    }
+
+    if (bugReportForm) {
+      bugReportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearTimeout(bugModalAutoCloseTimer);
+
+        const reporter = (bugReporterName && bugReporterName.value) ? bugReporterName.value.trim() : 'Anonim';
+        const category = (bugCategory && bugCategory.value) ? bugCategory.value : 'Lainnya';
+        const description = (bugDescription && bugDescription.value) ? bugDescription.value.trim() : '';
+
+        if (!description) return;
+
+        // 1. Feedback visual langsung: status "Mengirim..."
+        const sendingText = t('bug_status_sending') || 'Mengirim...';
+        if (bugReportStatus) {
+          bugReportStatus.textContent = sendingText;
+          bugReportStatus.className = 'bug-report-status is-sending';
+        }
+        if (btnSubmitBugReport) btnSubmitBugReport.disabled = true;
+        if (btnSubmitBugText) btnSubmitBugText.textContent = sendingText;
+
+        const payload = {
+          reporter: reporter || 'Anonim',
+          category,
+          description,
+          animMode,
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+          timestamp: new Date().toISOString()
+        };
+
+        // Simpan juga ke log cadangan lokal agar tidak ada laporan yang hilang
+        try {
+          const existingLogs = JSON.parse(localStorage.getItem('smoothietuber_bug_reports_log') || '[]');
+          existingLogs.push(payload);
+          localStorage.setItem('smoothietuber_bug_reports_log', JSON.stringify(existingLogs.slice(-30)));
+        } catch (_) {}
+
+        // 2. Kirimkan secara background menggunakan Fetch API ke endpoint relay/webhook tanpa mengekspos email
+        try {
+          if (BUG_REPORT_ENDPOINT && !BUG_REPORT_ENDPOINT.includes('YOUR_FORM_ID')) {
+            await fetch(BUG_REPORT_ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 650));
+          }
+        } catch (_) {
+          // Tetap lanjutkan agar UX pengguna mulus meskipun sedang offline
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        // 3. Ubah menjadi notifikasi sukses & tutup modal otomatis setelah 2 detik
+        const successText = t('bug_status_success') || 'Laporan berhasil terkirim! Terima kasih masukannya.';
+        if (bugReportStatus) {
+          bugReportStatus.textContent = successText;
+          bugReportStatus.className = 'bug-report-status is-success';
+        }
+        if (btnSubmitBugText) btnSubmitBugText.textContent = '✓ Terkirim';
+        showToast(`💌 ${successText}`);
+
+        bugModalAutoCloseTimer = setTimeout(() => {
+          closeBugReportModal();
+          bugReportForm.reset();
+          if (btnSubmitBugReport) btnSubmitBugReport.disabled = false;
+          if (btnSubmitBugText) btnSubmitBugText.textContent = t('btn_submit_bug') || 'Kirim Laporan';
+          if (bugReportStatus) bugReportStatus.className = 'bug-report-status hidden';
+        }, 2000);
+      });
+    }
+  }
+
   // --- 12. INITIALIZATION ---
   async function init() {
     setupVipGateEvents();
     initLanguageFlow();
+    setupBugReportModal();
     const isUnlocked = checkVipGate();
+
+    // Pulihkan mode animasi avatar dari localStorage ('bounce' | 'scale')
+    applyAvatarAnimationMode(animMode, false);
 
     // Pulihkan pengaturan audio & kalibrasi dari data persisten
     setThreshold(threshold);

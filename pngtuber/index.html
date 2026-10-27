@@ -22,7 +22,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=5.3">
+  <link rel="stylesheet" href="style.css?v=5.4">
 </head>
 <body class="bg-checkerboard">
 
@@ -44,11 +44,25 @@
   </div>
 
   <!-- =========================================================================
-       TOMBOL PILIHAN BAHASA (POJOK KIRI ATAS)
+       TOMBOL PILIHAN BAHASA (POJOK KIRI ATAS) & TOMBOL LAPOR BUG (POJOK KANAN ATAS)
        ========================================================================= -->
   <button id="btnHeaderLangSwitch" class="app-corner-lang-btn header-lang-pill" type="button" title="Pilih Bahasa / Switch Language" aria-label="Switch Language">
     <span class="lang-pill-flag">🌐</span>
     <span id="headerLangLabel" class="lang-pill-code">ID</span>
+  </button>
+
+  <button id="btnOpenBugReport" class="app-corner-bug-btn" type="button" title="Laporkan Kendala atau Masukan" aria-label="Lapor Bug">
+    <span class="bug-pill-icon" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="16" height="12" rx="2.5" fill="#fde68a"></rect>
+        <path d="M2 6.5l8 5 8-5"></path>
+        <circle cx="17.5" cy="16.5" r="4.5" fill="#fca5a5"></circle>
+        <path d="M17.5 12v9M14.5 15.5h6M15 18.5h5"></path>
+        <circle cx="16" cy="14.5" r="0.6" fill="currentColor"></circle>
+        <circle cx="19" cy="14.5" r="0.6" fill="currentColor"></circle>
+      </svg>
+    </span>
+    <span class="bug-pill-label" data-i18n="btn_report_bug">Lapor Bug</span>
   </button>
 
   <!-- =========================================================================
@@ -411,6 +425,36 @@
           <span class="switch-slider"></span>
         </label>
       </div>
+
+      <!-- PILIHAN MODE ANIMASI AVATAR (ANIMATION BEHAVIOR TOGGLE) -->
+      <div class="anim-behavior-box">
+        <div class="slider-info">
+          <label for="avatarAnimModeSelect" class="slider-label" data-i18n="label_anim_behavior_mode">Mode Animasi Avatar (Respons Suara):</label>
+        </div>
+        <select id="avatarAnimModeSelect" class="form-select doodle-select-mode" aria-label="Pilih Mode Animasi Avatar">
+          <option value="bounce" data-i18n="opt_anim_mode_bounce">Mode Pantulan (Bounce saat Bicara)</option>
+          <option value="scale" data-i18n="opt_anim_mode_scale">Mode Skala (Mengecil saat Diam - Membesar saat Bicara)</option>
+        </select>
+        <div class="doodle-radio-mode-group" role="radiogroup" aria-label="Opsi Mode Animasi Avatar">
+          <label class="doodle-radio-card active" data-mode-card="bounce">
+            <input type="radio" name="avatarAnimModeRadio" value="bounce" checked>
+            <span class="doodle-radio-dot"></span>
+            <div class="doodle-radio-text">
+              <span class="doodle-radio-title" data-i18n="opt_anim_mode_bounce">Mode Pantulan (Bounce saat Bicara)</span>
+              <span class="doodle-radio-desc" data-i18n="desc_anim_mode_bounce">Diam: normal/melayang • Bicara: memantul hop-hop</span>
+            </div>
+          </label>
+          <label class="doodle-radio-card" data-mode-card="scale">
+            <input type="radio" name="avatarAnimModeRadio" value="scale">
+            <span class="doodle-radio-dot"></span>
+            <div class="doodle-radio-text">
+              <span class="doodle-radio-title" data-i18n="opt_anim_mode_scale">Mode Skala (Mengecil saat Diam - Membesar saat Bicara)</span>
+              <span class="doodle-radio-desc" data-i18n="desc_anim_mode_scale">Diam: mengecil (0.92x) • Bicara: membesar dinamis (1.05x–1.10x)</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
       <div class="slider-control-group">
         <div class="slider-info"><label for="floatIntensitySlider" class="slider-label" data-i18n="label_float_intensity">Tinggi Ayunan:</label></div>
         <div class="slider-with-number">
@@ -675,6 +719,67 @@
   </div>
 
   <!-- =========================================================================
+       MODAL LAPORAN BUG / MASUKAN (DOODLE PASTEL STYLE - PRIVASI EMAIL AMAN)
+       ========================================================================= -->
+  <div id="bugReportModal" class="modal-backdrop bug-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="bugModalTitle">
+    <div class="modal-card bug-modal-card">
+      <div class="modal-header bug-modal-header">
+        <h2 id="bugModalTitle" class="modal-title" data-i18n="bug_modal_title">🐞 Lapor Bug / Masukan</h2>
+        <button id="btnCloseBugModal" class="btn-icon" type="button" aria-label="Tutup Modal">×</button>
+      </div>
+      <form id="bugReportForm" class="modal-body bug-modal-form" autocomplete="off">
+        <p class="section-desc" style="margin-bottom: 10px;" data-i18n="bug_modal_desc">
+          Temukan kendala saat menggunakan aplikasi? Kirimkan laporan di bawah ini agar segera kami perbaiki:
+        </p>
+
+        <div class="input-group">
+          <label for="bugReporterName" class="input-label" data-i18n="label_bug_reporter">1. Nama / Kontak Pelapor (Opsional):</label>
+          <input
+            type="text"
+            id="bugReporterName"
+            name="reporter"
+            class="form-input doodle-input"
+            maxlength="80"
+            placeholder="Contoh: Rina / @rina_art (boleh dikosongkan)"
+            data-i18n-placeholder="placeholder_bug_reporter"
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="bugCategory" class="input-label" data-i18n="label_bug_category">2. Kategori Kendala:</label>
+          <select id="bugCategory" name="category" class="form-select doodle-input" required>
+            <option value="Audio Tidak Sinkron" data-i18n="opt_bug_cat_audio">Audio Tidak Sinkron</option>
+            <option value="Gambar Hilang" data-i18n="opt_bug_cat_image">Gambar Hilang</option>
+            <option value="Tampilan Rusak" data-i18n="opt_bug_cat_ui">Tampilan Rusak</option>
+            <option value="Lainnya" data-i18n="opt_bug_cat_other">Lainnya</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="bugDescription" class="input-label" data-i18n="label_bug_desc">3. Deskripsi Kendala / Bug:</label>
+          <textarea
+            id="bugDescription"
+            name="description"
+            class="form-textarea doodle-input"
+            rows="4"
+            required
+            placeholder="Ceritakan detail kendala yang kamu alami..."
+            data-i18n-placeholder="placeholder_bug_desc"
+          ></textarea>
+        </div>
+
+        <div id="bugReportStatus" class="bug-report-status hidden" role="status" aria-live="polite"></div>
+
+        <div class="bug-modal-actions">
+          <button type="submit" id="btnSubmitBugReport" class="btn btn-primary btn-block">
+            <span id="btnSubmitBugText" data-i18n="btn_submit_bug">Kirim Laporan</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        LANGUAGE SELECTION SCREEN / MODAL (FIRST ACCESS & SWITCHER)
        ========================================================================= -->
   <div id="langSelectModal" class="lang-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="langModalTitle">
@@ -796,6 +901,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=5.3"></script>
+  <script src="script.js?v=5.4"></script>
 </body>
 </html>

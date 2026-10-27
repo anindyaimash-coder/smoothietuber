@@ -494,6 +494,53 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   text-transform: uppercase;
 }
 
+/* Bug Report Button in Top-Right Corner (Doodle Style) */
+.app-corner-bug-btn {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper-card);
+  border: 1.8px solid var(--ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 6px 13px;
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  box-shadow: 2px 2px 0px var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, opacity 0.25s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-corner-bug-btn:hover {
+  background: #fde68a;
+  box-shadow: 3px 3px 0px var(--ink);
+  transform: translateY(-1px) rotate(-0.5deg);
+}
+
+.app-corner-bug-btn:active {
+  transform: translateY(1.5px);
+  box-shadow: 1.5px 1.5px 0px var(--ink);
+}
+
+.bug-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.bug-pill-label {
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 /* ==========================================================================
    1. STAGE / PREVIEW AVATAR UTAMA (CANVAS DENGAN CANVA FLOATING ANIMATION)
    ========================================================================== */
@@ -579,6 +626,33 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   100% {
     transform: translateY(calc(-1 * var(--bounce-height, 18px))) scaleX(0.96) scaleY(1.04);
   }
+}
+
+/* MODE B: Mode Skala (Mengecil saat Diam - Membesar saat Bicara) */
+.avatar-image.anim-mode-scale {
+  transform-origin: bottom center;
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+  transform: scale(var(--dynamic-voice-scale, 0.92));
+}
+
+.avatar-image.anim-mode-scale:not(.state-speaking) {
+  animation: idleShrinkBreathing 3.2s ease-in-out infinite alternate;
+  transform: scale(0.92);
+}
+
+@keyframes idleShrinkBreathing {
+  0% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(0.90);
+  }
+}
+
+.avatar-image.anim-mode-scale.state-speaking {
+  animation: none !important;
+  filter: drop-shadow(4px 10px 0px rgba(43, 43, 43, 0.25));
+  transform: scale(var(--dynamic-voice-scale, 1.07)) !important;
 }
 
 .export-canvas-hidden {
@@ -1502,7 +1576,8 @@ body.obs-mode .veado-dock,
 body.obs-mode .veado-flyout,
 body.obs-mode .app-whimsical-header,
 body.obs-mode .app-corner-lang-btn,
-body.obs-mode .header-lang-pill {
+body.obs-mode .header-lang-pill,
+body.obs-mode .app-corner-bug-btn {
   opacity: 0 !important;
   pointer-events: none !important;
   transform: scale(0.9) !important;
@@ -1525,7 +1600,8 @@ body.pure-green-mode .veado-dock,
 body.pure-green-mode .veado-flyout,
 body.pure-green-mode .app-whimsical-header,
 body.pure-green-mode .app-corner-lang-btn,
-body.pure-green-mode .header-lang-pill {
+body.pure-green-mode .header-lang-pill,
+body.pure-green-mode .app-corner-bug-btn {
   opacity: 0 !important;
   pointer-events: none !important;
   transform: scale(0.9) !important;
@@ -2054,6 +2130,190 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
 }
 .btn-download { text-decoration: none; }
 
+/* ==========================================================================
+   PILIHAN MODE ANIMASI AVATAR (DOODLE RADIO & SELECT IN FLYOUT MOTION)
+   ========================================================================== */
+.anim-behavior-box {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: rgba(253, 230, 138, 0.22);
+  border: 1.6px dashed var(--ink);
+  border-radius: 14px 10px 14px 11px;
+  padding: 9px 10px;
+  margin: 2px 0 4px 0;
+}
+
+.doodle-select-mode {
+  font-size: 12px;
+  padding: 6px 8px;
+  border: 1.6px solid var(--ink);
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 2px 2px 0px var(--ink);
+  cursor: pointer;
+}
+
+.doodle-radio-mode-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doodle-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 9px;
+  background: #ffffff;
+  border: 1.5px solid var(--ink);
+  border-radius: 12px 9px 12px 9px;
+  box-shadow: 1.5px 1.5px 0px var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+  user-select: none;
+}
+
+.doodle-radio-card:hover {
+  background: #fffdf5;
+  transform: translateY(-1px);
+  box-shadow: 2px 2.5px 0px var(--ink);
+}
+
+.doodle-radio-card.active {
+  background: var(--crayon-mint);
+  border-width: 1.8px;
+  box-shadow: 2px 2px 0px var(--ink);
+}
+
+.doodle-radio-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.doodle-radio-dot {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  min-height: 15px;
+  border-radius: 50%;
+  border: 1.8px solid var(--ink);
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  position: relative;
+}
+
+.doodle-radio-card.active .doodle-radio-dot::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.doodle-radio-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.doodle-radio-title {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.doodle-radio-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+/* ==========================================================================
+   MODAL LAPORAN BUG (DOODLE PASTEL PAPER & ORGANIC HAND-DRAWN BORDER)
+   ========================================================================== */
+.bug-modal-backdrop {
+  z-index: 1650;
+}
+
+.bug-modal-card {
+  width: 440px;
+  max-width: calc(100vw - 24px);
+  background: #fdfbf4;
+  border: 2.2px solid var(--ink);
+  border-radius: 22px 14px 24px 16px / 16px 24px 14px 22px;
+  box-shadow: 5px 5px 0px var(--ink);
+}
+
+.bug-modal-header {
+  background: #fde68a;
+  border-bottom: 1.8px solid var(--ink);
+  padding: 12px 16px;
+}
+
+.bug-modal-form {
+  padding: 16px;
+  gap: 11px;
+}
+
+.doodle-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1.6px solid var(--ink);
+  border-radius: 12px 8px 12px 9px;
+  padding: 8px 11px;
+  box-shadow: 2px 2px 0px var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.doodle-input:focus {
+  background: #fffef7;
+  box-shadow: 3px 3px 0px var(--ink);
+}
+
+.form-textarea.doodle-input {
+  resize: vertical;
+  min-height: 78px;
+  line-height: 1.4;
+}
+
+.bug-report-status {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 12px;
+  border: 1.6px solid var(--ink);
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 2px 2px 0px var(--ink);
+}
+
+.bug-report-status.is-sending {
+  background: #fde68a;
+  color: var(--ink);
+}
+
+.bug-report-status.is-success {
+  background: var(--crayon-mint);
+  color: var(--ink);
+}
+
+.bug-modal-actions {
+  margin-top: 2px;
+}
+
 /* Utilities */
 .hidden { display: none !important; }
 .text-accent { color: #d97706; }
@@ -2231,6 +2491,13 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
   .emotion-circle-btn.btn-circle-add .plus-icon {
     font-size: 19px !important;
     margin-top: -1px !important;
+  }
+
+  .app-corner-bug-btn {
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 11.5px;
   }
 }
 
