@@ -1234,77 +1234,121 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   transform: translateY(-1px);
 }
 
-/* Compact Emotions List */
+/* ==========================================================================
+   COMPACT EMOTIONS LIST & DOODLE CIRCLE BUTTONS
+   ========================================================================== */
 .emotions-compact-list {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.emotion-compact-row {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
-  background: #fff;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
-  padding: 6px 10px;
-  box-shadow: 2px 2px 0px var(--ink);
-  transition: all 0.12s ease;
-}
-.emotion-compact-row.active {
-  background: var(--crayon-mint);
-  box-shadow: 2.5px 2.5px 0px var(--ink);
-}
-.emotion-name-text {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  flex: 1;
-}
-
-.emotion-name-box {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-  position: relative;
-}
-
-.emotion-name-input {
-  font-family: var(--font-heading);
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  background: transparent;
-  border: 1.2px dashed transparent;
-  border-radius: 5px;
-  padding: 2px 6px;
+  padding: 4px 0;
   width: 100%;
-  min-width: 60px;
-  outline: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.emotion-name-input:hover {
-  border-color: var(--ink-light);
-  background: rgba(253, 230, 138, 0.3);
-}
-
-.emotion-name-input:focus {
-  border-color: var(--ink);
-  border-style: solid;
+.emotion-circle-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
   background: #ffffff;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0px var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: visible;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease, background-color 0.12s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.emotion-circle-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 2.5px 3px 0px var(--ink);
+  background: #fffdf5;
+}
+
+.emotion-circle-btn:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: 1px 1px 0px var(--ink);
+}
+
+.emotion-circle-btn.active {
+  background: var(--crayon-yellow);
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--crayon-mint), 2px 2px 0px var(--ink);
+  transform: scale(1.04);
+}
+
+.emotion-circle-thumb {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(43, 40, 37, 0.03);
+}
+
+.emotion-circle-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.emotion-hotkey-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: var(--crayon-mint);
+  border: 1.2px solid var(--ink);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: var(--font-heading), monospace;
+  font-weight: 800;
+  font-size: 10px;
+  line-height: 1;
+  padding: 1px 3px;
+  min-width: 13px;
+  text-align: center;
+  box-shadow: 1px 1px 0px var(--ink);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Tombol Tambah Emosi ("+") Bergaya Doodle */
+.emotion-circle-btn.btn-circle-add {
+  border: 2px dashed var(--ink);
+  background: #ffffff;
+  color: var(--ink);
   box-shadow: 2px 2px 0px var(--ink);
 }
 
-.emotion-rename-icon {
-  font-size: 11px;
-  opacity: 0.55;
+.emotion-circle-btn.btn-circle-add:hover {
+  background: var(--crayon-yellow);
+  border-style: solid;
+  transform: translateY(-2px) scale(1.08);
+}
+
+.emotion-circle-btn.btn-circle-add .plus-icon {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  margin-top: -2px;
   pointer-events: none;
-  flex-shrink: 0;
 }
 
 /* Hotkeys in flyout */
@@ -2064,6 +2108,130 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
     max-height: 82dvh;
     box-shadow: 0 10px 36px rgba(43, 40, 37, 0.4);
   }
+
+  /* ========================================================================
+     PANEL DAFTAR EMOSI AVATAR (MOBILE RESPONSIVE - max-width: 768px)
+     Container panel samping ramping, tombol lingkaran 38px, tooltip hover, doodle plus
+     ======================================================================== */
+  #flyoutEmotions.veado-flyout {
+    width: 48px !important;
+    max-width: 50px !important;
+    min-width: 46px !important;
+    left: auto !important;
+    right: 86px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    padding: 6px 4px !important;
+    box-sizing: border-box !important;
+    border: var(--border-thick) !important;
+    border-radius: 20px !important;
+    box-shadow: 2.5px 2.5px 0px var(--ink) !important;
+    background: var(--paper-bg) !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    z-index: 125 !important;
+  }
+  #flyoutEmotions.veado-flyout::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Header minimalis & sembunyikan elemen desktop lebar yang memakan tempat */
+  #flyoutEmotions .flyout-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 0 4px 0 !important;
+    margin-bottom: 2px !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  #flyoutEmotions .flyout-title {
+    display: none !important;
+  }
+  #flyoutEmotions .btn-close-flyout {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    min-height: 22px !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    border: 1.5px solid var(--ink) !important;
+    background: #ffffff !important;
+    box-shadow: 1px 1px 0px var(--ink) !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+  }
+  #flyoutEmotions .flyout-body > .section-desc,
+  #flyoutEmotions .flyout-body > #btnAddEmotion,
+  #flyoutEmotions .flyout-body > .divider,
+  #flyoutEmotions .flyout-body > .backup-restore-box {
+    display: none !important;
+  }
+  #flyoutEmotions .flyout-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow: visible !important;
+  }
+
+  /* Rampingkan container kolom emosi (padding 4px-6px, gap 6px) */
+  .emotions-compact-list {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Perkecil diameter tombol emosi menjadi 38px x 38px */
+  .emotion-circle-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    border-radius: 50% !important;
+    border-width: 1.8px !important;
+    box-shadow: 1.5px 1.5px 0px var(--ink) !important;
+  }
+  .emotion-circle-btn.active {
+    box-shadow: 0 0 0 2px var(--crayon-mint), 2px 2px 0px var(--ink) !important;
+  }
+
+  /* Perkecil label angka hotkey di sudut menjadi ukuran font 9px */
+  .emotion-hotkey-badge {
+    font-size: 9px !important;
+    padding: 1px 2px !important;
+    min-width: 11px !important;
+    bottom: -1px !important;
+    right: -1px !important;
+    border-radius: 3px !important;
+  }
+
+  /* Tombol Tambah Emosi ("+") Bulat Doodle 38px x 38px di Paling Bawah */
+  .emotion-circle-btn.btn-circle-add {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    max-width: 38px !important;
+    max-height: 38px !important;
+    border-width: 1.8px !important;
+  }
+  .emotion-circle-btn.btn-circle-add .plus-icon {
+    font-size: 19px !important;
+    margin-top: -1px !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2110,6 +2278,17 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
     transform: translate(-50%, -50%) !important;
     max-height: 85dvh;
     border-radius: 14px;
+  }
+  #flyoutEmotions.veado-flyout {
+    width: 48px !important;
+    max-width: 50px !important;
+    min-width: 46px !important;
+    left: auto !important;
+    right: 76px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    padding: 5px 4px !important;
+    border-radius: 18px !important;
   }
   .btn-restore-controls {
     bottom: 14px;

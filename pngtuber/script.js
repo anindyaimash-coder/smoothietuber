@@ -2181,7 +2181,7 @@
     });
   });
 
-  // Render Daftar Emosi Ringkas di Flyout Emosi (Dengan Fitur Rename Emosi Langsung)
+  // Render Daftar Emosi Ringkas di Flyout Emosi (Tombol Bulat Doodle Minimalis)
   function renderCompactEmotionsList() {
     if (!emotionsListCompact) return;
     emotionsListCompact.innerHTML = '';
@@ -2190,91 +2190,76 @@
       const isCurrentActive = emo.id === activeEmotionId;
       const isRec = isRecordingHotkeyForId === emo.id;
 
-      const row = document.createElement('div');
-      row.className = `emotion-compact-row ${isCurrentActive ? 'active' : ''}`;
-      row.innerHTML = `
-        <div class="emotion-name-box">
-          <input 
-            type="text" 
-            class="emotion-name-input" 
-            value="${escapeHtml(emo.name)}" 
-            maxlength="24" 
-            placeholder="${t('placeholder_emo_name') || 'Nama emosi...'}" 
-            title="${t('desc_emotions') || 'Ubah nama emosi'}"
-          >
-          <span class="emotion-rename-icon" title="Edit">✏️</span>
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `emotion-circle-btn ${isCurrentActive ? 'active' : ''} ${isRec ? 'is-recording-key' : ''}`;
+      btn.dataset.emotionId = emo.id;
+      // 1. Hilangkan label teks nama emosi; pindahkan nama emosi ke atribut title (tooltip bawaan saat hover/tahan)
+      btn.title = `${emo.name} [${emo.hotkey.toUpperCase()}]`;
+
+      const spriteSrc = emo.sprites.closed || 'assets/normal_closed.png';
+      btn.innerHTML = `
+        <div class="emotion-circle-thumb">
+          <img src="${escapeHtml(spriteSrc)}" alt="${escapeHtml(emo.name)}">
         </div>
-        <button type="button" class="btn-hotkey-rebind btn-emo-rebind ${isRec ? 'is-recording-key' : ''}" title="${t('flyout_hotkeys_title') || 'Ubah Hotkey'}">
-          ${isRec ? '⌨️ ...' : emo.hotkey.toUpperCase()}
-        </button>
-        <button type="button" class="btn btn-secondary btn-emo-select">
-          ${isCurrentActive ? (t('btn_emo_active') || '✓ Aktif') : (t('btn_emo_select') || 'Pilih')}
-        </button>
-        ${emotions.length > 1 ? `<button type="button" class="btn-del-emotion" title="Hapus">🗑️</button>` : ''}
+        <span class="emotion-hotkey-badge">${escapeHtml(emo.hotkey.toUpperCase())}</span>
       `;
 
-      // Inline Emotion Name Renaming
-      const nameInput = row.querySelector('.emotion-name-input');
-      const handleNameChange = () => {
-        const trimmed = (nameInput.value || '').trim();
-        if (trimmed && trimmed !== emo.name) {
+      // Klik untuk memilih emosi aktif
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setActiveEmotion(emo.id);
+      });
+
+      // Long press / klik kanan untuk ubah nama atau hapus emosi
+      btn.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const action = prompt(`Ubah nama emosi "${emo.name}" (atau ketik 'HAPUS' untuk menghapus):`, emo.name);
+        if (action === null) return;
+        const trimmed = action.trim();
+        if (trimmed.toUpperCase() === 'HAPUS') {
+          if (emotions.length <= 1) {
+            showToast('⚠️ Minimal harus ada 1 emosi!');
+            return;
+          }
+          emotions = emotions.filter(item => item.id !== emo.id);
+          if (activeEmotionId === emo.id) activeEmotionId = emotions[0].id;
+          saveEmotions();
+          setActiveEmotion(activeEmotionId);
+          renderCompactEmotionsList();
+          renderHotkeysUI();
+          showToast(`🗑️ Emosi dihapus`);
+        } else if (trimmed && trimmed !== emo.name) {
           emo.name = trimmed;
           saveEmotions();
           if (emo.id === activeEmotionId && curEmotionName) {
             curEmotionName.textContent = formatDockEmotionName(emo.name);
             curEmotionName.title = emo.name;
           }
+          renderCompactEmotionsList();
           renderHotkeysUI();
-          showToast(t('toast_emotion_renamed') || '✏️ Nama emosi diperbarui!');
-        } else if (!trimmed) {
-          nameInput.value = emo.name;
-        }
-      };
-
-      nameInput.addEventListener('change', handleNameChange);
-      nameInput.addEventListener('blur', handleNameChange);
-      nameInput.addEventListener('keydown', (e) => {
-        e.stopPropagation(); // Mencegah pemicu hotkey saat mengetik!
-        if (e.key === 'Enter') {
-          nameInput.blur();
-        }
-      });
-      nameInput.addEventListener('keyup', (e) => e.stopPropagation());
-
-      row.querySelector('.btn-emo-select').addEventListener('click', () => {
-        setActiveEmotion(emo.id);
-        closeAllFlyouts();
-      });
-
-      const btnRebind = row.querySelector('.btn-emo-rebind');
-      btnRebind.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isRecordingHotkeyForId = (isRecordingHotkeyForId === emo.id) ? null : emo.id;
-        isRecordingSystemHotkey = null;
-        renderCompactEmotionsList();
-        renderHotkeysUI();
-        if (isRecordingHotkeyForId) {
-          showToast(`⌨️ ${t('desc_emo_hotkeys') || 'Tekan tombol baru'} ("${emo.name}")`);
+          showToast(`✏️ Nama emosi diubah menjadi "${trimmed}"`);
         }
       });
 
-      const btnDel = row.querySelector('.btn-del-emotion');
-      if (btnDel) {
-        btnDel.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (confirm(`Hapus emosi "${emo.name}"?`)) {
-            emotions = emotions.filter(e => e.id !== emo.id);
-            if (activeEmotionId === emo.id) activeEmotionId = emotions[0].id;
-            saveEmotions();
-            setActiveEmotion(activeEmotionId);
-            renderCompactEmotionsList();
-            renderHotkeysUI();
-          }
-        });
-      }
-
-      emotionsListCompact.appendChild(row);
+      emotionsListCompact.appendChild(btn);
     });
+
+    // 3. Tombol Tambah Emosi ("+"): tombol bulat berikon plus ("+") bergaya doodle di bagian paling bawah
+    const btnAdd = document.createElement('button');
+    btnAdd.type = 'button';
+    btnAdd.id = 'btnQuickAddEmotion';
+    btnAdd.className = 'emotion-circle-btn btn-circle-add';
+    const addTitle = (typeof t === 'function' ? t('btn_add_emotion') : null) || 'Tambah Emosi Baru';
+    btnAdd.title = addTitle;
+    btnAdd.innerHTML = `<span class="plus-icon">+</span>`;
+    btnAdd.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (btnAddEmotion) {
+        btnAddEmotion.click();
+      }
+    });
+    emotionsListCompact.appendChild(btnAdd);
   }
 
   // Tambah Emosi Baru
