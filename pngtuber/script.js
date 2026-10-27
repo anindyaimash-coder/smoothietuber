@@ -1217,7 +1217,7 @@
   const DEFAULT_SETTINGS = {
     threshold: 15.0,
     holdDelay: 160,
-    bounceIntensity: 12,
+    bounceIntensity: 18,
     bounceSpeed: 0.28,
     avatarScale: 1,
     avatarPosX: 0,
@@ -1351,7 +1351,7 @@
             return {
               threshold: (typeof parsed.threshold === 'number' && !isNaN(parsed.threshold) && parsed.threshold >= 0.1 && parsed.threshold <= 40.0) ? Math.round(parsed.threshold * 10) / 10 : DEFAULT_SETTINGS.threshold,
               holdDelay: (typeof parsed.holdDelay === 'number' && !isNaN(parsed.holdDelay) && parsed.holdDelay >= 50 && parsed.holdDelay <= 500) ? parsed.holdDelay : DEFAULT_SETTINGS.holdDelay,
-              bounceIntensity: (typeof parsed.bounceIntensity === 'number' && !isNaN(parsed.bounceIntensity) && parsed.bounceIntensity >= 0 && parsed.bounceIntensity <= 30) ? parsed.bounceIntensity : DEFAULT_SETTINGS.bounceIntensity,
+              bounceIntensity: (typeof parsed.bounceIntensity === 'number' && !isNaN(parsed.bounceIntensity) && parsed.bounceIntensity >= 1 && parsed.bounceIntensity <= 40) ? parsed.bounceIntensity : DEFAULT_SETTINGS.bounceIntensity,
               bounceSpeed: (typeof parsed.bounceSpeed === 'number' && !isNaN(parsed.bounceSpeed) && parsed.bounceSpeed >= 0.05 && parsed.bounceSpeed <= 1.0) ? Math.round(parsed.bounceSpeed * 100) / 100 : DEFAULT_SETTINGS.bounceSpeed,
               avatarScale: (typeof parsed.avatarScale === 'number' && !isNaN(parsed.avatarScale) && parsed.avatarScale >= 0.2 && parsed.avatarScale <= 2.5) ? parsed.avatarScale : DEFAULT_SETTINGS.avatarScale,
               avatarPosX: (typeof parsed.avatarPosX === 'number' && !isNaN(parsed.avatarPosX) && parsed.avatarPosX >= -2000 && parsed.avatarPosX <= 2000) ? parsed.avatarPosX : DEFAULT_SETTINGS.avatarPosX,
@@ -1566,8 +1566,8 @@
           if (typeof idbSettings.avatarScale === 'number') avatarScale = idbSettings.avatarScale;
           if (typeof idbSettings.avatarPosX === 'number') avatarPosX = idbSettings.avatarPosX;
           if (typeof idbSettings.avatarPosY === 'number') avatarPosY = idbSettings.avatarPosY;
-          if (typeof idbSettings.bounceIntensity === 'number') bounceIntensity = idbSettings.bounceIntensity;
-          if (typeof idbSettings.bounceSpeed === 'number') bounceSpeed = idbSettings.bounceSpeed;
+          if (typeof idbSettings.bounceIntensity === 'number' && idbSettings.bounceIntensity >= 1) bounceIntensity = idbSettings.bounceIntensity;
+          if (typeof idbSettings.bounceSpeed === 'number' && idbSettings.bounceSpeed >= 0.05) bounceSpeed = idbSettings.bounceSpeed;
           if (typeof idbSettings.activeEmotionId === 'string' && emotions.some(e => e.id === idbSettings.activeEmotionId)) {
             activeEmotionId = idbSettings.activeEmotionId;
           }
@@ -1617,8 +1617,8 @@
   // Sliders & Configuration dimuat dari userSettings yang persisten!
   let threshold = typeof userSettings.threshold === 'number' ? userSettings.threshold : 15;
   let holdDelay = typeof userSettings.holdDelay === 'number' ? userSettings.holdDelay : 160; // ms
-  let bounceIntensity = typeof userSettings.bounceIntensity === 'number' ? userSettings.bounceIntensity : 12; // px
-  let bounceSpeed = typeof userSettings.bounceSpeed === 'number' ? userSettings.bounceSpeed : 0.28; // seconds
+  let bounceIntensity = (typeof userSettings.bounceIntensity === 'number' && userSettings.bounceIntensity >= 1) ? userSettings.bounceIntensity : 18; // px
+  let bounceSpeed = (typeof userSettings.bounceSpeed === 'number' && userSettings.bounceSpeed >= 0.05) ? userSettings.bounceSpeed : 0.28; // seconds
   let avatarScale = typeof userSettings.avatarScale === 'number' ? userSettings.avatarScale : 1;
   let avatarPosX = typeof userSettings.avatarPosX === 'number' ? userSettings.avatarPosX : 0;
   let avatarPosY = typeof userSettings.avatarPosY === 'number' ? userSettings.avatarPosY : 0;
@@ -3228,18 +3228,21 @@
       let bounceScaleX = 1;
       let bounceScaleY = 1;
 
-      if (isSpeaking && bounceIntensity > 0) {
-        // Siklus pantulan bicara (Hop-Hop Animation) - 100% sinkron dengan stage CSS
-        const hopPeriod = Math.max(bounceSpeed, 0.05); // detik per 1 siklus pantulan penuh
-        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) -> 1 (puncak lompatan) -> 0 (lantai)
-        const arc = Math.pow(hopPhase, 0.8); // Kurva pantulan gravitasi yang lentur
+      const effectiveBounce = (typeof bounceIntensity === 'number' && !isNaN(bounceIntensity) && bounceIntensity >= 1) ? bounceIntensity : 18;
+      const effectiveSpeed = (typeof bounceSpeed === 'number' && !isNaN(bounceSpeed) && bounceSpeed >= 0.05) ? bounceSpeed : 0.28;
 
-        // Tinggi pantulan murni proporsional terhadap slider userSettings tanpa clamp buatan
-        currentBounce = bounceIntensity * canvasScaleY * arc;
+      if (isSpeaking) {
+        // Siklus pantulan bicara (Hop-Hop Animation) - 100% sinkron dengan stage CSS
+        const hopPeriod = effectiveSpeed; // detik per 1 siklus pantulan penuh
+        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) -> 1 (puncak lompatan) -> 0 (lantai)
+        const arc = Math.pow(hopPhase, 0.75); // Kurva pantulan gravitasi yang lentur
+
+        // Tinggi pantulan murni proporsional terhadap slider userSettings (default 18px jika 0/undefined)
+        currentBounce = effectiveBounce * canvasScaleY * arc;
 
         // Efek lentur Squash & Stretch (khas animasi kartun / Veadotube)
-        bounceScaleX = 1.03 - (0.06 * arc);
-        bounceScaleY = 0.97 + (0.06 * arc);
+        bounceScaleX = 1.04 - (0.08 * arc);
+        bounceScaleY = 0.96 + (0.08 * arc);
       }
 
       const normX = avatarPosX / winW;
@@ -3285,13 +3288,16 @@
       let bounceScaleX = 1;
       let bounceScaleY = 1;
 
-      if (isSpeaking && bounceIntensity > 0) {
-        const hopPeriod = Math.max(bounceSpeed, 0.05);
+      const effectiveBounce = (typeof bounceIntensity === 'number' && !isNaN(bounceIntensity) && bounceIntensity >= 1) ? bounceIntensity : 18;
+      const effectiveSpeed = (typeof bounceSpeed === 'number' && !isNaN(bounceSpeed) && bounceSpeed >= 0.05) ? bounceSpeed : 0.28;
+
+      if (isSpeaking) {
+        const hopPeriod = effectiveSpeed;
         const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod));
-        const arc = Math.pow(hopPhase, 0.8);
-        currentBounce = bounceIntensity * canvasScaleY * arc;
-        bounceScaleX = 1.03 - (0.06 * arc);
-        bounceScaleY = 0.97 + (0.06 * arc);
+        const arc = Math.pow(hopPhase, 0.75);
+        currentBounce = effectiveBounce * canvasScaleY * arc;
+        bounceScaleX = 1.04 - (0.08 * arc);
+        bounceScaleY = 0.96 + (0.08 * arc);
       }
 
       const normX = avatarPosX / winW;

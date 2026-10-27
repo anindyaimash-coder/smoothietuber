@@ -1,17 +1,46 @@
 /* ==========================================================================
-   SmoothieTuber 🥤 - Doodle / Hand-Drawn Aesthetic Style Sheet (Veadotube Layout)
-   Inspired by wobbly ink outlines, notebook stationery & Veadotube Mini
-   100% Free for Commercial Use (Google Fonts OFL: Cabin Sketch, Architects Daughter, Gaegu, Special Elite)
+   SmoothieTuber - Clean Minimal Modern Branding Style Sheet
+   Typography:
+   - Headline: Colasta (Geometric Display Font)
+   - Text / UI / Labels: Mograph (Clean Minimal Sans-Serif)
    OBS Studio Ready & Transparent Video Export Compatible
    ========================================================================== */
 
+/* Colasta Headline Font */
+@font-face {
+  font-family: 'Colasta';
+  src: url('assets/fonts/Colasta.otf') format('opentype'),
+       url('assets/fonts/Colasta.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Colasta';
+  src: url('assets/fonts/Colasta-Bold.otf') format('opentype'),
+       url('assets/fonts/Colasta-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Mograph Text & Body Font */
+@font-face {
+  font-family: 'Mograph';
+  src: url('assets/fonts/Mograph.ttf') format('truetype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* Typography - 100% Free Commercial (SIL Open Font License OFL 1.1) */
-  --font-heading: 'Cabin Sketch', 'Architects Daughter', cursive, sans-serif;
-  --font-doodle: 'Architects Daughter', 'Gaegu', 'Pangolin', cursive, sans-serif;
-  --font-ui: 'Architects Daughter', 'Gaegu', cursive, sans-serif;
-  --font-note: 'Special Elite', 'Architects Daughter', monospace;
-  --font-mono: 'Special Elite', monospace;
+  /* Typography - Headline: Colasta | Text: Mograph */
+  --font-heading: 'Colasta', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-doodle: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-note: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Mograph', monospace, sans-serif;
 
   /* Whimsical Sketchy Line-Art Color Palette */
   --ink: #2b2825;              /* Fine charcoal sketch outline */
@@ -72,8 +101,8 @@
   --avatar-scale: 1;
   --avatar-pos-x: 0px;
   --avatar-pos-y: 0px;
-  --bounce-height: 12px;
-  --bounce-offset: 12px;
+  --bounce-height: 18px;
+  --bounce-offset: 18px;
   --bounce-duration: 0.28s;
   --bounce-half-duration: 0.14s;
   --float-amplitude: 8px;
@@ -489,10 +518,10 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 
 @keyframes speechHop {
   0% {
-    transform: translateY(0px) scaleX(1.03) scaleY(0.97);
+    transform: translateY(0px) scaleX(1.04) scaleY(0.96);
   }
   100% {
-    transform: translateY(calc(-1 * var(--bounce-height, 12px))) scaleX(0.97) scaleY(1.03);
+    transform: translateY(calc(-1 * var(--bounce-height, 18px))) scaleX(0.96) scaleY(1.04);
   }
 }
 
