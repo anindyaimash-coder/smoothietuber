@@ -107,6 +107,7 @@
       label_float_intensity: 'Tinggi Ayunan:',
       label_float_speed: 'Kecepatan Melayang:',
       label_bounce: 'Pantulan Bicara (Hop):',
+      label_bounce_speed: 'Kecepatan Pantulan:',
       label_avatar_scale: 'Ukuran Avatar:',
       label_pos_y: 'Posisi Vertikal (Offset Y):',
       label_pos_presets: '📍 Posisi Cepat Avatar (Sudut Layar):',
@@ -320,6 +321,7 @@
       label_float_intensity: '揺れの高さ:',
       label_float_speed: '浮遊速度:',
       label_bounce: '発声時の跳ね (Hop):',
+      label_bounce_speed: '跳ねる速度 (Bounce Speed):',
       label_avatar_scale: 'アバターサイズ:',
       label_pos_y: '垂直位置 (Y軸オフセット):',
       label_pos_presets: '📍 クイック配置 (画面の隅):',
@@ -533,6 +535,7 @@
       label_float_intensity: '浮动幅度:',
       label_float_speed: '浮动速度:',
       label_bounce: '说话跳动幅度 (Hop):',
+      label_bounce_speed: '跳跃速度 (Bounce Speed):',
       label_avatar_scale: '形象大小:',
       label_pos_y: '垂直偏移 (Y轴):',
       label_pos_presets: '📍 快速角落定位:',
@@ -746,6 +749,7 @@
       label_float_intensity: 'Float Amplitude:',
       label_float_speed: 'Floating Speed:',
       label_bounce: 'Speech Bounce (Hop):',
+      label_bounce_speed: 'Bounce Speed:',
       label_avatar_scale: 'Avatar Scale:',
       label_pos_y: 'Vertical Position (Y Offset):',
       label_pos_presets: '📍 Quick Screen Presets:',
@@ -959,6 +963,7 @@
       label_float_intensity: 'Float Amplitude:',
       label_float_speed: 'Floating Speed:',
       label_bounce: 'Speech Bounce (Hop):',
+      label_bounce_speed: 'Bounce Speed:',
       label_avatar_scale: 'Avatar Scale:',
       label_pos_y: 'Vertical Position (Y Offset):',
       label_pos_presets: '📍 Quick Screen Presets:',
@@ -1213,6 +1218,7 @@
     threshold: 15.0,
     holdDelay: 160,
     bounceIntensity: 12,
+    bounceSpeed: 0.28,
     avatarScale: 1,
     avatarPosX: 0,
     avatarPosY: 0,
@@ -1346,6 +1352,7 @@
               threshold: (typeof parsed.threshold === 'number' && !isNaN(parsed.threshold) && parsed.threshold >= 0.1 && parsed.threshold <= 40.0) ? Math.round(parsed.threshold * 10) / 10 : DEFAULT_SETTINGS.threshold,
               holdDelay: (typeof parsed.holdDelay === 'number' && !isNaN(parsed.holdDelay) && parsed.holdDelay >= 50 && parsed.holdDelay <= 500) ? parsed.holdDelay : DEFAULT_SETTINGS.holdDelay,
               bounceIntensity: (typeof parsed.bounceIntensity === 'number' && !isNaN(parsed.bounceIntensity) && parsed.bounceIntensity >= 0 && parsed.bounceIntensity <= 30) ? parsed.bounceIntensity : DEFAULT_SETTINGS.bounceIntensity,
+              bounceSpeed: (typeof parsed.bounceSpeed === 'number' && !isNaN(parsed.bounceSpeed) && parsed.bounceSpeed >= 0.05 && parsed.bounceSpeed <= 1.0) ? Math.round(parsed.bounceSpeed * 100) / 100 : DEFAULT_SETTINGS.bounceSpeed,
               avatarScale: (typeof parsed.avatarScale === 'number' && !isNaN(parsed.avatarScale) && parsed.avatarScale >= 0.2 && parsed.avatarScale <= 2.5) ? parsed.avatarScale : DEFAULT_SETTINGS.avatarScale,
               avatarPosX: (typeof parsed.avatarPosX === 'number' && !isNaN(parsed.avatarPosX) && parsed.avatarPosX >= -2000 && parsed.avatarPosX <= 2000) ? parsed.avatarPosX : DEFAULT_SETTINGS.avatarPosX,
               avatarPosY: (typeof parsed.avatarPosY === 'number' && !isNaN(parsed.avatarPosY) && parsed.avatarPosY >= -2000 && parsed.avatarPosY <= 2000) ? parsed.avatarPosY : DEFAULT_SETTINGS.avatarPosY,
@@ -1450,6 +1457,7 @@
           threshold,
           holdDelay,
           bounceIntensity,
+          bounceSpeed,
           avatarScale,
           avatarPosX,
           avatarPosY,
@@ -1559,6 +1567,7 @@
           if (typeof idbSettings.avatarPosX === 'number') avatarPosX = idbSettings.avatarPosX;
           if (typeof idbSettings.avatarPosY === 'number') avatarPosY = idbSettings.avatarPosY;
           if (typeof idbSettings.bounceIntensity === 'number') bounceIntensity = idbSettings.bounceIntensity;
+          if (typeof idbSettings.bounceSpeed === 'number') bounceSpeed = idbSettings.bounceSpeed;
           if (typeof idbSettings.activeEmotionId === 'string' && emotions.some(e => e.id === idbSettings.activeEmotionId)) {
             activeEmotionId = idbSettings.activeEmotionId;
           }
@@ -1609,6 +1618,7 @@
   let threshold = typeof userSettings.threshold === 'number' ? userSettings.threshold : 15;
   let holdDelay = typeof userSettings.holdDelay === 'number' ? userSettings.holdDelay : 160; // ms
   let bounceIntensity = typeof userSettings.bounceIntensity === 'number' ? userSettings.bounceIntensity : 12; // px
+  let bounceSpeed = typeof userSettings.bounceSpeed === 'number' ? userSettings.bounceSpeed : 0.28; // seconds
   let avatarScale = typeof userSettings.avatarScale === 'number' ? userSettings.avatarScale : 1;
   let avatarPosX = typeof userSettings.avatarPosX === 'number' ? userSettings.avatarPosX : 0;
   let avatarPosY = typeof userSettings.avatarPosY === 'number' ? userSettings.avatarPosY : 0;
@@ -1704,6 +1714,8 @@
   const floatSpeedBadge = document.getElementById('floatSpeedBadge');
   const bounceIntensitySlider = document.getElementById('bounceIntensity');
   const bounceBadge = document.getElementById('bounceBadge');
+  const bounceSpeedSlider = document.getElementById('bounceSpeedSlider');
+  const bounceSpeedBadge = document.getElementById('bounceSpeedBadge');
   const avatarScaleSlider = document.getElementById('avatarScale');
   const scaleBadge = document.getElementById('scaleBadge');
   const avatarPosYSlider = document.getElementById('avatarPosY');
@@ -3216,20 +3228,18 @@
       let bounceScaleX = 1;
       let bounceScaleY = 1;
 
-      if (isSpeaking) {
-        // Siklus pantulan bicara (Hop-Hop Animation)
-        const hopPeriod = 0.28; // ~3.5 pantulan per detik saat berbicara
-        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) ke 1 (puncak lompatan)
-        const arc = Math.pow(hopPhase, 0.75); // Kurva pantulan gravitasi yang lentur
+      if (isSpeaking && bounceIntensity > 0) {
+        // Siklus pantulan bicara (Hop-Hop Animation) - 100% sinkron dengan stage CSS
+        const hopPeriod = Math.max(bounceSpeed, 0.05); // detik per 1 siklus pantulan penuh
+        const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod)); // 0 (lantai) -> 1 (puncak lompatan) -> 0 (lantai)
+        const arc = Math.pow(hopPhase, 0.8); // Kurva pantulan gravitasi yang lentur
 
-        // Base lift + animated extra hop yang sangat kentara di resolusi canvas
-        const baseBounce = Math.max(bounceIntensity, 12) * canvasScaleY;
-        const extraHop = Math.max(bounceIntensity * 1.2, 16) * canvasScaleY * arc;
-        currentBounce = baseBounce + extraHop;
+        // Tinggi pantulan murni proporsional terhadap slider userSettings tanpa clamp buatan
+        currentBounce = bounceIntensity * canvasScaleY * arc;
 
         // Efek lentur Squash & Stretch (khas animasi kartun / Veadotube)
-        bounceScaleX = 1.04 - (0.07 * arc);
-        bounceScaleY = 0.96 + (0.08 * arc);
+        bounceScaleX = 1.03 - (0.06 * arc);
+        bounceScaleY = 0.97 + (0.06 * arc);
       }
 
       const normX = avatarPosX / winW;
@@ -3275,15 +3285,13 @@
       let bounceScaleX = 1;
       let bounceScaleY = 1;
 
-      if (isSpeaking) {
-        const hopPeriod = 0.28;
+      if (isSpeaking && bounceIntensity > 0) {
+        const hopPeriod = Math.max(bounceSpeed, 0.05);
         const hopPhase = Math.abs(Math.sin((nowSec * Math.PI) / hopPeriod));
-        const arc = Math.pow(hopPhase, 0.75);
-        const baseBounce = Math.max(bounceIntensity, 12) * canvasScaleY;
-        const extraHop = Math.max(bounceIntensity * 1.2, 16) * canvasScaleY * arc;
-        currentBounce = baseBounce + extraHop;
-        bounceScaleX = 1.04 - (0.07 * arc);
-        bounceScaleY = 0.96 + (0.08 * arc);
+        const arc = Math.pow(hopPhase, 0.8);
+        currentBounce = bounceIntensity * canvasScaleY * arc;
+        bounceScaleX = 1.03 - (0.06 * arc);
+        bounceScaleY = 0.97 + (0.06 * arc);
       }
 
       const normX = avatarPosX / winW;
@@ -3767,10 +3775,21 @@
 
   bounceIntensitySlider.addEventListener('input', (e) => {
     bounceIntensity = parseInt(e.target.value, 10);
+    document.documentElement.style.setProperty('--bounce-height', `${bounceIntensity}px`);
     document.documentElement.style.setProperty('--bounce-offset', `${bounceIntensity}px`);
     bounceBadge.textContent = `${bounceIntensity} px`;
     saveUserSettings();
   });
+
+  if (bounceSpeedSlider) {
+    bounceSpeedSlider.addEventListener('input', (e) => {
+      bounceSpeed = parseFloat(e.target.value);
+      document.documentElement.style.setProperty('--bounce-half-duration', `${(bounceSpeed / 2).toFixed(3)}s`);
+      document.documentElement.style.setProperty('--bounce-duration', `${bounceSpeed.toFixed(3)}s`);
+      if (bounceSpeedBadge) bounceSpeedBadge.textContent = `${bounceSpeed.toFixed(2)} s`;
+      saveUserSettings();
+    });
+  }
 
   avatarScaleSlider.addEventListener('input', (e) => {
     const val = parseInt(e.target.value, 10);
@@ -4257,6 +4276,7 @@
           threshold,
           holdDelay,
           bounceIntensity,
+          bounceSpeed,
           avatarScale,
           avatarPosX,
           avatarPosY,
@@ -4322,7 +4342,15 @@
             bounceIntensity = s.bounceIntensity;
             if (bounceIntensitySlider) bounceIntensitySlider.value = bounceIntensity;
             if (bounceBadge) bounceBadge.textContent = `${bounceIntensity} px`;
+            document.documentElement.style.setProperty('--bounce-height', `${bounceIntensity}px`);
             document.documentElement.style.setProperty('--bounce-offset', `${bounceIntensity}px`);
+          }
+          if (typeof s.bounceSpeed === 'number') {
+            bounceSpeed = s.bounceSpeed;
+            if (bounceSpeedSlider) bounceSpeedSlider.value = bounceSpeed;
+            if (bounceSpeedBadge) bounceSpeedBadge.textContent = `${bounceSpeed.toFixed(2)} s`;
+            document.documentElement.style.setProperty('--bounce-half-duration', `${(bounceSpeed / 2).toFixed(3)}s`);
+            document.documentElement.style.setProperty('--bounce-duration', `${bounceSpeed.toFixed(3)}s`);
           }
           if (typeof s.avatarScale === 'number') {
             setAvatarScaleValue(Math.round(s.avatarScale * 100));
@@ -4398,6 +4426,10 @@
       bounceIntensitySlider.value = bounceIntensity;
       if (bounceBadge) bounceBadge.textContent = `${bounceIntensity} px`;
     }
+    if (bounceSpeedSlider) {
+      bounceSpeedSlider.value = bounceSpeed;
+      if (bounceSpeedBadge) bounceSpeedBadge.textContent = `${bounceSpeed.toFixed(2)} s`;
+    }
     if (avatarScaleSlider) {
       avatarScaleSlider.value = Math.round(avatarScale * 100);
       if (scaleBadge) scaleBadge.textContent = `${Math.round(avatarScale * 100)}%`;
@@ -4410,7 +4442,10 @@
     document.documentElement.style.setProperty('--avatar-pos-x', `${avatarPosX}px`);
     document.documentElement.style.setProperty('--avatar-pos-y', `${avatarPosY}px`);
     document.documentElement.style.setProperty('--avatar-scale', `${avatarScale}`);
+    document.documentElement.style.setProperty('--bounce-height', `${bounceIntensity}px`);
     document.documentElement.style.setProperty('--bounce-offset', `${bounceIntensity}px`);
+    document.documentElement.style.setProperty('--bounce-half-duration', `${(bounceSpeed / 2).toFixed(3)}s`);
+    document.documentElement.style.setProperty('--bounce-duration', `${bounceSpeed.toFixed(3)}s`);
     document.documentElement.style.setProperty('--float-amplitude', `${floatIntensity}px`);
     document.documentElement.style.setProperty('--float-duration', `${floatDuration}s`);
 
