@@ -84,6 +84,14 @@
       bg_dark: '⬛ Studio Gelap',
       btn_upload_bg: '🖼️ Unggah Wallpaper Sendiri',
       btn_remove_bg: '❌ Hapus Gambar Kustom',
+      title_adjust_bg: '📐 Sesuaikan Ukuran & Posisi Background',
+      btn_bg_fit_cover: '📐 Penuh (Cover)',
+      btn_bg_fit_contain: '🖼️ Pas Utuh (Contain)',
+      label_bg_scale: 'Ukuran / Zoom Background:',
+      label_bg_pos_x: 'Geser Posisi Horizontal (X):',
+      label_bg_pos_y: 'Geser Posisi Vertikal (Y):',
+      btn_reset_bg_transform: '🔄 Reset Ukuran & Posisi Background',
+      toast_bg_transform_reset: '🔄 Ukuran & posisi background dipulihkan ke normal!',
       label_camera_handcam: '📷 Kamera Langsung (Handcam):',
       desc_camera_handcam: 'Sorot meja, tangan, atau kegiatan live di HP. Avatar melayang di atas kamera secara live!',
       btn_camera_back: '📷 Kamera Belakang',
@@ -726,6 +734,14 @@
       bg_dark: '⬛ Dark Studio',
       btn_upload_bg: '🖼️ Upload Custom Wallpaper',
       btn_remove_bg: '❌ Remove Custom Background',
+      title_adjust_bg: '📐 Adjust Background Size & Position',
+      btn_bg_fit_cover: '📐 Fill Screen (Cover)',
+      btn_bg_fit_contain: '🖼️ Fit Screen (Contain)',
+      label_bg_scale: 'Background Size / Zoom:',
+      label_bg_pos_x: 'Horizontal Offset (X):',
+      label_bg_pos_y: 'Vertical Offset (Y):',
+      btn_reset_bg_transform: '🔄 Reset Background Size & Position',
+      toast_bg_transform_reset: '🔄 Background size & position reset!',
       label_camera_handcam: '📷 Live Handcam / Camera:',
       desc_camera_handcam: 'Stream your desk, hands, or live activity while your avatar floats right on top!',
       btn_camera_back: '📷 Rear Camera',
@@ -940,6 +956,14 @@
       bg_dark: '⬛ Dark Studio',
       btn_upload_bg: '🖼️ Upload Custom Wallpaper',
       btn_remove_bg: '❌ Remove Custom Background',
+      title_adjust_bg: '📐 Adjust Background Size & Position',
+      btn_bg_fit_cover: '📐 Fill Screen (Cover)',
+      btn_bg_fit_contain: '🖼️ Fit Screen (Contain)',
+      label_bg_scale: 'Background Size / Zoom:',
+      label_bg_pos_x: 'Horizontal Offset (X):',
+      label_bg_pos_y: 'Vertical Offset (Y):',
+      btn_reset_bg_transform: '🔄 Reset Background Size & Position',
+      toast_bg_transform_reset: '🔄 Background size & position reset!',
       label_camera_handcam: '📷 Live Handcam / Camera:',
       desc_camera_handcam: 'Stream your desk, hands, or live activity whilst your avatar floats right on top!',
       btn_camera_back: '📷 Rear Camera',
@@ -1229,7 +1253,11 @@
     blinkDuration: 160,
     activeEmotionId: 'emotion_normal',
     exportResolution: '720x1280',
-    exportFps: '30'
+    exportFps: '30',
+    customBgScale: 100,
+    customBgPosX: 0,
+    customBgPosY: 0,
+    customBgFit: 'cover'
   };
 
   const DEFAULT_SYSTEM_HOTKEYS = {
@@ -1363,7 +1391,11 @@
               blinkDuration: (typeof parsed.blinkDuration === 'number' && !isNaN(parsed.blinkDuration) && parsed.blinkDuration >= 50 && parsed.blinkDuration <= 600) ? parsed.blinkDuration : DEFAULT_SETTINGS.blinkDuration,
               activeEmotionId: (typeof parsed.activeEmotionId === 'string' && parsed.activeEmotionId) ? parsed.activeEmotionId : DEFAULT_SETTINGS.activeEmotionId,
               exportResolution: (typeof parsed.exportResolution === 'string' && parsed.exportResolution) ? parsed.exportResolution : DEFAULT_SETTINGS.exportResolution,
-              exportFps: (parsed.exportFps === '60') ? '60' : '30'
+              exportFps: (parsed.exportFps === '60') ? '60' : '30',
+              customBgScale: (typeof parsed.customBgScale === 'number' && !isNaN(parsed.customBgScale) && parsed.customBgScale >= 20 && parsed.customBgScale <= 300) ? parsed.customBgScale : DEFAULT_SETTINGS.customBgScale,
+              customBgPosX: (typeof parsed.customBgPosX === 'number' && !isNaN(parsed.customBgPosX) && parsed.customBgPosX >= -1000 && parsed.customBgPosX <= 1000) ? parsed.customBgPosX : DEFAULT_SETTINGS.customBgPosX,
+              customBgPosY: (typeof parsed.customBgPosY === 'number' && !isNaN(parsed.customBgPosY) && parsed.customBgPosY >= -1000 && parsed.customBgPosY <= 1000) ? parsed.customBgPosY : DEFAULT_SETTINGS.customBgPosY,
+              customBgFit: (parsed.customBgFit === 'contain') ? 'contain' : 'cover'
             };
           }
         }
@@ -1468,7 +1500,11 @@
           blinkDuration,
           activeEmotionId,
           exportResolution: exportResolution ? exportResolution.value : '720x1280',
-          exportFps: exportFps ? exportFps.value : '30'
+          exportFps: exportFps ? exportFps.value : '30',
+          customBgScale: userSettings.customBgScale || 100,
+          customBgPosX: userSettings.customBgPosX || 0,
+          customBgPosY: userSettings.customBgPosY || 0,
+          customBgFit: userSettings.customBgFit || 'cover'
         };
         localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(payload));
         localStorage.setItem('smoothietuber_user_settings_v4', JSON.stringify(payload));
@@ -1577,10 +1613,14 @@
       // 3. Pulihkan juga custom background dari IndexedDB jika ada
       const savedBg = await idbGetWithTimeout('smoothietuber_custom_bg', 400);
       if (savedBg && customBgLayer) {
-        customBgLayer.style.backgroundImage = `url("${savedBg}")`;
+        if (customBgImg) customBgImg.src = savedBg;
         customBgLayer.classList.remove('hidden');
         if (btnRemoveCustomBg) btnRemoveCustomBg.classList.remove('hidden');
+        if (customBgControls) customBgControls.classList.remove('hidden');
         customBgImageObj = new Image();
+        customBgImageObj.onload = () => {
+          applyCustomBgTransform();
+        };
         customBgImageObj.src = savedBg;
       }
     } catch (e) {
@@ -1652,6 +1692,8 @@
   const exportCanvas = document.getElementById('exportCanvas');
   const exportCtx = exportCanvas.getContext('2d', { alpha: true });
   const customBgLayer = document.getElementById('customBgLayer');
+  const customBgImg = document.getElementById('customBgImg');
+  const cameraBgWrapper = document.getElementById('cameraBgWrapper');
   const cameraBgVideo = document.getElementById('cameraBgVideo');
 
   // Left Dock
@@ -1743,6 +1785,16 @@
   const btnStopCamera = document.getElementById('btnStopCamera');
   const cameraFitToggleGroup = document.getElementById('cameraFitToggleGroup');
   const btnToggleCameraFit = document.getElementById('btnToggleCameraFit');
+  const customBgControls = document.getElementById('customBgControls');
+  const btnBgFitCover = document.getElementById('btnBgFitCover');
+  const btnBgFitContain = document.getElementById('btnBgFitContain');
+  const customBgScaleSlider = document.getElementById('customBgScaleSlider');
+  const customBgScaleBadge = document.getElementById('customBgScaleBadge');
+  const customBgPosXSlider = document.getElementById('customBgPosXSlider');
+  const customBgPosXBadge = document.getElementById('customBgPosXBadge');
+  const customBgPosYSlider = document.getElementById('customBgPosYSlider');
+  const customBgPosYBadge = document.getElementById('customBgPosYBadge');
+  const btnResetCustomBgTransform = document.getElementById('btnResetCustomBgTransform');
 
   // Audio File Flyout
   const inputAudioFile = document.getElementById('inputAudioFile');
@@ -3139,6 +3191,48 @@
   let lastValidRecordedImg = null;
   let lastExportRenderTimestamp = 0;
 
+  // Penyesuaian tampilan latar belakang kustom di layar preview
+  function applyCustomBgTransform() {
+    if (!customBgImageObj || !customBgImg || !customBgLayer || customBgLayer.classList.contains('hidden')) return;
+
+    const winW = window.innerWidth || 1;
+    const winH = window.innerHeight || 1;
+    const imgW = customBgImageObj.naturalWidth || winW;
+    const imgH = customBgImageObj.naturalHeight || winH;
+    const imgAspect = imgW / imgH;
+    const screenAspect = winW / winH;
+
+    let baseW, baseH;
+    if (userSettings.customBgFit === 'contain') {
+      if (imgAspect > screenAspect) {
+        baseW = winW;
+        baseH = winW / imgAspect;
+      } else {
+        baseH = winH;
+        baseW = winH * imgAspect;
+      }
+    } else {
+      // 'cover' bawaan
+      if (imgAspect > screenAspect) {
+        baseH = winH;
+        baseW = winH * imgAspect;
+      } else {
+        baseW = winW;
+        baseH = winW / imgAspect;
+      }
+    }
+
+    const scale = (userSettings.customBgScale || 100) / 100;
+    const renderW = Math.round(baseW * scale);
+    const renderH = Math.round(baseH * scale);
+    const posX = userSettings.customBgPosX || 0;
+    const posY = userSettings.customBgPosY || 0;
+
+    customBgImg.style.width = `${renderW}px`;
+    customBgImg.style.height = `${renderH}px`;
+    customBgImg.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px))`;
+  }
+
   function renderExportFrame(timestamp) {
     if (!isRecordingVideo) return;
 
@@ -3178,24 +3272,52 @@
       exportCtx.fillStyle = '#00FF00';
       exportCtx.fillRect(0, 0, w, h);
     } else if (isCameraActive && bgMode !== 'green') {
-      // Prioritas Utama Kamera: Jika kamera HP menyala, selalu rekam latar kamera langsung dengan rasio cover penuh (anti-gepeng)
+      // Prioritas Utama Kamera: Rekam latar kamera langsung, cover penuh atau fit contain anti-gepeng
       const vw = cameraBgVideo.videoWidth || 1280;
       const vh = cameraBgVideo.videoHeight || 720;
       const vAspect = vw / vh;
       const cAspect = w / h;
-      let sx = 0, sy = 0, sw = vw, sh = vh;
-      if (vAspect > cAspect) {
-        sw = vh * cAspect;
-        sx = (vw - sw) / 2;
+
+      exportCtx.save();
+      if (activeCameraFacing === 'user') {
+        // Cermin horizontal untuk kamera depan selfie agar sama persis dengan preview
+        exportCtx.translate(w, 0);
+        exportCtx.scale(-1, 1);
+      }
+
+      if (isCameraCoverFit) {
+        let sx = 0, sy = 0, sw = vw, sh = vh;
+        if (vAspect > cAspect) {
+          sw = vh * cAspect;
+          sx = (vw - sw) / 2;
+        } else {
+          sh = vw / cAspect;
+          sy = (vh - sh) / 2;
+        }
+        try {
+          exportCtx.drawImage(cameraBgVideo, sx, sy, sw, sh, 0, 0, w, h);
+        } catch (e) {
+          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
+        }
       } else {
-        sh = vw / cAspect;
-        sy = (vh - sh) / 2;
+        // Mode Contain
+        exportCtx.fillStyle = '#000000';
+        exportCtx.fillRect(0, 0, w, h);
+        let dw = w, dh = h, dx = 0, dy = 0;
+        if (vAspect > cAspect) {
+          dh = w / vAspect;
+          dy = (h - dh) / 2;
+        } else {
+          dw = h * vAspect;
+          dx = (w - dw) / 2;
+        }
+        try {
+          exportCtx.drawImage(cameraBgVideo, dx, dy, dw, dh);
+        } catch (e) {
+          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
+        }
       }
-      try {
-        exportCtx.drawImage(cameraBgVideo, sx, sy, sw, sh, 0, 0, w, h);
-      } catch (e) {
-        try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
-      }
+      exportCtx.restore();
     } else if (bgMode === 'current') {
       if (document.body.classList.contains('bg-green')) {
         exportCtx.fillStyle = '#00FF00';
@@ -3206,8 +3328,61 @@
       } else if (document.body.classList.contains('bg-dark')) {
         exportCtx.fillStyle = '#21232d';
         exportCtx.fillRect(0, 0, w, h);
-      } else if (customBgImageObj && customBgImageObj.complete) {
-        exportCtx.drawImage(customBgImageObj, 0, 0, w, h);
+      } else if (customBgImageObj && customBgImageObj.complete && customBgImageObj.naturalWidth > 0) {
+        // Latar Belakang Kustom: Rekam dengan rasio, skala & posisi yang 100% presisi sinkron dengan preview layar
+        const winW = window.innerWidth || 1;
+        const winH = window.innerHeight || 1;
+        const imgW = customBgImageObj.naturalWidth;
+        const imgH = customBgImageObj.naturalHeight;
+        const imgAspect = imgW / imgH;
+        const screenAspect = winW / winH;
+
+        let baseW, baseH;
+        if (userSettings.customBgFit === 'contain') {
+          if (imgAspect > screenAspect) {
+            baseW = winW;
+            baseH = winW / imgAspect;
+          } else {
+            baseH = winH;
+            baseW = winH * imgAspect;
+          }
+        } else {
+          // 'cover'
+          if (imgAspect > screenAspect) {
+            baseH = winH;
+            baseW = winH * imgAspect;
+          } else {
+            baseW = winW;
+            baseH = winW / imgAspect;
+          }
+        }
+
+        const scale = (userSettings.customBgScale || 100) / 100;
+        const renderW = baseW * scale;
+        const renderH = baseH * scale;
+        const posX = userSettings.customBgPosX || 0;
+        const posY = userSettings.customBgPosY || 0;
+
+        // Skala adaptif yang persis sama dengan skala avatar (Math.min canvas / Math.min screen)
+        const screenBase = Math.min(winW, winH);
+        const canvasBase = Math.min(w, h);
+        const scaleFactor = canvasBase / screenBase;
+
+        const exportDrawW = renderW * scaleFactor;
+        const exportDrawH = renderH * scaleFactor;
+
+        const normX = posX / winW;
+        const normY = posY / winH;
+        const exportCenterX = (w / 2) + (normX * w);
+        const exportCenterY = (h / 2) + (normY * h);
+
+        exportCtx.drawImage(
+          customBgImageObj,
+          exportCenterX - (exportDrawW / 2),
+          exportCenterY - (exportDrawH / 2),
+          exportDrawW,
+          exportDrawH
+        );
       }
     }
 
@@ -3942,19 +4117,31 @@
   let isCameraCoverFit = true;
 
   function applyCameraFitStyle() {
-    if (!cameraBgVideo) return;
+    if (!cameraBgVideo || !cameraBgWrapper) return;
+    const vw = window.innerWidth || document.documentElement.clientWidth;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+
+    cameraBgWrapper.style.width = `${vw}px`;
+    cameraBgWrapper.style.height = `${vh}px`;
+    cameraBgVideo.style.width = `${vw}px`;
+    cameraBgVideo.style.height = `${vh}px`;
+
     if (isCameraCoverFit) {
       cameraBgVideo.style.setProperty('-webkit-object-fit', 'cover', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'cover', 'important');
-      cameraBgVideo.style.setProperty('background', 'transparent', 'important');
-      cameraBgVideo.classList.remove('camera-fit-contain');
+      cameraBgWrapper.classList.remove('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_cover');
     } else {
       cameraBgVideo.style.setProperty('-webkit-object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'contain', 'important');
-      cameraBgVideo.style.setProperty('background', '#000000', 'important');
-      cameraBgVideo.classList.add('camera-fit-contain');
+      cameraBgWrapper.classList.add('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_contain');
+    }
+
+    if (activeCameraFacing === 'user') {
+      cameraBgWrapper.classList.add('camera-facing-user');
+    } else {
+      cameraBgWrapper.classList.remove('camera-facing-user');
     }
   }
 
@@ -3997,9 +4184,11 @@
       cameraStream = stream;
       activeCameraFacing = facing;
 
+      if (cameraBgWrapper) {
+        cameraBgWrapper.classList.remove('hidden');
+      }
       if (cameraBgVideo) {
         cameraBgVideo.srcObject = cameraStream;
-        cameraBgVideo.classList.remove('hidden');
         cameraBgVideo.muted = true;
         cameraBgVideo.playsInline = true;
         cameraBgVideo.setAttribute('playsinline', '');
@@ -4010,6 +4199,7 @@
       }
 
       if (customBgLayer) customBgLayer.classList.add('hidden');
+      if (customBgControls) customBgControls.classList.add('hidden');
       if (btnRemoveCustomBg) btnRemoveCustomBg.classList.add('hidden');
       if (btnStopCamera) btnStopCamera.classList.remove('hidden');
       if (cameraFitToggleGroup) cameraFitToggleGroup.classList.remove('hidden');
@@ -4053,9 +4243,12 @@
       cameraStream = null;
     }
     activeCameraFacing = null;
+    if (cameraBgWrapper) {
+      cameraBgWrapper.classList.add('hidden');
+      cameraBgWrapper.classList.remove('camera-facing-user');
+    }
     if (cameraBgVideo) {
       cameraBgVideo.srcObject = null;
-      cameraBgVideo.classList.add('hidden');
     }
     if (btnStopCamera) btnStopCamera.classList.add('hidden');
     if (cameraFitToggleGroup) cameraFitToggleGroup.classList.add('hidden');
@@ -4070,8 +4263,15 @@
 
     if (document.body.classList.contains('bg-pure-transparent')) {
       document.body.classList.remove('bg-pure-transparent');
-      document.body.classList.add('bg-checkerboard');
-      if (bgChoiceButtons && bgChoiceButtons[0]) bgChoiceButtons[0].classList.add('active');
+      if (customBgImageObj && customBgImg && customBgImg.src) {
+        if (customBgLayer) customBgLayer.classList.remove('hidden');
+        if (customBgControls) customBgControls.classList.remove('hidden');
+        if (btnRemoveCustomBg) btnRemoveCustomBg.classList.remove('hidden');
+        applyCustomBgTransform();
+      } else {
+        document.body.classList.add('bg-checkerboard');
+        if (bgChoiceButtons && bgChoiceButtons[0]) bgChoiceButtons[0].classList.add('active');
+      }
     }
 
     if (notify) showToast(t('toast_camera_stopped'));
@@ -4104,6 +4304,16 @@
     if (cameraStream && cameraBgVideo) {
       applyCameraFitStyle();
     }
+    applyCustomBgTransform();
+  });
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      if (cameraStream && cameraBgVideo) {
+        applyCameraFitStyle();
+      }
+      applyCustomBgTransform();
+    }, 150);
   });
 
   // Background choices
@@ -4118,7 +4328,9 @@
       document.body.classList.add(bgClass);
 
       customBgLayer.classList.add('hidden');
+      if (customBgControls) customBgControls.classList.add('hidden');
       customBgImageObj = null;
+      if (customBgImg) customBgImg.src = '';
       btnRemoveCustomBg.classList.add('hidden');
     });
   });
@@ -4131,11 +4343,15 @@
     const reader = new FileReader();
     reader.onload = (loadEvt) => {
       const dataUrl = loadEvt.target.result;
-      customBgLayer.style.backgroundImage = `url("${dataUrl}")`;
+      if (customBgImg) customBgImg.src = dataUrl;
       customBgLayer.classList.remove('hidden');
-      btnRemoveCustomBg.classList.remove('hidden');
+      if (btnRemoveCustomBg) btnRemoveCustomBg.classList.remove('hidden');
+      if (customBgControls) customBgControls.classList.remove('hidden');
 
       customBgImageObj = new Image();
+      customBgImageObj.onload = () => {
+        applyCustomBgTransform();
+      };
       customBgImageObj.src = dataUrl;
 
       idbSet('smoothietuber_custom_bg', dataUrl).catch(() => {});
@@ -4149,8 +4365,9 @@
 
   btnRemoveCustomBg.addEventListener('click', () => {
     stopCameraBackground(false);
-    customBgLayer.style.backgroundImage = '';
+    if (customBgImg) customBgImg.src = '';
     customBgLayer.classList.add('hidden');
+    if (customBgControls) customBgControls.classList.add('hidden');
     customBgImageObj = null;
     btnRemoveCustomBg.classList.add('hidden');
     idbSet('smoothietuber_custom_bg', null).catch(() => {});
@@ -4510,6 +4727,96 @@
       });
     }
 
+    // Pulihkan pengaturan ukuran & posisi latar belakang kustom
+    if (customBgScaleSlider) {
+      customBgScaleSlider.value = userSettings.customBgScale || 100;
+      if (customBgScaleBadge) customBgScaleBadge.textContent = `${userSettings.customBgScale || 100}%`;
+      customBgScaleSlider.addEventListener('input', () => {
+        userSettings.customBgScale = parseInt(customBgScaleSlider.value, 10) || 100;
+        if (customBgScaleBadge) customBgScaleBadge.textContent = `${userSettings.customBgScale}%`;
+        applyCustomBgTransform();
+      });
+      customBgScaleSlider.addEventListener('change', () => {
+        saveUserSettings();
+      });
+    }
+
+    if (customBgPosXSlider) {
+      customBgPosXSlider.value = userSettings.customBgPosX || 0;
+      if (customBgPosXBadge) customBgPosXBadge.textContent = `${userSettings.customBgPosX || 0} px`;
+      customBgPosXSlider.addEventListener('input', () => {
+        userSettings.customBgPosX = parseInt(customBgPosXSlider.value, 10) || 0;
+        if (customBgPosXBadge) customBgPosXBadge.textContent = `${userSettings.customBgPosX} px`;
+        applyCustomBgTransform();
+      });
+      customBgPosXSlider.addEventListener('change', () => {
+        saveUserSettings();
+      });
+    }
+
+    if (customBgPosYSlider) {
+      customBgPosYSlider.value = userSettings.customBgPosY || 0;
+      if (customBgPosYBadge) customBgPosYBadge.textContent = `${userSettings.customBgPosY || 0} px`;
+      customBgPosYSlider.addEventListener('input', () => {
+        userSettings.customBgPosY = parseInt(customBgPosYSlider.value, 10) || 0;
+        if (customBgPosYBadge) customBgPosYBadge.textContent = `${userSettings.customBgPosY} px`;
+        applyCustomBgTransform();
+      });
+      customBgPosYSlider.addEventListener('change', () => {
+        saveUserSettings();
+      });
+    }
+
+    if (btnBgFitCover) {
+      btnBgFitCover.addEventListener('click', () => {
+        userSettings.customBgFit = 'cover';
+        btnBgFitCover.classList.add('is-active');
+        if (btnBgFitContain) btnBgFitContain.classList.remove('is-active');
+        applyCustomBgTransform();
+        saveUserSettings();
+      });
+    }
+
+    if (btnBgFitContain) {
+      btnBgFitContain.addEventListener('click', () => {
+        userSettings.customBgFit = 'contain';
+        btnBgFitContain.classList.add('is-active');
+        if (btnBgFitCover) btnBgFitCover.classList.remove('is-active');
+        applyCustomBgTransform();
+        saveUserSettings();
+      });
+    }
+
+    if (userSettings.customBgFit === 'contain') {
+      if (btnBgFitContain) btnBgFitContain.classList.add('is-active');
+      if (btnBgFitCover) btnBgFitCover.classList.remove('is-active');
+    } else {
+      if (btnBgFitCover) btnBgFitCover.classList.add('is-active');
+      if (btnBgFitContain) btnBgFitContain.classList.remove('is-active');
+    }
+
+    if (btnResetCustomBgTransform) {
+      btnResetCustomBgTransform.addEventListener('click', () => {
+        userSettings.customBgScale = 100;
+        userSettings.customBgPosX = 0;
+        userSettings.customBgPosY = 0;
+        userSettings.customBgFit = 'cover';
+
+        if (customBgScaleSlider) customBgScaleSlider.value = 100;
+        if (customBgScaleBadge) customBgScaleBadge.textContent = '100%';
+        if (customBgPosXSlider) customBgPosXSlider.value = 0;
+        if (customBgPosXBadge) customBgPosXBadge.textContent = '0 px';
+        if (customBgPosYSlider) customBgPosYSlider.value = 0;
+        if (customBgPosYBadge) customBgPosYBadge.textContent = '0 px';
+        if (btnBgFitCover) btnBgFitCover.classList.add('is-active');
+        if (btnBgFitContain) btnBgFitContain.classList.remove('is-active');
+
+        applyCustomBgTransform();
+        saveUserSettings();
+        showToast(t('toast_bg_transform_reset') || '🔄 Ukuran & posisi background dipulihkan!');
+      });
+    }
+
     // Event listener Backup & Restore Profil
     if (btnExportProfile) {
       btnExportProfile.addEventListener('click', exportUserProfile);
@@ -4524,6 +4831,7 @@
     // Pulihkan avatar kustom dari penyimpanan IndexedDB permanen secara aman (AWAIT sebelum first paint)
     await restoreEmotionsFromIDB();
     isStorageHydrated = true;
+    applyCustomBgTransform();
 
     lastAppliedSpriteSrc = '';
     updateSlotImages();

@@ -22,22 +22,26 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=5.1">
+  <link rel="stylesheet" href="style.css?v=5.2">
 </head>
 <body class="bg-checkerboard">
 
-  <!-- Background layer kustom (Wallpaper tetap di belakang avatar) -->
-  <div id="customBgLayer" class="custom-bg-layer hidden"></div>
+  <!-- Background layer kustom (Wallpaper tetap di belakang avatar dengan pengaturan ukuran & posisi) -->
+  <div id="customBgLayer" class="custom-bg-layer hidden">
+    <img id="customBgImg" class="custom-bg-img" alt="Latar Belakang Kustom">
+  </div>
 
-  <!-- Video layer kamera langsung (Handcam Meja/Kegiatan di HP - Fullscreen Cover) -->
-  <video
-    id="cameraBgVideo"
-    class="camera-bg-layer hidden"
-    autoplay
-    playsinline
-    webkit-playsinline
-    muted
-  ></video>
+  <!-- Video layer kamera langsung (Handcam Meja/Kegiatan di HP - Fullscreen Cover Anti-Square) -->
+  <div id="cameraBgWrapper" class="camera-bg-wrapper hidden">
+    <video
+      id="cameraBgVideo"
+      class="camera-bg-layer"
+      autoplay
+      playsinline
+      webkit-playsinline
+      muted
+    ></video>
+  </div>
 
   <!-- =========================================================================
        TOMBOL PILIHAN BAHASA (POJOK KIRI ATAS)
@@ -269,6 +273,61 @@
         <button id="btnRemoveCustomBg" class="btn btn-text hidden" type="button" data-i18n="btn_remove_bg">
           ❌ Hapus Gambar Kustom
         </button>
+
+        <!-- Kontrol Penyesuaian Ukuran & Posisi Background Kustom -->
+        <div id="customBgControls" class="custom-bg-controls hidden">
+          <div class="custom-bg-section-title">
+            <span data-i18n="title_adjust_bg">📐 Sesuaikan Ukuran &amp; Posisi Background</span>
+          </div>
+
+          <!-- Mode Tampilan: Cover / Contain -->
+          <div class="bg-fit-mode-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+            <button id="btnBgFitCover" type="button" class="btn btn-secondary is-active" style="font-size: 11px; padding: 5px;" data-i18n="btn_bg_fit_cover">
+              📐 Penuh (Cover)
+            </button>
+            <button id="btnBgFitContain" type="button" class="btn btn-secondary" style="font-size: 11px; padding: 5px;" data-i18n="btn_bg_fit_contain">
+              🖼️ Pas Utuh (Contain)
+            </button>
+          </div>
+
+          <!-- Slider Ukuran (Scale / Zoom) -->
+          <div class="slider-control-group">
+            <div class="slider-info">
+              <label for="customBgScaleSlider" class="slider-label" data-i18n="label_bg_scale">Ukuran / Zoom Background:</label>
+            </div>
+            <div class="slider-with-number">
+              <input id="customBgScaleSlider" type="range" min="20" max="300" step="5" value="100" class="range-slider">
+              <span id="customBgScaleBadge" class="range-value-pill">100%</span>
+            </div>
+          </div>
+
+          <!-- Slider Posisi Horizontal (X) -->
+          <div class="slider-control-group">
+            <div class="slider-info">
+              <label for="customBgPosXSlider" class="slider-label" data-i18n="label_bg_pos_x">Geser Posisi Horizontal (X):</label>
+            </div>
+            <div class="slider-with-number">
+              <input id="customBgPosXSlider" type="range" min="-400" max="400" step="5" value="0" class="range-slider">
+              <span id="customBgPosXBadge" class="range-value-pill">0 px</span>
+            </div>
+          </div>
+
+          <!-- Slider Posisi Vertikal (Y) -->
+          <div class="slider-control-group">
+            <div class="slider-info">
+              <label for="customBgPosYSlider" class="slider-label" data-i18n="label_bg_pos_y">Geser Posisi Vertikal (Y):</label>
+            </div>
+            <div class="slider-with-number">
+              <input id="customBgPosYSlider" type="range" min="-600" max="600" step="5" value="0" class="range-slider">
+              <span id="customBgPosYBadge" class="range-value-pill">0 px</span>
+            </div>
+          </div>
+
+          <!-- Tombol Reset Ukuran & Posisi Background -->
+          <button id="btnResetCustomBgTransform" class="btn btn-secondary btn-block" type="button" style="font-size: 11px; padding: 5px; margin-top: 2px;" data-i18n="btn_reset_bg_transform">
+            🔄 Reset Ukuran &amp; Posisi Background
+          </button>
+        </div>
       </div>
 
       <div class="divider" style="margin: 8px 0 6px 0;"></div>
@@ -737,6 +796,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=5.1"></script>
+  <script src="script.js?v=5.2"></script>
 </body>
 </html>
