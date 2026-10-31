@@ -218,10 +218,11 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
+  transform-origin: center center !important;
   width: 100% !important;
   height: 100% !important;
-  min-width: 100vw !important;
-  min-height: 100dvh !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
   object-fit: cover !important;
   -webkit-object-fit: cover !important;
   object-position: center center !important;

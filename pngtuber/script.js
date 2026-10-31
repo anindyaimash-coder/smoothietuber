@@ -3533,36 +3533,29 @@
   }
 
   // --- 8. VIDEO EXPORT (CANVAS MEDIA RECORDER TRANSPARAN & LIVE FRAME ASPECT RATIO WYSIWYG) ---
-  function setupExportCanvasSize() {
+  function getTargetExportDimensions() {
     const res = (exportResolution && exportResolution.value) || (bgStageAspectSelect && bgStageAspectSelect.value) || userSettings.exportResolution || '720x1280';
-    if (res === '720x1280') {
-      exportCanvas.width = 720;
-      exportCanvas.height = 1280;
-    } else if (res === '1080x1920') {
-      exportCanvas.width = 1080;
-      exportCanvas.height = 1920;
-    } else if (res === '1620x1080') {
-      exportCanvas.width = 1620;
-      exportCanvas.height = 1080;
-    } else if (res === '1080x1620') {
-      exportCanvas.width = 1080;
-      exportCanvas.height = 1620;
-    } else if (res === '1080x1080') {
-      exportCanvas.width = 1080;
-      exportCanvas.height = 1080;
-    } else if (res === '1280x720') {
-      exportCanvas.width = 1280;
-      exportCanvas.height = 720;
-    } else if (res === '1920x1080') {
-      exportCanvas.width = 1920;
-      exportCanvas.height = 1080;
-    } else if (res === '800x800') {
-      exportCanvas.width = 800;
-      exportCanvas.height = 800;
-    } else {
-      // Bawaan default: 9:16 vertikal (720 × 1280 - Rekomendasi Medsos HP)
-      exportCanvas.width = 720;
-      exportCanvas.height = 1280;
+    if (res === '720x1280') return { width: 720, height: 1280 };
+    if (res === '1080x1920') return { width: 1080, height: 1920 };
+    if (res === '1620x1080') return { width: 1620, height: 1080 };
+    if (res === '1080x1620') return { width: 1080, height: 1620 };
+    if (res === '1080x1080') return { width: 1080, height: 1080 };
+    if (res === '1280x720') return { width: 1280, height: 720 };
+    if (res === '1920x1080') return { width: 1920, height: 1080 };
+    if (res === '800x800') return { width: 1080, height: 1080 };
+    // Bawaan default: 9:16 vertikal (720 × 1280 - Rekomendasi Medsos HP)
+    return { width: 720, height: 1280 };
+  }
+
+  function setupExportCanvasSize() {
+    const { width, height } = getTargetExportDimensions();
+    // PENTING: Jangan pernah menimpa exportCanvas.width/height jika ukurannya sudah sama atau saat sedang merekam,
+    // karena mengubah atribut width/height pada HTML5 Canvas akan langsung menghapus seluruh gambar (menjadi hitam/kosong)!
+    if (exportCanvas.width !== width) {
+      exportCanvas.width = width;
+    }
+    if (exportCanvas.height !== height) {
+      exportCanvas.height = height;
     }
   }
 
@@ -3577,9 +3570,7 @@
   }
 
   function getActiveStageFrameRect() {
-    setupExportCanvasSize();
-    const expW = exportCanvas.width || 720;
-    const expH = exportCanvas.height || 1280;
+    const { width: expW, height: expH } = getTargetExportDimensions();
     const targetAspect = expW / expH;
 
     const vw = window.innerWidth || document.documentElement.clientWidth || 1;
@@ -3590,7 +3581,11 @@
     let frameH = vh;
     let isFramed = false;
 
-    if (Math.abs(screenAspect - targetAspect) >= 0.03) {
+    // Jika di HP potret (vw < vh) dan memilih rasio 9:16, gunakan layar penuh HP (anti-hitam atas/bawah).
+    // Jika memilih 1:1, 3:2, 2:3, 16:9 (atau di layar desktop/landscape), bentuk bingkai sesuai rasio yang dipilih!
+    const isPortraitPhone916 = !isMacDesktop && (vw < vh) && Math.abs(targetAspect - (9 / 16)) < 0.02;
+
+    if (!isPortraitPhone916 && Math.abs(screenAspect - targetAspect) >= 0.03) {
       isFramed = true;
       if (screenAspect > targetAspect) {
         frameH = vh;
@@ -3616,6 +3611,9 @@
   }
 
   function applyStageFrameAspect(notify = false) {
+    if (!isRecordingVideo) {
+      setupExportCanvasSize();
+    }
     const rect = getActiveStageFrameRect();
     const rootStyle = document.documentElement.style;
     rootStyle.setProperty('--stage-frame-w', `${rect.width}px`);
@@ -3731,7 +3729,10 @@
     const h = exportCanvas.height;
     const isTransparentMode = (toggleTransparentExport && toggleTransparentExport.checked) || (exportBgMode && exportBgMode.value === 'transparent');
     const bgMode = isTransparentMode ? 'transparent' : (exportBgMode ? exportBgMode.value : 'current');
-    const isCameraActive = cameraStream && cameraBgVideo && !cameraBgVideo.paused && !cameraBgVideo.ended;
+    if (cameraStream && cameraBgVideo && cameraBgVideo.paused && !cameraBgVideo.ended) {
+      cameraBgVideo.play().catch(() => {});
+    }
+    const isCameraActive = Boolean(cameraStream && cameraBgVideo && cameraBgVideo.readyState >= 2 && !cameraBgVideo.ended);
 
     // Bersihkan seluruh bidang canvas agar murni transparan (alpha channel = 0)
     exportCtx.clearRect(0, 0, w, h);
@@ -3744,49 +3745,61 @@
       exportCtx.fillStyle = '#00FF00';
       exportCtx.fillRect(0, 0, w, h);
     } else if (isCameraActive && bgMode !== 'green') {
-      // Prioritas Utama Kamera: Rekam latar kamera langsung dengan dukungan Zoom In / Zoom Out (0.5x - 3.0x)
+      // Prioritas Utama Kamera: Rekam latar kamera langsung dengan dukungan Zoom (0.5x Ultra-Wide - 3.0x)
+      // Menggunakan source-crop (sx, sy, sw, sh) agar 100% bebas bug compositing GPU WebKit iOS Safari
       const vw = cameraBgVideo.videoWidth || 1280;
       const vh = cameraBgVideo.videoHeight || 720;
       const vAspect = vw / vh;
       const cAspect = w / h;
-      const effZoom = getEffectiveCameraVisualZoom();
+      const effZoom = Math.max(1.0, getEffectiveCameraVisualZoom());
 
       exportCtx.save();
-      exportCtx.fillStyle = '#000000';
-      exportCtx.fillRect(0, 0, w, h);
-
-      exportCtx.translate(w / 2, h / 2);
       if (activeCameraFacing === 'user') {
         // Cermin horizontal untuk kamera depan selfie agar sama persis dengan preview
-        exportCtx.scale(-1 * effZoom, effZoom);
-      } else {
-        exportCtx.scale(effZoom, effZoom);
+        exportCtx.translate(w, 0);
+        exportCtx.scale(-1, 1);
       }
 
-      let baseW = w;
-      let baseH = h;
       if (isCameraCoverFit) {
+        let baseSw = vw;
+        let baseSh = vh;
         if (vAspect > cAspect) {
-          baseH = h;
-          baseW = h * vAspect;
+          baseSh = vh;
+          baseSw = vh * cAspect;
         } else {
-          baseW = w;
-          baseH = w / vAspect;
+          baseSw = vw;
+          baseSh = vw / cAspect;
+        }
+        const sw = Math.max(1, baseSw / effZoom);
+        const sh = Math.max(1, baseSh / effZoom);
+        const sx = (vw - sw) / 2;
+        const sy = (vh - sh) / 2;
+        try {
+          exportCtx.drawImage(cameraBgVideo, sx, sy, sw, sh, 0, 0, w, h);
+        } catch (e) {
+          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
         }
       } else {
+        exportCtx.fillStyle = '#000000';
+        exportCtx.fillRect(0, 0, w, h);
+        let dw = w;
+        let dh = h;
         if (vAspect > cAspect) {
-          baseW = w;
-          baseH = w / vAspect;
+          dw = w;
+          dh = w / vAspect;
         } else {
-          baseH = h;
-          baseW = h * vAspect;
+          dh = h;
+          dw = h * vAspect;
         }
-      }
-
-      try {
-        exportCtx.drawImage(cameraBgVideo, -baseW / 2, -baseH / 2, baseW, baseH);
-      } catch (e) {
-        try { exportCtx.drawImage(cameraBgVideo, -w / 2, -h / 2, w, h); } catch (_) {}
+        dw *= effZoom;
+        dh *= effZoom;
+        const dx = (w - dw) / 2;
+        const dy = (h - dh) / 2;
+        try {
+          exportCtx.drawImage(cameraBgVideo, dx, dy, dw, dh);
+        } catch (e) {
+          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
+        }
       }
       exportCtx.restore();
     } else if (bgMode === 'current') {
@@ -4011,6 +4024,11 @@
       } catch (e) {}
     } else if (currentAudioSourceMode === 'mic' && !micStream) {
       await startMicrophone();
+    }
+
+    // Pastikan video kamera tetap berputar (tidak ter-pause oleh pergantian sesi audio iOS Safari)
+    if (cameraStream && cameraBgVideo && cameraBgVideo.paused) {
+      await cameraBgVideo.play().catch(() => {});
     }
 
     // Pastikan tidak ada loop RAF ganda yang sedang berjalan
@@ -4667,11 +4685,12 @@
   let isSwitchingCameraLens = false;
 
   function getEffectiveCameraVisualZoom() {
-    // Jika lensa fisik Ultra-Wide (0.5x) sedang aktif, 0.5x adalah ukuran 1.0x dari sensor Ultra-Wide
+    // PENTING: Skala visual elemen <video> TIDAK BOLEH < 1.0 agar bingkai kamera tidak pernah mengecil!
+    // Saat lensa fisik Ultra-Wide (0.5x) aktif, 0.5x adalah 1.0x penuh dari sensor Ultra-Wide (dan 0.75x adalah 1.5x dari sensor Ultra-Wide).
     if (isUsingUltraWideLens && activeCameraFacing === 'environment') {
-      return Math.max(0.5, cameraZoom / 0.5);
+      return Math.max(1.0, cameraZoom / 0.5);
     }
-    return cameraZoom;
+    return Math.max(1.0, cameraZoom);
   }
 
   function updateCameraZoomUI() {
@@ -4708,7 +4727,7 @@
     }
   }
 
-  // Coba cari lensa Ultra-Wide (0.5x) atau lensa utama belakang pada iPhone / Android
+  // Coba cari lensa Ultra-Wide (0.5x / 13mm) atau lensa utama Wide (1x / 26mm) pada iPhone / Android
   async function findRearCameraLensDeviceId(wantUltraWide) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return null;
     try {
@@ -4716,16 +4735,28 @@
       const videoInputs = devices.filter(d => d.kind === 'videoinput' && d.deviceId);
       if (videoInputs.length <= 1) return null;
 
+      const uwRegex = /(ultra\s*wide|ultra-wide|ultra\s*lebar|lebar\s*ultra|0\.5x|超広角|超广角|camera 2,\s*facing back)/i;
+
       if (wantUltraWide) {
-        const uw = videoInputs.find(d => /(ultra\s*wide|ultra-wide|0\.5x|lebar ultra|camera 2,\s*facing back)/i.test(d.label || ''));
+        const uw = videoInputs.find(d => uwRegex.test(d.label || ''));
         return uw ? uw.deviceId : null;
       } else {
-        const mainBack = videoInputs.find(d => {
+        // Prioritas 1: Lensa Utama 1x murni ("Back Camera" / "Kamera Belakang")
+        const pureMainBack = videoInputs.find(d => {
           const l = (d.label || '').toLowerCase();
-          return (l.includes('back') || l.includes('belakang') || l.includes('rear') || l.includes('environment')) &&
-                 !/(ultra\s*wide|ultra-wide|telephoto|tele)/i.test(l);
+          const isBack = l.includes('back') || l.includes('belakang') || l.includes('rear') || l.includes('environment') || l.includes('背面') || l.includes('后置');
+          const isSpecial = /(ultra|lebar|telephoto|tele|dual|triple|ganda|tiga|desk\s*view|tampilan\s*meja|超広角|超广角|望遠|长焦)/i.test(l);
+          return isBack && !isSpecial;
         });
-        return mainBack ? mainBack.deviceId : null;
+        if (pureMainBack) return pureMainBack.deviceId;
+
+        // Prioritas 2: Kamera belakang apa pun yang bukan Ultra-Wide / Telephoto / Desk View
+        const fallbackMainBack = videoInputs.find(d => {
+          const l = (d.label || '').toLowerCase();
+          const isBack = l.includes('back') || l.includes('belakang') || l.includes('rear') || l.includes('environment') || l.includes('背面') || l.includes('后置');
+          return isBack && !uwRegex.test(l) && !/(telephoto|tele|desk\s*view|tampilan\s*meja)/i.test(l);
+        });
+        return fallbackMainBack ? fallbackMainBack.deviceId : null;
       }
     } catch (_) {
       return null;
@@ -4737,33 +4768,43 @@
     cameraZoom = clamped;
     updateCameraZoomUI();
 
-    // Jika sedang di kamera belakang dan pengguna memilih < 0.8x (misal 0.5x), coba beralih ke lensa Ultra-Wide jika tersedia di HP
+    // Sebagaimana aplikasi Kamera bawaan iPhone:
+    // - Saat memilih < 1.0x (mis. 0.5x), pindah ke lensa fisik Ultra-Wide (13mm) sementara bingkai kamera tetap 100% penuh!
+    // - Saat memilih >= 1.0x (1x, 1.5x, 2x, 3x), gunakan lensa utama Wide (26mm) dan perbesar gambar di dalam bingkai tetap.
     if (cameraStream && activeCameraFacing === 'environment' && !isSwitchingCameraLens) {
-      const wantUltraWide = cameraZoom <= 0.75;
+      const wantUltraWide = cameraZoom < 0.98;
       if (wantUltraWide !== isUsingUltraWideLens) {
         const targetLensId = await findRearCameraLensDeviceId(wantUltraWide);
         if (targetLensId) {
           isSwitchingCameraLens = true;
           try {
-            const isPortrait = window.innerHeight >= window.innerWidth;
-            const newStream = await navigator.mediaDevices.getUserMedia({
-              video: {
-                deviceId: { exact: targetLensId },
-                width: { ideal: isPortrait ? 720 : 1280 },
-                height: { ideal: isPortrait ? 1280 : 720 }
-              }
-            });
+            let newStream = null;
+            try {
+              newStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  deviceId: { exact: targetLensId },
+                  width: { ideal: 1920 },
+                  height: { ideal: 1080 }
+                }
+              });
+            } catch (_) {
+              newStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  deviceId: { exact: targetLensId }
+                }
+              }).catch(() => null);
+            }
             if (newStream) {
               cameraStream.getTracks().forEach(tr => tr.stop());
               cameraStream = newStream;
               isUsingUltraWideLens = wantUltraWide;
+              updateActiveCameraLabelDisplay();
               if (cameraBgVideo) {
                 cameraBgVideo.srcObject = cameraStream;
                 await cameraBgVideo.play().catch(() => {});
               }
             }
           } catch (_) {
-            // Jika tidak bisa pindah lensa hardware, gunakan uncrop & smooth scale CSS/Canvas
             isUsingUltraWideLens = false;
           } finally {
             isSwitchingCameraLens = false;
@@ -4773,7 +4814,8 @@
         }
       }
 
-      // Terapkan juga hardware zoom constraint jika kamera mendukung dan zoom >= 1.0
+      // Jika kamera memiliki hardware zoom (mis. virtual multi-camera device iOS / Android),
+      // gunakan hardware zoom < 1.0 hanya bila tidak sedang memakai lensa Ultra-Wide terpisah.
       try {
         const videoTrack = cameraStream.getVideoTracks()[0];
         if (videoTrack && typeof videoTrack.getCapabilities === 'function') {
@@ -4781,11 +4823,10 @@
           if (caps && caps.zoom && typeof videoTrack.applyConstraints === 'function') {
             const minZ = caps.zoom.min || 1;
             const maxZ = caps.zoom.max || 1;
-            if (cameraZoom < 1.0 && minZ < 1.0) {
+            if (!isUsingUltraWideLens && cameraZoom < 1.0 && minZ < 1.0) {
               const hwZoom = Math.max(minZ, Math.min(maxZ, cameraZoom));
               videoTrack.applyConstraints({ advanced: [{ zoom: hwZoom }] }).catch(() => {});
             } else if (minZ <= 1.0 && maxZ >= 1.0) {
-              // Reset hardware zoom ke 1.0 agar skala ditangani seragam oleh CSS + Canvas Export (100% WYSIWYG)
               videoTrack.applyConstraints({ advanced: [{ zoom: Math.max(minZ, 1.0) }] }).catch(() => {});
             }
           }
@@ -4795,7 +4836,8 @@
 
     applyCameraFitStyle();
     if (notify) {
-      showToast(`${t('toast_cam_zoom') || '🔍 Zoom Kamera:'} ${Number(cameraZoom.toFixed(2))}x`);
+      const lensHint = (isUsingUltraWideLens && activeCameraFacing === 'environment') ? ' (Ultra-Wide)' : '';
+      showToast(`${t('toast_cam_zoom') || '🔍 Zoom Kamera:'} ${Number(cameraZoom.toFixed(2))}x${lensHint}`);
     }
   }
 
@@ -4810,47 +4852,25 @@
     cameraBgWrapper.style.left = `${frameRect.left || 0}px`;
     cameraBgWrapper.style.top = `${frameRect.top || 0}px`;
 
-    // Hitung ukuran dasar video penuh sensor (tanpa terpotong kotak <video>) agar saat Zoom Out (0.5x - 0.95x)
-    // bagian tepi sensor kamera yang tadinya terpotong Cover bisa terlihat utuh!
-    const vidW = cameraBgVideo.videoWidth || (vh > vw ? 720 : 1280);
-    const vidH = cameraBgVideo.videoHeight || (vh > vw ? 1280 : 720);
-    const vAspect = vidW / vidH;
-    const sAspect = vw / vh;
+    // Jaga ukuran elemen <video> SELALU 100% penuh mengikuti bingkai aktif (Anti-Square & Anti-Shrink)
+    cameraBgVideo.style.setProperty('width', `${vw}px`, 'important');
+    cameraBgVideo.style.setProperty('height', `${vh}px`, 'important');
+    cameraBgVideo.style.setProperty('min-width', '100%', 'important');
+    cameraBgVideo.style.setProperty('min-height', '100%', 'important');
 
-    let baseW = vw;
-    let baseH = vh;
     if (isCameraCoverFit) {
-      if (vAspect > sAspect) {
-        baseH = vh;
-        baseW = Math.round(vh * vAspect);
-      } else {
-        baseW = vw;
-        baseH = Math.round(vw / vAspect);
-      }
-      cameraBgVideo.style.setProperty('-webkit-object-fit', 'fill', 'important');
-      cameraBgVideo.style.setProperty('object-fit', 'fill', 'important');
+      cameraBgVideo.style.setProperty('-webkit-object-fit', 'cover', 'important');
+      cameraBgVideo.style.setProperty('object-fit', 'cover', 'important');
       cameraBgWrapper.classList.remove('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_cover');
     } else {
-      if (vAspect > sAspect) {
-        baseW = vw;
-        baseH = Math.round(vw / vAspect);
-      } else {
-        baseH = vh;
-        baseW = Math.round(vh * vAspect);
-      }
       cameraBgVideo.style.setProperty('-webkit-object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'contain', 'important');
       cameraBgWrapper.classList.add('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_contain');
     }
 
-    cameraBgVideo.style.setProperty('min-width', '0px', 'important');
-    cameraBgVideo.style.setProperty('min-height', '0px', 'important');
-    cameraBgVideo.style.width = `${baseW}px`;
-    cameraBgVideo.style.height = `${baseH}px`;
-
-    const effZoom = getEffectiveCameraVisualZoom();
+    const effZoom = Math.max(1.0, getEffectiveCameraVisualZoom());
     if (activeCameraFacing === 'user') {
       cameraBgWrapper.classList.add('camera-facing-user');
       cameraBgVideo.style.setProperty('transform', `translate(-50%, -50%) scale(${-effZoom}, ${effZoom})`, 'important');
@@ -4979,8 +4999,9 @@
         return;
       }
 
-      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280), di Mac minta 1920x1080 / 1280x720
-      const isPortrait = !isMacDesktop && (window.innerHeight >= window.innerWidth);
+      // PENTING untuk iOS Safari (Anti-Square): Sensor fisik kamera HP selalu berorientasi landscape (1920x1080 / 1280x720).
+      // Jika meminta width: 720, height: 1280 di iOS WebKit, sistem memotong sensor 1280x720 menjadi kotak 720x720 (1:1).
+      // Dengan meminta 1920x1080 / 1280x720, iOS Safari otomatis merotasi stream menjadi 9:16 penuh saat HP dipegang tegak!
       let stream = null;
       let isMacContinuityMirrorFallback = false;
       isUsingUltraWideLens = false;
@@ -4995,6 +5016,9 @@
           isMacContinuityMirrorFallback = frontLookup.onlyContinuityOnMac;
         } else if (isMacDesktop && facing === 'environment') {
           targetDeviceId = await findPreferredIphoneContinuityCameraId();
+        } else if (!isMacDesktop && facing === 'environment') {
+          // Di HP saat membuka Kamera Belakang (1x), utamakan lensa utama Wide 1x jika daftar perangkat sudah terbuka
+          targetDeviceId = await findRearCameraLensDeviceId(false);
         }
       }
 
@@ -5003,8 +5027,8 @@
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
               deviceId: { exact: targetDeviceId },
-              width: { ideal: isPortrait ? 720 : 1920 },
-              height: { ideal: isPortrait ? 1280 : 1080 }
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
             }
           });
         } catch (exactCamErr) {
@@ -5019,8 +5043,8 @@
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
               facingMode: { exact: facing },
-              width: { ideal: isPortrait ? 720 : 1280 },
-              height: { ideal: isPortrait ? 1280 : 720 }
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
             }
           });
         } catch (e0) {
@@ -5028,8 +5052,8 @@
             stream = await navigator.mediaDevices.getUserMedia({
               video: {
                 facingMode: { ideal: facing },
-                width: { ideal: isPortrait ? 720 : 1280 },
-                height: { ideal: isPortrait ? 1280 : 720 }
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
               }
             });
           } catch (e1) {
