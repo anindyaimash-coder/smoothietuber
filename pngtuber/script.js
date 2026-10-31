@@ -73,7 +73,12 @@
       status_active: 'Aktif',
       status_muted: 'Bungkam',
       label_mic_device: 'Perangkat Mikrofon:',
-      option_default_system: 'Default Sistem',
+      option_default_system: '⚡ Otomatis (Prioritas Mic Eksternal)',
+      btn_refresh_mic: '🔄 Deteksi Mic',
+      label_active_mic: 'Aktif:',
+      toast_mic_refreshed: '🎙️ Perangkat mikrofon diperbarui:',
+      label_camera_zoom: '🔍 Zoom Kamera:',
+      toast_cam_zoom: '🔍 Zoom Kamera:',
       label_threshold: 'Ambang Batas Suara (Threshold):',
       label_hang_time: 'Waktu Tahan Mulut (Hang Time):',
       btn_reset_audio: '🔄 Reset / Rekalibrasi Audio (Hotkey: R)',
@@ -315,7 +320,12 @@
       status_active: '有効',
       status_muted: 'ミュート中',
       label_mic_device: 'マイクデバイス:',
-      option_default_system: 'システム既定',
+      option_default_system: '⚡ 自動 (外部マイク優先)',
+      btn_refresh_mic: '🔄 マイク再検出',
+      label_active_mic: '使用中:',
+      toast_mic_refreshed: '🎙️ マイクを更新しました:',
+      label_camera_zoom: '🔍 カメラズーム:',
+      toast_cam_zoom: '🔍 カメラズーム:',
       label_threshold: '音声検出しきい値 (Threshold):',
       label_hang_time: '口開き保持時間 (Hang Time):',
       btn_reset_audio: '🔄 音声リセット / 再調整 (ホットキー: R)',
@@ -549,7 +559,12 @@
       status_active: '工作中',
       status_muted: '静音中',
       label_mic_device: '麦克风设备:',
-      option_default_system: '系统默认',
+      option_default_system: '⚡ 自动 (优先外接麦克风)',
+      btn_refresh_mic: '🔄 检测麦克风',
+      label_active_mic: '当前使用:',
+      toast_mic_refreshed: '🎙️ 麦克风已更新:',
+      label_camera_zoom: '🔍 摄像头缩放:',
+      toast_cam_zoom: '🔍 摄像头缩放:',
       label_threshold: '声音感应阈值 (Threshold):',
       label_hang_time: '张嘴保持时间 (Hang Time):',
       btn_reset_audio: '🔄 重置 / 重新校准音频 (快捷键: R)',
@@ -783,7 +798,12 @@
       status_active: 'Active',
       status_muted: 'Muted',
       label_mic_device: 'Microphone Device:',
-      option_default_system: 'System Default',
+      option_default_system: '⚡ Auto (Prioritize External Mic)',
+      btn_refresh_mic: '🔄 Detect Mic',
+      label_active_mic: 'Active:',
+      toast_mic_refreshed: '🎙️ Microphone updated:',
+      label_camera_zoom: '🔍 Camera Zoom:',
+      toast_cam_zoom: '🔍 Camera Zoom:',
       label_threshold: 'Voice Threshold:',
       label_hang_time: 'Mouth Hold Delay (Hang Time):',
       btn_reset_audio: '🔄 Reset Audio Engine (Hotkey: R)',
@@ -1025,7 +1045,12 @@
       status_active: 'Active',
       status_muted: 'Muted',
       label_mic_device: 'Microphone Device:',
-      option_default_system: 'System Default',
+      option_default_system: '⚡ Auto (Prioritize External Mic)',
+      btn_refresh_mic: '🔄 Detect Mic',
+      label_active_mic: 'Active:',
+      toast_mic_refreshed: '🎙️ Microphone updated:',
+      label_camera_zoom: '🔍 Camera Zoom:',
+      toast_cam_zoom: '🔍 Camera Zoom:',
       label_threshold: 'Voice Threshold:',
       label_hang_time: 'Mouth Hold Delay (Hang Time):',
       btn_reset_audio: '🔄 Reset Audio Engine (Hotkey: R)',
@@ -1859,6 +1884,8 @@
   const volumeValue = document.getElementById('volumeValue');
   const thresholdValueDisplay = document.getElementById('thresholdValueDisplay');
   const micSelect = document.getElementById('micSelect');
+  const btnRefreshMicDevices = document.getElementById('btnRefreshMicDevices');
+  const activeMicDeviceName = document.getElementById('activeMicDeviceName');
   const thresholdSliderInput = document.getElementById('thresholdSliderInput');
   const thresholdBadge = document.getElementById('thresholdBadge');
   const holdDelaySlider = document.getElementById('holdDelaySlider');
@@ -1917,6 +1944,16 @@
   const btnStopCamera = document.getElementById('btnStopCamera');
   const cameraFitToggleGroup = document.getElementById('cameraFitToggleGroup');
   const btnToggleCameraFit = document.getElementById('btnToggleCameraFit');
+  const cameraZoomControlGroup = document.getElementById('cameraZoomControlGroup');
+  const cameraZoomSlider = document.getElementById('cameraZoomSlider');
+  const cameraZoomBadge = document.getElementById('cameraZoomBadge');
+  const btnCamZoomOut = document.getElementById('btnCamZoomOut');
+  const btnCamZoomIn = document.getElementById('btnCamZoomIn');
+  const btnCamZoomPresets = document.querySelectorAll('.btn-cam-zoom-preset');
+  const cameraZoomFloatingBar = document.getElementById('cameraZoomFloatingBar');
+  const btnFloatCamZoomOut = document.getElementById('btnFloatCamZoomOut');
+  const btnFloatCamZoomIn = document.getElementById('btnFloatCamZoomIn');
+  const floatZoomPresetBtns = document.querySelectorAll('.float-zoom-preset-btn');
   const customBgControls = document.getElementById('customBgControls');
   const btnBgFitCover = document.getElementById('btnBgFitCover');
   const btnBgFitContain = document.getElementById('btnBgFitContain');
@@ -2230,6 +2267,9 @@
       curEmotionName.title = emo.name;
     }
     if (curEmotionHotkey) curEmotionHotkey.textContent = `[${emo.hotkey.toUpperCase()}]`;
+    if (btnEmotionPicker) {
+      btnEmotionPicker.title = `${emo.name} [${emo.hotkey.toUpperCase()}]`;
+    }
 
     // Preload
     Object.values(emo.sprites).forEach(src => { if (src) getImageObject(src); });
@@ -2437,6 +2477,9 @@
     closeAllFlyouts();
     if (!wasOpen) {
       target.classList.remove('hidden');
+      if (flyoutId === 'flyoutAudio' && typeof populateAudioDevices === 'function') {
+        populateAudioDevices().catch(() => {});
+      }
     }
   }
 
@@ -2622,15 +2665,33 @@
     }
   }
 
-  function resetAudioCalibration() {
+  async function resetAudioCalibration() {
     setSpeakingState(false);
     updateVolumeMeter(0);
     lastVoiceActiveTimestamp = 0;
 
     if (audioContext && audioContext.state === 'suspended') {
-      audioContext.resume().catch(() => {});
+      try {
+        await audioContext.resume();
+      } catch (_) {}
     }
 
+    // Hentikan stream lama terlebih dahulu lalu minta ulang mikrofon agar iOS Safari mendeteksi mic eksternal yang baru dicolok
+    if (micStream) {
+      try {
+        micStream.getTracks().forEach(tr => tr.stop());
+      } catch (_) {}
+      micStream = null;
+    }
+    if (micSourceNode) {
+      try {
+        micSourceNode.disconnect();
+      } catch (_) {}
+      micSourceNode = null;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 160));
+    await startMicrophone(true);
     showToast(t('toast_audio_reset'));
   }
 
@@ -2948,8 +3009,32 @@
 
   let currentMicState = 'disconnected';
   let currentMicStateKey = 'status_mic_disconnected';
+  let isSwitchingMic = false;
 
-  async function startMicrophone() {
+  // Helper untuk mendeteksi apakah label perangkat adalah mikrofon internal bawaan HP
+  function isBuiltInPhoneMicLabel(label) {
+    if (!label) return false;
+    const l = label.toLowerCase();
+    // Jika ada indikasi eksternal eksplisit, bukan built-in
+    if (/(usb|headset|wired|external|earpods|airpods|bluetooth|lavalier|wireless|receiver|lightning|type-c|line in|mikrofon eksternal)/i.test(l)) {
+      return false;
+    }
+    return /(iphone microphone|mikrofon iphone|ipad microphone|ipod microphone|built-in|internal|mikrofon internal|speakerphone|bottom microphone|front microphone|back microphone)/i.test(l);
+  }
+
+  function updateActiveMicLabelDisplay() {
+    if (!activeMicDeviceName) return;
+    if (micStream && micStream.getAudioTracks().length > 0) {
+      const track = micStream.getAudioTracks()[0];
+      activeMicDeviceName.textContent = track.label || 'Default Microphone';
+    } else {
+      activeMicDeviceName.textContent = '-';
+    }
+  }
+
+  async function startMicrophone(silentToast = false) {
+    if (isSwitchingMic) return;
+    isSwitchingMic = true;
     initAudioContext();
     setMicStatus('connecting', 'status_mic_connecting');
 
@@ -2958,22 +3043,110 @@
         throw new Error('SECURE_CONTEXT_REQUIRED');
       }
 
-      const selectedDeviceId = micSelect.value || undefined;
-      const constraints = {
-        audio: {
-          deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
+      // PENTING untuk iOS Safari (iPhone 13 mini dll):
+      // Hentikan track lama sebelum memanggil getUserMedia baru agar AVAudioSession melepas kunci dari iPhone Microphone bawaan
+      if (micStream) {
+        try {
+          micStream.getTracks().forEach(tr => tr.stop());
+        } catch (_) {}
+        micStream = null;
+      }
+      if (micSourceNode) {
+        try {
+          micSourceNode.disconnect();
+        } catch (_) {}
+        micSourceNode = null;
+      }
+
+      const rawSelected = micSelect ? micSelect.value : 'auto';
+      const isAutoPriority = !rawSelected || rawSelected === 'auto' || rawSelected === 'default';
+
+      // Pada iOS Safari, echoCancellation: true memaksa AVAudioSessionModeVoiceChat yang sering menolak/mengabaikan
+      // mic eksternal Lightning/USB/wireless dan memaksa iPhone Microphone bawaan.
+      // Karena SmoothieTuber TIDAK mengeluarkan suara mic ke speaker (tidak ada feedback loop),
+      // mematikan echoCancellation/noiseSuppression/autoGainControl membuat iOS langsung membaca mic eksternal dengan jernih!
+      const baseAudioProps = {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        channelCount: { ideal: 1 }
       };
 
-      micStream = await navigator.mediaDevices.getUserMedia(constraints);
-      if (isMicMuted) {
-        micStream.getAudioTracks().forEach(t => t.enabled = false);
+      let stream = null;
+      if (!isAutoPriority) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              ...baseAudioProps,
+              deviceId: { exact: rawSelected }
+            }
+          });
+        } catch (exactErr) {
+          console.warn('Exact mic deviceId failed, falling back to auto:', exactErr);
+        }
       }
-      micSourceNode = audioContext.createMediaStreamSource(micStream);
 
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: baseAudioProps
+          });
+        } catch (baseErr) {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+      }
+
+      // Setelah izin didapat, cek daftar enumerateDevices().
+      // Jika mode "auto" aktif dan stream awal masih tertuju ke "iPhone Microphone" padahal ada mic eksternal di daftar,
+      // otomatis pindah ke deviceId mic eksternal tersebut!
+      if (isAutoPriority && navigator.mediaDevices.enumerateDevices) {
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const audioInputs = devices.filter(d => d.kind === 'audioinput' && d.deviceId);
+          const currentTrack = stream.getAudioTracks()[0];
+          const currentLabel = currentTrack ? (currentTrack.label || '') : '';
+
+          if (audioInputs.length > 1) {
+            const externalCandidate = audioInputs.find(d => d.label && !isBuiltInPhoneMicLabel(d.label));
+            if (externalCandidate && (!currentLabel || isBuiltInPhoneMicLabel(currentLabel)) && externalCandidate.label !== currentLabel) {
+              try {
+                stream.getTracks().forEach(tr => tr.stop());
+                const extStream = await navigator.mediaDevices.getUserMedia({
+                  audio: {
+                    ...baseAudioProps,
+                    deviceId: { exact: externalCandidate.deviceId }
+                  }
+                });
+                if (extStream) {
+                  stream = extStream;
+                }
+              } catch (extErr) {
+                // Jika gagal exact switch, buka kembali stream standar
+                stream = await navigator.mediaDevices.getUserMedia({ audio: baseAudioProps }).catch(() => navigator.mediaDevices.getUserMedia({ audio: true }));
+              }
+            }
+          }
+        } catch (_) {}
+      }
+
+      micStream = stream;
+      if (isMicMuted) {
+        micStream.getAudioTracks().forEach(tr => { tr.enabled = false; });
+      }
+
+      // Pantau jika track mikrofon terputus (misal mic eksternal dicabut) agar otomatis re-route
+      const activeTrack = micStream.getAudioTracks()[0];
+      if (activeTrack) {
+        activeTrack.addEventListener('ended', () => {
+          if (isListening && !isSwitchingMic) {
+            setTimeout(() => {
+              startMicrophone(true).catch(() => {});
+            }, 300);
+          }
+        });
+      }
+
+      micSourceNode = audioContext.createMediaStreamSource(micStream);
       micSourceNode.connect(analyser);
       const targetRecordNode = recordGainNode || audioRecordDestination;
       if (targetRecordNode) {
@@ -2983,12 +3156,18 @@
       currentAudioSourceMode = 'mic';
       isListening = true;
       setMicStatus('active', 'status_mic_active');
-      populateAudioDevices();
+      await populateAudioDevices();
+      updateActiveMicLabelDisplay();
       startAudioLoop();
-      showToast(t('toast_mic_active'));
+
+      if (!silentToast) {
+        const trackName = activeTrack && activeTrack.label ? ` (${activeTrack.label})` : '';
+        showToast(t('toast_mic_active') + trackName);
+      }
     } catch (err) {
       console.error('Gagal mic:', err);
       isListening = false;
+      updateActiveMicLabelDisplay();
       if (err.message === 'SECURE_CONTEXT_REQUIRED' || (typeof window !== 'undefined' && !window.isSecureContext)) {
         setMicStatus('error', 'status_mic_https');
         showToast('🔒 ' + t('status_mic_https'));
@@ -2999,6 +3178,8 @@
         setMicStatus('error', 'status_mic_error');
         showToast('⚠️ ' + t('status_mic_error') + ': ' + (err.message || 'Error'));
       }
+    } finally {
+      isSwitchingMic = false;
     }
   }
 
@@ -3011,6 +3192,7 @@
       micSourceNode.disconnect();
       micSourceNode = null;
     }
+    updateActiveMicLabelDisplay();
     setMicStatus('disconnected', 'status_mic_disconnected');
     if (currentAudioSourceMode === 'mic' && !isAnyMediaPlaying()) {
       isListening = false;
@@ -3051,22 +3233,38 @@
   }
 
   async function populateAudioDevices() {
-    if (!navigator.mediaDevices?.enumerateDevices) return;
+    if (!navigator.mediaDevices?.enumerateDevices || !micSelect) return;
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       const audioInputs = devices.filter(d => d.kind === 'audioinput');
-      if (audioInputs.length > 0) {
-        micSelect.disabled = false;
-        const currentVal = micSelect.value;
-        micSelect.innerHTML = '';
-        audioInputs.forEach((d, i) => {
-          const opt = document.createElement('option');
-          opt.value = d.deviceId;
-          opt.textContent = d.label || `Mikrofon ${i + 1}`;
-          micSelect.appendChild(opt);
-        });
-        if (currentVal) micSelect.value = currentVal;
+      micSelect.disabled = false;
+      const previousSelection = micSelect.value || 'auto';
+      micSelect.innerHTML = '';
+
+      // Selalu sediakan opsi "⚡ Otomatis (Prioritas Mic Eksternal)" di urutan paling atas
+      // agar dropdown tidak mengunci paksa ke ID iPhone Microphone bawaan!
+      const autoOpt = document.createElement('option');
+      autoOpt.value = 'auto';
+      autoOpt.dataset.i18n = 'option_default_system';
+      autoOpt.textContent = t('option_default_system') || '⚡ Otomatis (Prioritas Mic Eksternal)';
+      micSelect.appendChild(autoOpt);
+
+      audioInputs.forEach((d, i) => {
+        if (!d.deviceId) return;
+        const opt = document.createElement('option');
+        opt.value = d.deviceId;
+        const labelText = d.label || `Mikrofon ${i + 1}`;
+        const isExt = d.label && !isBuiltInPhoneMicLabel(d.label);
+        opt.textContent = isExt ? `🎧 ${labelText}` : `📱 ${labelText}`;
+        micSelect.appendChild(opt);
+      });
+
+      if (previousSelection && Array.from(micSelect.options).some(o => o.value === previousSelection)) {
+        micSelect.value = previousSelection;
+      } else {
+        micSelect.value = 'auto';
       }
+      updateActiveMicLabelDisplay();
     } catch (e) {}
   }
 
@@ -3165,6 +3363,34 @@
         stopMicrophone();
       } else {
         startMicrophone();
+      }
+    });
+  }
+
+  if (micSelect) {
+    micSelect.addEventListener('change', async () => {
+      await startMicrophone(false);
+    });
+  }
+
+  if (btnRefreshMicDevices) {
+    btnRefreshMicDevices.addEventListener('click', async () => {
+      if (micSelect) micSelect.value = 'auto';
+      await resetAudioCalibration();
+      const trackLabel = (micStream && micStream.getAudioTracks()[0] && micStream.getAudioTracks()[0].label)
+        ? micStream.getAudioTracks()[0].label
+        : 'Default';
+      showToast(`${t('toast_mic_refreshed')} ${trackLabel}`);
+    });
+  }
+
+  if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+    navigator.mediaDevices.addEventListener('devicechange', async () => {
+      await populateAudioDevices();
+      if (isListening && (!micSelect || micSelect.value === 'auto')) {
+        setTimeout(() => {
+          startMicrophone(true).catch(() => {});
+        }, 250);
       }
     });
   }
@@ -3413,50 +3639,49 @@
       exportCtx.fillStyle = '#00FF00';
       exportCtx.fillRect(0, 0, w, h);
     } else if (isCameraActive && bgMode !== 'green') {
-      // Prioritas Utama Kamera: Rekam latar kamera langsung, cover penuh atau fit contain anti-gepeng
+      // Prioritas Utama Kamera: Rekam latar kamera langsung dengan dukungan Zoom In / Zoom Out (0.5x - 3.0x)
       const vw = cameraBgVideo.videoWidth || 1280;
       const vh = cameraBgVideo.videoHeight || 720;
       const vAspect = vw / vh;
       const cAspect = w / h;
+      const effZoom = getEffectiveCameraVisualZoom();
 
       exportCtx.save();
+      exportCtx.fillStyle = '#000000';
+      exportCtx.fillRect(0, 0, w, h);
+
+      exportCtx.translate(w / 2, h / 2);
       if (activeCameraFacing === 'user') {
         // Cermin horizontal untuk kamera depan selfie agar sama persis dengan preview
-        exportCtx.translate(w, 0);
-        exportCtx.scale(-1, 1);
+        exportCtx.scale(-1 * effZoom, effZoom);
+      } else {
+        exportCtx.scale(effZoom, effZoom);
       }
 
+      let baseW = w;
+      let baseH = h;
       if (isCameraCoverFit) {
-        let sx = 0, sy = 0, sw = vw, sh = vh;
         if (vAspect > cAspect) {
-          sw = vh * cAspect;
-          sx = (vw - sw) / 2;
+          baseH = h;
+          baseW = h * vAspect;
         } else {
-          sh = vw / cAspect;
-          sy = (vh - sh) / 2;
-        }
-        try {
-          exportCtx.drawImage(cameraBgVideo, sx, sy, sw, sh, 0, 0, w, h);
-        } catch (e) {
-          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
+          baseW = w;
+          baseH = w / vAspect;
         }
       } else {
-        // Mode Contain
-        exportCtx.fillStyle = '#000000';
-        exportCtx.fillRect(0, 0, w, h);
-        let dw = w, dh = h, dx = 0, dy = 0;
         if (vAspect > cAspect) {
-          dh = w / vAspect;
-          dy = (h - dh) / 2;
+          baseW = w;
+          baseH = w / vAspect;
         } else {
-          dw = h * vAspect;
-          dx = (w - dw) / 2;
+          baseH = h;
+          baseW = h * vAspect;
         }
-        try {
-          exportCtx.drawImage(cameraBgVideo, dx, dy, dw, dh);
-        } catch (e) {
-          try { exportCtx.drawImage(cameraBgVideo, 0, 0, w, h); } catch (_) {}
-        }
+      }
+
+      try {
+        exportCtx.drawImage(cameraBgVideo, -baseW / 2, -baseH / 2, baseW, baseH);
+      } catch (e) {
+        try { exportCtx.drawImage(cameraBgVideo, -w / 2, -h / 2, w, h); } catch (_) {}
       }
       exportCtx.restore();
     } else if (bgMode === 'current') {
@@ -4323,35 +4548,196 @@
     avatarWrapper.addEventListener('pointercancel', finishDrag);
   }
 
-  // --- 9C. LIVE CAMERA HANDCAM LAYER (IPHONE & ANDROID) ---
+  // --- 9C. LIVE CAMERA HANDCAM LAYER & REAR CAMERA ZOOM (0.5x - 3.0x) ---
   let isCameraCoverFit = true;
+  let cameraZoom = 1.0;
+  let isUsingUltraWideLens = false;
+  let isSwitchingCameraLens = false;
+
+  function getEffectiveCameraVisualZoom() {
+    // Jika lensa fisik Ultra-Wide (0.5x) sedang aktif, 0.5x adalah ukuran 1.0x dari sensor Ultra-Wide
+    if (isUsingUltraWideLens && activeCameraFacing === 'environment') {
+      return Math.max(0.5, cameraZoom / 0.5);
+    }
+    return cameraZoom;
+  }
+
+  function updateCameraZoomUI() {
+    const formatted = `${Number(cameraZoom.toFixed(2))}x`;
+    if (cameraZoomSlider) {
+      cameraZoomSlider.value = cameraZoom;
+    }
+    if (cameraZoomBadge) {
+      cameraZoomBadge.textContent = formatted;
+    }
+    if (btnCamZoomPresets && btnCamZoomPresets.length > 0) {
+      btnCamZoomPresets.forEach(btn => {
+        const z = parseFloat(btn.dataset.camZoom);
+        if (Math.abs(z - cameraZoom) < 0.04) {
+          btn.classList.add('is-active');
+        } else {
+          btn.classList.remove('is-active');
+        }
+      });
+    }
+    if (floatZoomPresetBtns && floatZoomPresetBtns.length > 0) {
+      floatZoomPresetBtns.forEach(btn => {
+        const z = parseFloat(btn.dataset.camZoom);
+        if (Math.abs(z - cameraZoom) < 0.04) {
+          btn.classList.add('is-active');
+        } else {
+          btn.classList.remove('is-active');
+        }
+      });
+    }
+  }
+
+  // Coba cari lensa Ultra-Wide (0.5x) atau lensa utama belakang pada iPhone / Android
+  async function findRearCameraLensDeviceId(wantUltraWide) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return null;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(d => d.kind === 'videoinput' && d.deviceId);
+      if (videoInputs.length <= 1) return null;
+
+      if (wantUltraWide) {
+        const uw = videoInputs.find(d => /(ultra\s*wide|ultra-wide|0\.5x|lebar ultra|camera 2,\s*facing back)/i.test(d.label || ''));
+        return uw ? uw.deviceId : null;
+      } else {
+        const mainBack = videoInputs.find(d => {
+          const l = (d.label || '').toLowerCase();
+          return (l.includes('back') || l.includes('belakang') || l.includes('rear') || l.includes('environment')) &&
+                 !/(ultra\s*wide|ultra-wide|telephoto|tele)/i.test(l);
+        });
+        return mainBack ? mainBack.deviceId : null;
+      }
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function setCameraZoom(newZoom, notify = false) {
+    const clamped = Math.max(0.5, Math.min(3.0, Math.round(newZoom * 20) / 20));
+    cameraZoom = clamped;
+    updateCameraZoomUI();
+
+    // Jika sedang di kamera belakang dan pengguna memilih < 0.8x (misal 0.5x), coba beralih ke lensa Ultra-Wide jika tersedia di HP
+    if (cameraStream && activeCameraFacing === 'environment' && !isSwitchingCameraLens) {
+      const wantUltraWide = cameraZoom <= 0.75;
+      if (wantUltraWide !== isUsingUltraWideLens) {
+        const targetLensId = await findRearCameraLensDeviceId(wantUltraWide);
+        if (targetLensId) {
+          isSwitchingCameraLens = true;
+          try {
+            const isPortrait = window.innerHeight >= window.innerWidth;
+            const newStream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                deviceId: { exact: targetLensId },
+                width: { ideal: isPortrait ? 720 : 1280 },
+                height: { ideal: isPortrait ? 1280 : 720 }
+              }
+            });
+            if (newStream) {
+              cameraStream.getTracks().forEach(tr => tr.stop());
+              cameraStream = newStream;
+              isUsingUltraWideLens = wantUltraWide;
+              if (cameraBgVideo) {
+                cameraBgVideo.srcObject = cameraStream;
+                await cameraBgVideo.play().catch(() => {});
+              }
+            }
+          } catch (_) {
+            // Jika tidak bisa pindah lensa hardware, gunakan uncrop & smooth scale CSS/Canvas
+            isUsingUltraWideLens = false;
+          } finally {
+            isSwitchingCameraLens = false;
+          }
+        } else {
+          isUsingUltraWideLens = false;
+        }
+      }
+
+      // Terapkan juga hardware zoom constraint jika kamera mendukung dan zoom >= 1.0
+      try {
+        const videoTrack = cameraStream.getVideoTracks()[0];
+        if (videoTrack && typeof videoTrack.getCapabilities === 'function') {
+          const caps = videoTrack.getCapabilities();
+          if (caps && caps.zoom && typeof videoTrack.applyConstraints === 'function') {
+            const minZ = caps.zoom.min || 1;
+            const maxZ = caps.zoom.max || 1;
+            if (cameraZoom < 1.0 && minZ < 1.0) {
+              const hwZoom = Math.max(minZ, Math.min(maxZ, cameraZoom));
+              videoTrack.applyConstraints({ advanced: [{ zoom: hwZoom }] }).catch(() => {});
+            } else if (minZ <= 1.0 && maxZ >= 1.0) {
+              // Reset hardware zoom ke 1.0 agar skala ditangani seragam oleh CSS + Canvas Export (100% WYSIWYG)
+              videoTrack.applyConstraints({ advanced: [{ zoom: Math.max(minZ, 1.0) }] }).catch(() => {});
+            }
+          }
+        }
+      } catch (_) {}
+    }
+
+    applyCameraFitStyle();
+    if (notify) {
+      showToast(`${t('toast_cam_zoom') || '🔍 Zoom Kamera:'} ${Number(cameraZoom.toFixed(2))}x`);
+    }
+  }
 
   function applyCameraFitStyle() {
     if (!cameraBgVideo || !cameraBgWrapper) return;
-    const vw = window.innerWidth || document.documentElement.clientWidth;
-    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const vw = window.innerWidth || document.documentElement.clientWidth || 1;
+    const vh = window.innerHeight || document.documentElement.clientHeight || 1;
 
     cameraBgWrapper.style.width = `${vw}px`;
     cameraBgWrapper.style.height = `${vh}px`;
-    cameraBgVideo.style.width = `${vw}px`;
-    cameraBgVideo.style.height = `${vh}px`;
 
+    // Hitung ukuran dasar video penuh sensor (tanpa terpotong kotak <video>) agar saat Zoom Out (0.5x - 0.95x)
+    // bagian tepi sensor kamera yang tadinya terpotong Cover bisa terlihat utuh!
+    const vidW = cameraBgVideo.videoWidth || (vh > vw ? 720 : 1280);
+    const vidH = cameraBgVideo.videoHeight || (vh > vw ? 1280 : 720);
+    const vAspect = vidW / vidH;
+    const sAspect = vw / vh;
+
+    let baseW = vw;
+    let baseH = vh;
     if (isCameraCoverFit) {
-      cameraBgVideo.style.setProperty('-webkit-object-fit', 'cover', 'important');
-      cameraBgVideo.style.setProperty('object-fit', 'cover', 'important');
+      if (vAspect > sAspect) {
+        baseH = vh;
+        baseW = Math.round(vh * vAspect);
+      } else {
+        baseW = vw;
+        baseH = Math.round(vw / vAspect);
+      }
+      cameraBgVideo.style.setProperty('-webkit-object-fit', 'fill', 'important');
+      cameraBgVideo.style.setProperty('object-fit', 'fill', 'important');
       cameraBgWrapper.classList.remove('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_cover');
     } else {
+      if (vAspect > sAspect) {
+        baseW = vw;
+        baseH = Math.round(vw / vAspect);
+      } else {
+        baseH = vh;
+        baseW = Math.round(vh * vAspect);
+      }
       cameraBgVideo.style.setProperty('-webkit-object-fit', 'contain', 'important');
       cameraBgVideo.style.setProperty('object-fit', 'contain', 'important');
       cameraBgWrapper.classList.add('camera-fit-contain');
       if (btnToggleCameraFit) btnToggleCameraFit.textContent = t('btn_camera_fit_contain');
     }
 
+    cameraBgVideo.style.setProperty('min-width', '0px', 'important');
+    cameraBgVideo.style.setProperty('min-height', '0px', 'important');
+    cameraBgVideo.style.width = `${baseW}px`;
+    cameraBgVideo.style.height = `${baseH}px`;
+
+    const effZoom = getEffectiveCameraVisualZoom();
     if (activeCameraFacing === 'user') {
       cameraBgWrapper.classList.add('camera-facing-user');
+      cameraBgVideo.style.setProperty('transform', `translate(-50%, -50%) scale(${-effZoom}, ${effZoom})`, 'important');
     } else {
       cameraBgWrapper.classList.remove('camera-facing-user');
+      cameraBgVideo.style.setProperty('transform', `translate(-50%, -50%) scale(${effZoom})`, 'important');
     }
   }
 
@@ -4367,6 +4753,7 @@
       // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280)
       const isPortrait = window.innerHeight >= window.innerWidth;
       let stream = null;
+      isUsingUltraWideLens = false;
 
       // 3-Stage Graceful Fallback (Omit audio:false to prevent "Invalid constraint" exceptions)
       try {
@@ -4393,6 +4780,8 @@
 
       cameraStream = stream;
       activeCameraFacing = facing;
+      cameraZoom = 1.0;
+      updateCameraZoomUI();
 
       if (cameraBgWrapper) {
         cameraBgWrapper.classList.remove('hidden');
@@ -4413,10 +4802,29 @@
       if (btnRemoveCustomBg) btnRemoveCustomBg.classList.add('hidden');
       if (btnStopCamera) btnStopCamera.classList.remove('hidden');
       if (cameraFitToggleGroup) cameraFitToggleGroup.classList.remove('hidden');
+      if (cameraZoomControlGroup) cameraZoomControlGroup.classList.remove('hidden');
+      if (cameraZoomFloatingBar) {
+        if (facing === 'environment') {
+          cameraZoomFloatingBar.classList.remove('hidden');
+        } else {
+          cameraZoomFloatingBar.classList.add('hidden');
+        }
+      }
       if (exportBgMode) exportBgMode.value = 'current';
 
       document.body.className = '';
       document.body.classList.add('bg-pure-transparent');
+
+      // PENTING untuk iOS Safari: menyalakan kamera kadang menginterupsi AVAudioSession mikrofon.
+      // Pastikan AudioContext tetap berjalan dan pulihkan mikrofon jika track terputus.
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+      }
+      if (isListening && (!micStream || !micStream.active || micStream.getAudioTracks().some(tr => tr.readyState === 'ended'))) {
+        setTimeout(() => {
+          startMicrophone(true).catch(() => {});
+        }, 250);
+      }
 
       if (facing === 'environment') {
         if (btnCameraBack) btnCameraBack.classList.add('is-active');
@@ -4453,6 +4861,7 @@
       cameraStream = null;
     }
     activeCameraFacing = null;
+    isUsingUltraWideLens = false;
     if (cameraBgWrapper) {
       cameraBgWrapper.classList.add('hidden');
       cameraBgWrapper.classList.remove('camera-facing-user');
@@ -4462,6 +4871,8 @@
     }
     if (btnStopCamera) btnStopCamera.classList.add('hidden');
     if (cameraFitToggleGroup) cameraFitToggleGroup.classList.add('hidden');
+    if (cameraZoomControlGroup) cameraZoomControlGroup.classList.add('hidden');
+    if (cameraZoomFloatingBar) cameraZoomFloatingBar.classList.add('hidden');
     if (btnCameraBack) btnCameraBack.classList.remove('is-active');
     if (btnCameraFront) btnCameraFront.classList.remove('is-active');
 
@@ -4503,6 +4914,79 @@
       showToast(isCameraCoverFit ? t('toast_camera_fit_cover') : t('toast_camera_fit_contain'));
     });
   }
+
+  // Event Listeners Zoom Kamera Belakang & Depan (Slider, Tombol +/-, Preset, & Cubit Layar 2 Jari)
+  if (cameraZoomSlider) {
+    cameraZoomSlider.addEventListener('input', (e) => {
+      setCameraZoom(parseFloat(e.target.value) || 1.0, false);
+    });
+  }
+  if (btnCamZoomOut) {
+    btnCamZoomOut.addEventListener('click', () => {
+      setCameraZoom(cameraZoom - 0.25, true);
+    });
+  }
+  if (btnCamZoomIn) {
+    btnCamZoomIn.addEventListener('click', () => {
+      setCameraZoom(cameraZoom + 0.25, true);
+    });
+  }
+  if (btnCamZoomPresets && btnCamZoomPresets.length > 0) {
+    btnCamZoomPresets.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetZ = parseFloat(btn.dataset.camZoom);
+        if (!isNaN(targetZ)) setCameraZoom(targetZ, true);
+      });
+    });
+  }
+  if (btnFloatCamZoomOut) {
+    btnFloatCamZoomOut.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCameraZoom(cameraZoom - 0.25, true);
+    });
+  }
+  if (btnFloatCamZoomIn) {
+    btnFloatCamZoomIn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCameraZoom(cameraZoom + 0.25, true);
+    });
+  }
+  if (floatZoomPresetBtns && floatZoomPresetBtns.length > 0) {
+    floatZoomPresetBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetZ = parseFloat(btn.dataset.camZoom);
+        if (!isNaN(targetZ)) setCameraZoom(targetZ, true);
+      });
+    });
+  }
+
+  // Gestur Pinch-to-Zoom 2 Jari di layar saat kamera aktif
+  let pinchStartDist = 0;
+  let pinchStartZoom = 1.0;
+
+  window.addEventListener('touchstart', (e) => {
+    if (!cameraStream || !e.touches || e.touches.length !== 2) return;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.hypot(dx, dy);
+    pinchStartZoom = cameraZoom;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!cameraStream || !e.touches || e.touches.length !== 2 || pinchStartDist <= 10) return;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.hypot(dx, dy);
+    const ratio = dist / pinchStartDist;
+    setCameraZoom(pinchStartZoom * ratio, false);
+  }, { passive: true });
+
+  window.addEventListener('touchend', (e) => {
+    if (!e.touches || e.touches.length < 2) {
+      pinchStartDist = 0;
+    }
+  }, { passive: true });
 
   if (cameraBgVideo) {
     cameraBgVideo.addEventListener('loadedmetadata', () => {

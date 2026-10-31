@@ -36,11 +36,11 @@
 
 :root {
   /* Typography - Headline: Colasta | Text: Mograph */
-  --font-heading: 'Colasta', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-doodle: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-ui: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-note: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Mograph', monospace, sans-serif;
+  --font-heading: 'Colasta', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  --font-doodle: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  --font-ui: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  --font-note: 'Mograph', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  --font-mono: 'Mograph', monospace, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 
   /* Whimsical Sketchy Line-Art Color Palette */
   --ink: #2b2825;              /* Fine charcoal sketch outline */
@@ -252,6 +252,128 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   font-weight: 700;
 }
 
+/* Camera Zoom Controls inside Flyout & Floating Stage Bar */
+.camera-zoom-control-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 253, 249, 0.9);
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 2px 2px 0px var(--ink);
+}
+
+.cam-zoom-step-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: var(--paper-card);
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 1.5px 1.5px 0px var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.cam-zoom-step-btn:hover {
+  background: var(--crayon-yellow);
+}
+
+.cam-zoom-step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 0.5px 0.5px 0px var(--ink);
+}
+
+.camera-zoom-presets-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.btn-cam-zoom-preset {
+  flex: 1;
+  padding: 4px 2px !important;
+  font-size: 11px !important;
+  font-family: var(--font-mono) !important;
+  font-weight: 700 !important;
+}
+
+.btn-cam-zoom-preset.is-active {
+  background: var(--crayon-yellow) !important;
+  border-color: var(--ink) !important;
+  box-shadow: 2px 2px 0px var(--ink) !important;
+}
+
+/* Floating Rear Camera Zoom Pill on Main Stage (Bottom Center) */
+.camera-zoom-floating-bar {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 105;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: rgba(255, 253, 249, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.8px solid var(--ink);
+  border-radius: var(--radius-pill);
+  box-shadow: 2.5px 2.5px 0px var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.float-zoom-step-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 1.5px 1.5px 0px var(--ink);
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.float-zoom-step-btn:active {
+  transform: scale(0.94);
+}
+
+.float-zoom-preset-btn {
+  min-width: 34px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  border: 1.4px solid var(--ink);
+  background: var(--paper-card);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 1px 1px 0px var(--ink);
+  transition: all 0.12s ease;
+}
+
+.float-zoom-preset-btn.is-active {
+  background: var(--crayon-yellow);
+  box-shadow: 1.8px 1.8px 0px var(--ink);
+  transform: scale(1.06);
+}
+
 .btn-pos-preset:hover,
 .btn-pos-preset:focus {
   background: var(--crayon-mint);
@@ -451,15 +573,18 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   top: 14px;
   left: 16px;
   z-index: 110;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 0;
   background: var(--paper-card);
-  border: 1.6px solid var(--ink);
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  font-family: var(--font-heading);
-  font-size: 13px;
+  border: 1.8px solid var(--ink);
+  border-radius: 50%;
+  padding: 0;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-heading);
+  font-size: 20px;
   font-weight: 700;
   color: var(--ink);
   box-shadow: 2px 2px 0px var(--ink);
@@ -482,33 +607,33 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 }
 
 .lang-pill-flag {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 .lang-pill-code {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  display: none !important;
 }
 
-/* Bug Report Button in Top-Right Corner (Doodle Style) */
+/* Bug Report Button in Top-Right Corner (Emoticon-Only Doodle Style) */
 .app-corner-bug-btn {
   position: fixed;
   top: 14px;
   right: 16px;
   z-index: 110;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 0;
   background: var(--paper-card);
   border: 1.8px solid var(--ink);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 6px 13px;
-  font-family: var(--font-heading);
-  font-size: 12.5px;
+  border-radius: 50%;
+  padding: 0;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-heading);
+  font-size: 20px;
   font-weight: 700;
   color: var(--ink);
   box-shadow: 2px 2px 0px var(--ink);
@@ -521,7 +646,7 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 .app-corner-bug-btn:hover {
   background: #fde68a;
   box-shadow: 3px 3px 0px var(--ink);
-  transform: translateY(-1px) rotate(-0.5deg);
+  transform: translateY(-1px) rotate(-3deg);
 }
 
 .app-corner-bug-btn:active {
@@ -534,11 +659,12 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   align-items: center;
   justify-content: center;
   line-height: 1;
+  font-size: 20px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
 
 .bug-pill-label {
-  letter-spacing: 0.02em;
-  white-space: nowrap;
+  display: none !important;
 }
 
 /* ==========================================================================
@@ -732,6 +858,8 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  line-height: 1;
 }
 
 /* Tombol Mic & Status LED */
@@ -875,54 +1003,33 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 }
 
 /* ==========================================================================
-   RIGHT DOCK: EMOTION PILL & 4-SPRITE VERTICAL STACK (VEADOTUBE STYLE)
+   RIGHT DOCK: EMOTION PILL (EMOTICON-ONLY BUTTON) & 4-SPRITE VERTICAL STACK
    ========================================================================== */
 .emotion-state-pill {
-  width: 100%;
+  width: 44px;
+  height: 44px;
   background: var(--crayon-yellow);
   border: 1.5px solid var(--ink);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-btn);
   box-shadow: 2px 2px 0px var(--crayon-orange), 2.5px 2.5px 0px var(--ink);
   color: var(--ink);
-  padding: 4px 5px;
+  padding: 0;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  font-family: var(--font-heading);
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-heading);
   transition: all 0.12s ease;
 }
 .emotion-state-pill:hover {
   background: #fff;
   box-shadow: 2.5px 2.5px 0px var(--ink);
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
-.cur-emotion-text {
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-  max-width: 66px;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.cur-emotion-key {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--ink);
-  background: rgba(255,255,255,0.7);
-  border: 1px solid var(--ink);
-  border-radius: 4px;
-  padding: 0 3px;
-  line-height: 1.2;
-}
+.cur-emotion-text,
+.cur-emotion-key,
 .pill-arrow {
-  font-size: 9px;
-  line-height: 0.8;
+  display: none !important;
 }
 
 /* 4 Sprite Tiles Column */
@@ -985,6 +1092,7 @@ body.bg-pure-transparent { background: transparent !important; background-image:
   bottom: 1.5px;
   right: 1.5px;
   font-size: 11px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
   background: #ffffff;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
@@ -1538,27 +1646,32 @@ body.bg-pure-transparent { background: transparent !important; background-image:
 .player-timeline-box { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .player-time-readout { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
 
-/* Floating Restore Button (OBS Mode) */
+/* Floating Restore Button (OBS Mode - Emoticon Only) */
 .btn-restore-controls {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  width: 44px;
+  height: 44px;
   background: var(--smoothie-yellow);
   border: var(--border-thick);
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   box-shadow: var(--shadow-card);
   color: var(--ink);
-  padding: 8px 16px;
-  font-family: var(--font-heading);
-  font-size: 14px;
+  padding: 0;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-heading);
+  font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
 }
 .btn-restore-controls:hover {
   background: #fff;
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 /* OBS Mode Hide Rules & True Alpha Transparency */
@@ -1577,7 +1690,8 @@ body.obs-mode .veado-flyout,
 body.obs-mode .app-whimsical-header,
 body.obs-mode .app-corner-lang-btn,
 body.obs-mode .header-lang-pill,
-body.obs-mode .app-corner-bug-btn {
+body.obs-mode .app-corner-bug-btn,
+body.obs-mode .camera-zoom-floating-bar {
   opacity: 0 !important;
   pointer-events: none !important;
   transform: scale(0.9) !important;
@@ -1592,7 +1706,8 @@ body.pure-green-mode {
 
 body.pure-green-mode .custom-bg-layer,
 body.pure-green-mode .camera-bg-wrapper,
-body.pure-green-mode .camera-bg-layer {
+body.pure-green-mode .camera-bg-layer,
+body.pure-green-mode .camera-zoom-floating-bar {
   display: none !important;
 }
 
@@ -1612,23 +1727,26 @@ body.pure-green-mode .app-corner-bug-btn {
   top: 14px;
   right: 14px;
   z-index: 9999;
+  width: 42px;
+  height: 42px;
   background: rgba(43, 40, 37, 0.88);
   color: #ffffff;
   border: 1.5px solid rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-family: var(--font-heading);
-  font-size: 12px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-heading);
+  font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  opacity: 0.72;
+  opacity: 0.78;
 }
 
 .btn-restore-pure-green:hover,
@@ -2328,8 +2446,10 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
   .header-lang-pill {
     top: 10px;
     left: 10px;
-    padding: 4px 10px;
-    font-size: 12px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 18px;
   }
   .app-whimsical-header {
     top: 8px;
@@ -2496,8 +2616,10 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
   .app-corner-bug-btn {
     top: 10px;
     right: 10px;
-    padding: 5px 10px;
-    font-size: 11.5px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 18px;
   }
 }
 
@@ -2560,8 +2682,26 @@ body:not(.pure-green-mode) .btn-restore-pure-green {
   .btn-restore-controls {
     bottom: 14px;
     right: 14px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    padding: 0;
+  }
+  .camera-zoom-floating-bar {
+    bottom: 12px;
+    padding: 4px 6px;
+    gap: 4px;
+  }
+  .float-zoom-step-btn {
+    width: 28px;
+    height: 28px;
     font-size: 12px;
-    padding: 6px 12px;
+  }
+  .float-zoom-preset-btn {
+    min-width: 30px;
+    height: 26px;
+    padding: 0 5px;
+    font-size: 10.5px;
   }
   .toast-notification {
     width: calc(100vw - 40px);

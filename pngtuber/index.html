@@ -22,7 +22,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
-  <link rel="stylesheet" href="style.css?v=5.6">
+  <link rel="stylesheet" href="style.css?v=5.7">
 </head>
 <body class="bg-checkerboard">
 
@@ -45,24 +45,16 @@
 
   <!-- =========================================================================
        TOMBOL PILIHAN BAHASA (POJOK KIRI ATAS) & TOMBOL LAPOR BUG (POJOK KANAN ATAS)
+       Hanya menampilkan emotikon/ikon tanpa teks sesuai permintaan pengguna
        ========================================================================= -->
-  <button id="btnHeaderLangSwitch" class="app-corner-lang-btn header-lang-pill" type="button" title="Pilih Bahasa / Switch Language" aria-label="Switch Language">
+  <button id="btnHeaderLangSwitch" class="app-corner-lang-btn header-lang-pill icon-only-toolbar-btn" type="button" title="Pilih Bahasa / Switch Language" aria-label="Switch Language">
     <span class="lang-pill-flag">🌐</span>
-    <span id="headerLangLabel" class="lang-pill-code">ID</span>
+    <span id="headerLangLabel" class="lang-pill-code hidden">ID</span>
   </button>
 
-  <button id="btnOpenBugReport" class="app-corner-bug-btn" type="button" title="Laporkan Kendala atau Masukan" aria-label="Lapor Bug">
-    <span class="bug-pill-icon" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="16" height="12" rx="2.5" fill="#fde68a"></rect>
-        <path d="M2 6.5l8 5 8-5"></path>
-        <circle cx="17.5" cy="16.5" r="4.5" fill="#fca5a5"></circle>
-        <path d="M17.5 12v9M14.5 15.5h6M15 18.5h5"></path>
-        <circle cx="16" cy="14.5" r="0.6" fill="currentColor"></circle>
-        <circle cx="19" cy="14.5" r="0.6" fill="currentColor"></circle>
-      </svg>
-    </span>
-    <span class="bug-pill-label" data-i18n="btn_report_bug">Lapor Bug</span>
+  <button id="btnOpenBugReport" class="app-corner-bug-btn icon-only-toolbar-btn" type="button" title="Lapor Bug" data-i18n-title="btn_report_bug" aria-label="Lapor Bug">
+    <span class="bug-pill-icon" aria-hidden="true">🐞</span>
+    <span class="bug-pill-label hidden" data-i18n="btn_report_bug">Lapor Bug</span>
   </button>
 
   <!-- =========================================================================
@@ -145,11 +137,11 @@
        ========================================================================= -->
   <aside id="rightDock" class="veado-dock veado-dock-right" aria-label="Toolbar Emosi & Sprite 4-State">
 
-    <!-- Tombol Pilihan Emosi Aktif (Pill di atas stack sprite) -->
-    <button id="btnEmotionPicker" class="emotion-state-pill" type="button" title="Klik untuk kelola atau berganti emosi" data-i18n-title="dock_emotions" data-flyout="flyoutEmotions">
-      <span id="curEmotionName" class="cur-emotion-text">Normal</span>
-      <span id="curEmotionHotkey" class="cur-emotion-key">[1]</span>
-      <span class="pill-arrow">▾</span>
+    <!-- Tombol Pilihan Emosi Aktif (Hanya Emotikon Tanpa Teks) -->
+    <button id="btnEmotionPicker" class="dock-btn emotion-state-pill" type="button" title="Klik untuk kelola atau berganti emosi" data-i18n-title="dock_emotions" data-flyout="flyoutEmotions" aria-label="Kelola Emosi">
+      <span class="dock-icon" aria-hidden="true">🎭</span>
+      <span id="curEmotionName" class="cur-emotion-text hidden">Normal</span>
+      <span id="curEmotionHotkey" class="cur-emotion-key hidden">[1]</span>
     </button>
 
     <!-- 4 TILE SPRITE STACK VERTIKAL (Persis Veadotube!) -->
@@ -236,10 +228,18 @@
         <span>Vol: <strong id="volumeValue">0.0</strong> / <strong id="thresholdValueDisplay" class="text-accent">15.0</strong></span>
       </div>
       <div class="input-group">
-        <label for="micSelect" class="input-label" data-i18n="label_mic_device">Perangkat Mikrofon:</label>
-        <select id="micSelect" class="form-select" disabled>
-          <option value="" data-i18n="option_default_system">Default Sistem</option>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 2px;">
+          <label for="micSelect" class="input-label" data-i18n="label_mic_device">Perangkat Mikrofon:</label>
+          <button id="btnRefreshMicDevices" class="btn btn-secondary" type="button" style="font-size: 11px; padding: 3px 8px;" title="Segarkan & deteksi ulang mikrofon eksternal yang baru dicolok" data-i18n="btn_refresh_mic">
+            🔄 Deteksi Mic
+          </button>
+        </div>
+        <select id="micSelect" class="form-select">
+          <option value="auto" data-i18n="option_default_system">⚡ Otomatis (Prioritas Mic Eksternal)</option>
         </select>
+        <div id="activeMicInfoNote" style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
+          🎙️ <span data-i18n="label_active_mic">Input Aktif:</span> <strong id="activeMicDeviceName">Default Sistem</strong>
+        </div>
       </div>
       <div class="slider-control-group">
         <div class="slider-info">
@@ -367,6 +367,26 @@
           <button id="btnToggleCameraFit" class="btn btn-secondary btn-block" type="button" style="font-size: 11px; padding: 5px;" data-i18n="btn_camera_fit_cover">
             📐 Tampilan: Penuh Layar (Cover)
           </button>
+        </div>
+
+        <!-- Kontrol Zoom In / Zoom Out Kamera Belakang -->
+        <div id="cameraZoomControlGroup" class="camera-zoom-control-box hidden" style="margin-top: 8px;">
+          <div class="slider-info" style="margin-bottom: 4px;">
+            <label for="cameraZoomSlider" class="slider-label" style="font-size: 12px;" data-i18n="label_camera_zoom">🔍 Zoom Kamera Belakang:</label>
+            <span id="cameraZoomBadge" class="range-value-pill">1.0x</span>
+          </div>
+          <div class="slider-with-number" style="gap: 6px;">
+            <button id="btnCamZoomOut" type="button" class="btn btn-secondary cam-zoom-step-btn" title="Zoom Out">➖</button>
+            <input id="cameraZoomSlider" type="range" min="0.5" max="3.0" step="0.1" value="1.0" class="range-slider">
+            <button id="btnCamZoomIn" type="button" class="btn btn-secondary cam-zoom-step-btn" title="Zoom In">➕</button>
+          </div>
+          <div class="camera-zoom-presets-row">
+            <button type="button" class="btn-cam-zoom-preset" data-zoom="0.5">0.5x</button>
+            <button type="button" class="btn-cam-zoom-preset active" data-zoom="1.0">1x</button>
+            <button type="button" class="btn-cam-zoom-preset" data-zoom="1.5">1.5x</button>
+            <button type="button" class="btn-cam-zoom-preset" data-zoom="2.0">2x</button>
+            <button type="button" class="btn-cam-zoom-preset" data-zoom="3.0">3x</button>
+          </div>
         </div>
       </div>
     </div>
@@ -663,14 +683,25 @@
     </div>
   </div>
 
-  <!-- FLOATING RESTORE BUTTON & TOAST -->
-  <button id="btnRestoreControls" class="btn-restore-controls hidden" title="Tampilkan Toolbar (Tekan H)" data-i18n="btn_restore_controls">
-    ⚙️ Tampilkan Toolbar
+  <!-- FLOATING QUICK ZOOM PILL KHUSUS KAMERA BELAKANG (MUNCUL DI LAYAR SAAT KAMERA BELAKANG AKTIF) -->
+  <div id="cameraZoomFloatingBar" class="camera-zoom-floating-bar hidden" role="group" aria-label="Zoom Kamera Belakang">
+    <button id="btnFloatCamZoomOut" type="button" class="float-zoom-step-btn" title="Zoom Out" aria-label="Zoom Out">➖</button>
+    <button type="button" class="float-zoom-preset-btn" data-zoom="0.5">0.5x</button>
+    <button type="button" class="float-zoom-preset-btn active" data-zoom="1.0">1x</button>
+    <button type="button" class="float-zoom-preset-btn" data-zoom="1.5">1.5x</button>
+    <button type="button" class="float-zoom-preset-btn" data-zoom="2.0">2x</button>
+    <button type="button" class="float-zoom-preset-btn" data-zoom="3.0">3x</button>
+    <button id="btnFloatCamZoomIn" type="button" class="float-zoom-step-btn" title="Zoom In" aria-label="Zoom In">➕</button>
+  </div>
+
+  <!-- FLOATING RESTORE BUTTON & TOAST (HANYA EMOTIKON TANPA TEKS) -->
+  <button id="btnRestoreControls" class="btn-restore-controls icon-only-toolbar-btn hidden" type="button" title="Tampilkan Toolbar (Tekan H)" data-i18n-title="btn_restore_controls" aria-label="Tampilkan Toolbar">
+    <span aria-hidden="true">⚙️</span>
   </button>
 
-  <!-- FLOATING RESTORE BUTTON UNTUK PURE GREEN SCREEN -->
-  <button id="btnRestorePureGreen" class="btn-restore-pure-green hidden" type="button" title="Keluar dari Green Screen Murni (Tekan Esc atau G)" data-i18n="btn_restore_green">
-    ⚙️ Keluar Green Screen
+  <!-- FLOATING RESTORE BUTTON UNTUK PURE GREEN SCREEN (HANYA EMOTIKON TANPA TEKS) -->
+  <button id="btnRestorePureGreen" class="btn-restore-pure-green icon-only-toolbar-btn hidden" type="button" title="Keluar dari Green Screen Murni (Tekan Esc atau G)" data-i18n-title="btn_restore_green" aria-label="Keluar Green Screen">
+    <span aria-hidden="true">⚙️</span>
   </button>
 
   <div id="toastNotification" class="toast-notification hidden" role="status" aria-live="polite">
@@ -897,6 +928,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=5.6"></script>
+  <script src="script.js?v=5.7"></script>
 </body>
 </html>
