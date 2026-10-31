@@ -1829,6 +1829,7 @@
 
   // --- DOM ELEMENTS ---
   const stage = document.getElementById('stage');
+  const stageAspectBadge = document.getElementById('stageAspectBadge');
   const avatarImage = document.getElementById('avatarImage');
   const avatarWrapper = document.getElementById('avatarWrapper');
   const exportCanvas = document.getElementById('exportCanvas');
@@ -1936,6 +1937,7 @@
   const btnResetEmotionHotkeys = document.getElementById('btnResetEmotionHotkeys');
 
   // Background Flyout
+  const bgStageAspectSelect = document.getElementById('bgStageAspectSelect');
   const bgChoiceButtons = document.querySelectorAll('.btn-bg-choice');
   const inputCustomBg = document.getElementById('inputCustomBg');
   const btnRemoveCustomBg = document.getElementById('btnRemoveCustomBg');
@@ -3530,9 +3532,9 @@
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
-  // --- 8. VIDEO EXPORT (CANVAS MEDIA RECORDER TRANSPARAN) ---
+  // --- 8. VIDEO EXPORT (CANVAS MEDIA RECORDER TRANSPARAN & LIVE FRAME ASPECT RATIO WYSIWYG) ---
   function setupExportCanvasSize() {
-    const res = exportResolution ? exportResolution.value : '720x1280';
+    const res = (exportResolution && exportResolution.value) || (bgStageAspectSelect && bgStageAspectSelect.value) || userSettings.exportResolution || '720x1280';
     if (res === '720x1280') {
       exportCanvas.width = 720;
       exportCanvas.height = 1280;
@@ -3564,16 +3566,109 @@
     }
   }
 
+  function getAspectRatioLabel(w, h) {
+    if (w === h) return '1:1';
+    const ratio = w / h;
+    if (Math.abs(ratio - (9 / 16)) < 0.02) return '9:16';
+    if (Math.abs(ratio - (16 / 9)) < 0.02) return '16:9';
+    if (Math.abs(ratio - (3 / 2)) < 0.02) return '3:2';
+    if (Math.abs(ratio - (2 / 3)) < 0.02) return '2:3';
+    return `${w}:${h}`;
+  }
+
+  function getActiveStageFrameRect() {
+    setupExportCanvasSize();
+    const expW = exportCanvas.width || 720;
+    const expH = exportCanvas.height || 1280;
+    const targetAspect = expW / expH;
+
+    const vw = window.innerWidth || document.documentElement.clientWidth || 1;
+    const vh = window.innerHeight || document.documentElement.clientHeight || 1;
+    const screenAspect = vw / vh;
+
+    let frameW = vw;
+    let frameH = vh;
+    let isFramed = false;
+
+    if (Math.abs(screenAspect - targetAspect) >= 0.03) {
+      isFramed = true;
+      if (screenAspect > targetAspect) {
+        frameH = vh;
+        frameW = Math.max(180, Math.round(vh * targetAspect));
+      } else {
+        frameW = vw;
+        frameH = Math.max(180, Math.round(vw / targetAspect));
+      }
+    }
+
+    const left = Math.round((vw - frameW) / 2);
+    const top = Math.round((vh - frameH) / 2);
+    return {
+      width: frameW,
+      height: frameH,
+      left,
+      top,
+      expW,
+      expH,
+      targetAspect,
+      isFramed
+    };
+  }
+
+  function applyStageFrameAspect(notify = false) {
+    const rect = getActiveStageFrameRect();
+    const rootStyle = document.documentElement.style;
+    rootStyle.setProperty('--stage-frame-w', `${rect.width}px`);
+    rootStyle.setProperty('--stage-frame-h', `${rect.height}px`);
+    rootStyle.setProperty('--stage-frame-left', `${rect.left}px`);
+    rootStyle.setProperty('--stage-frame-top', `${rect.top}px`);
+    rootStyle.setProperty('--stage-frame-min', `${Math.min(rect.width, rect.height)}px`);
+
+    if (stage) {
+      stage.classList.toggle('is-framed-aspect', rect.isFramed);
+    }
+
+    const ratioLabel = getAspectRatioLabel(rect.expW, rect.expH);
+    if (stageAspectBadge) {
+      stageAspectBadge.textContent = `📐 Bingkai ${ratioLabel} (${rect.expW}×${rect.expH})`;
+      if (rect.isFramed && !isRecordingVideo) {
+        stageAspectBadge.classList.remove('hidden');
+      } else {
+        stageAspectBadge.classList.add('hidden');
+      }
+    }
+
+    const previewWrapper = document.querySelector('.video-preview-wrapper');
+    if (previewWrapper) {
+      previewWrapper.style.aspectRatio = `${rect.expW} / ${rect.expH}`;
+    }
+
+    // Pastikan posisi avatar tetap berada di dalam bingkai yang dipilih (tidak keluar bingkai)
+    if (typeof setAvatarPosition === 'function') {
+      setAvatarPosition(avatarPosX, avatarPosY, false);
+    }
+
+    applyCustomBgTransform();
+    if (cameraStream && cameraBgVideo) {
+      applyCameraFitStyle();
+    }
+
+    if (notify) {
+      showToast(`📐 Bingkai ${ratioLabel} (${rect.expW} × ${rect.expH}) diterapkan ke layar & kamera!`);
+    }
+  }
+
   let customBgImageObj = null;
   let lastValidRecordedImg = null;
   let lastExportRenderTimestamp = 0;
 
-  // Penyesuaian tampilan latar belakang kustom di layar preview
+  // Penyesuaian tampilan latar belakang kustom di layar preview (mengikuti ukuran bingkai aktif)
   function applyCustomBgTransform() {
     if (!customBgImageObj || !customBgImg || !customBgLayer || customBgLayer.classList.contains('hidden')) return;
 
-    const winW = window.innerWidth || 1;
-    const winH = window.innerHeight || 1;
+    const frameRect = getActiveStageFrameRect();
+    const winW = frameRect.width || window.innerWidth || 1;
+    const winH = frameRect.height || window.innerHeight || 1;
     const imgW = customBgImageObj.naturalWidth || winW;
     const imgH = customBgImageObj.naturalHeight || winH;
     const imgAspect = imgW / imgH;
@@ -3705,9 +3800,10 @@
         exportCtx.fillStyle = '#21232d';
         exportCtx.fillRect(0, 0, w, h);
       } else if (customBgImageObj && customBgImageObj.complete && customBgImageObj.naturalWidth > 0) {
-        // Latar Belakang Kustom: Rekam dengan rasio, skala & posisi yang 100% presisi sinkron dengan preview layar
-        const winW = window.innerWidth || 1;
-        const winH = window.innerHeight || 1;
+        // Latar Belakang Kustom: Rekam dengan rasio, skala & posisi yang 100% presisi sinkron dengan bingkai layar aktif
+        const frameRect = getActiveStageFrameRect();
+        const winW = frameRect.width || window.innerWidth || 1;
+        const winH = frameRect.height || window.innerHeight || 1;
         const imgW = customBgImageObj.naturalWidth;
         const imgH = customBgImageObj.naturalHeight;
         const imgAspect = imgW / imgH;
@@ -3779,8 +3875,9 @@
       lastValidRecordedImg = currentImg;
       exportCtx.save();
 
-      const winW = window.innerWidth || 1;
-      const winH = window.innerHeight || 1;
+      const frameRect = getActiveStageFrameRect();
+      const winW = frameRect.width || window.innerWidth || 1;
+      const winH = frameRect.height || window.innerHeight || 1;
       // Skala adaptif resolusi canvas agar efek visual pantulan & melayang sama proporsinya di semua resolusi ekspor
       const canvasScaleY = h / Math.max(winH, 400);
 
@@ -3847,8 +3944,9 @@
     } else if (lastValidRecordedImg) {
       // Fallback cadangan darurat agar video tidak pernah hitam/kosong
       exportCtx.save();
-      const winW = window.innerWidth || 1;
-      const winH = window.innerHeight || 1;
+      const frameRect = getActiveStageFrameRect();
+      const winW = frameRect.width || window.innerWidth || 1;
+      const winH = frameRect.height || window.innerHeight || 1;
       const canvasScaleY = h / Math.max(winH, 400);
 
       const nowSec = (timestamp || performance.now()) / 1000;
@@ -4454,16 +4552,19 @@
   let dragInitialX = 0;
   let dragInitialY = 0;
 
-  function setAvatarPosition(x, y) {
-    avatarPosX = Math.round(x);
-    avatarPosY = Math.round(y);
+  function setAvatarPosition(x, y, shouldSave = true) {
+    const frameRect = getActiveStageFrameRect();
+    const maxOffsetX = Math.round((frameRect.width || window.innerWidth || 360) * 0.42);
+    const maxOffsetY = Math.round((frameRect.height || window.innerHeight || 640) * 0.42);
+    avatarPosX = Math.max(-maxOffsetX, Math.min(maxOffsetX, Math.round(x)));
+    avatarPosY = Math.max(-maxOffsetY, Math.min(maxOffsetY, Math.round(y)));
     document.documentElement.style.setProperty('--avatar-pos-x', `${avatarPosX}px`);
     document.documentElement.style.setProperty('--avatar-pos-y', `${avatarPosY}px`);
     if (avatarPosYSlider) {
       avatarPosYSlider.value = avatarPosY;
       if (posYBadge) posYBadge.textContent = `${avatarPosY} px`;
     }
-    saveUserSettings();
+    if (shouldSave) saveUserSettings();
   }
 
   function setAvatarScaleValue(scalePercent) {
@@ -4475,12 +4576,13 @@
   }
 
   function applyPositionPreset(preset) {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const frameRect = getActiveStageFrameRect();
+    const vw = frameRect.width || window.innerWidth;
+    const vh = frameRect.height || window.innerHeight;
     
-    // Perhitungan jarak sudut proporsional layar HP & Desktop
-    const xDist = Math.round(vw * 0.30);
-    const yDist = Math.round(vh * 0.30);
+    // Perhitungan jarak sudut proporsional sesuai bingkai rekaman aktif (1:1, 9:16, 16:9, 3:2, 2:3)
+    const xDist = Math.round(vw * 0.28);
+    const yDist = Math.round(vh * 0.28);
 
     switch (preset) {
       case 'bottom-right':
@@ -4699,11 +4801,14 @@
 
   function applyCameraFitStyle() {
     if (!cameraBgVideo || !cameraBgWrapper) return;
-    const vw = window.innerWidth || document.documentElement.clientWidth || 1;
-    const vh = window.innerHeight || document.documentElement.clientHeight || 1;
+    const frameRect = getActiveStageFrameRect();
+    const vw = frameRect.width || window.innerWidth || document.documentElement.clientWidth || 1;
+    const vh = frameRect.height || window.innerHeight || document.documentElement.clientHeight || 1;
 
     cameraBgWrapper.style.width = `${vw}px`;
     cameraBgWrapper.style.height = `${vh}px`;
+    cameraBgWrapper.style.left = `${frameRect.left || 0}px`;
+    cameraBgWrapper.style.top = `${frameRect.top || 0}px`;
 
     // Hitung ukuran dasar video penuh sensor (tanpa terpotong kotak <video>) agar saat Zoom Out (0.5x - 0.95x)
     // bagian tepi sensor kamera yang tadinya terpotong Cover bisa terlihat utuh!
@@ -4833,6 +4938,38 @@
     }
   }
 
+  async function findPreferredFrontCameraId() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return { deviceId: null, onlyContinuityOnMac: false };
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(d => d.kind === 'videoinput' && d.deviceId);
+      if (videoInputs.length === 0) return { deviceId: null, onlyContinuityOnMac: false };
+
+      if (!isMacDesktop) {
+        const frontMobile = videoInputs.find(d => /(front|depan|user|selfie|truedepth|facetime|camera 1,\s*facing front)/i.test(d.label || ''));
+        return { deviceId: frontMobile ? frontMobile.deviceId : null, onlyContinuityOnMac: false };
+      }
+
+      // Di Mac desktop: cari kamera FaceTime bawaan atau webcam USB non-Continuity (bukan virtual OBS)
+      const macFrontOrUsb = videoInputs.find(d => {
+        const l = d.label || '';
+        return !isIphoneContinuityCameraLabel(l) && !/(virtual|obs|manycam|snap camera)/i.test(l);
+      });
+      if (macFrontOrUsb) {
+        return { deviceId: macFrontOrUsb.deviceId, onlyContinuityOnMac: false };
+      }
+
+      // Jika di Mac mini HANYA ada kamera iPhone Continuity Camera (sistem macOS Apple hanya mengekspos kamera belakang iPhone)
+      const continuityCam = videoInputs.find(d => isIphoneContinuityCameraLabel(d.label || ''));
+      if (continuityCam) {
+        return { deviceId: continuityCam.deviceId, onlyContinuityOnMac: true };
+      }
+      return { deviceId: null, onlyContinuityOnMac: false };
+    } catch (_) {
+      return { deviceId: null, onlyContinuityOnMac: false };
+    }
+  }
+
   async function startCameraBackground(facing = 'environment', specificDeviceId = null) {
     stopCameraBackground(false);
 
@@ -4845,13 +4982,20 @@
       // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280), di Mac minta 1920x1080 / 1280x720
       const isPortrait = !isMacDesktop && (window.innerHeight >= window.innerWidth);
       let stream = null;
+      let isMacContinuityMirrorFallback = false;
       isUsingUltraWideLens = false;
 
-      const selectedCamId = specificDeviceId || (cameraDeviceSelect && cameraDeviceSelect.value !== 'auto' ? cameraDeviceSelect.value : null);
-      let targetDeviceId = selectedCamId;
+      // Hanya kunci ke dropdown jika specificDeviceId diberikan langsung dari pilihan dropdown manual
+      let targetDeviceId = specificDeviceId || null;
 
-      if (!targetDeviceId && isMacDesktop && facing === 'environment') {
-        targetDeviceId = await findPreferredIphoneContinuityCameraId();
+      if (!targetDeviceId) {
+        if (facing === 'user') {
+          const frontLookup = await findPreferredFrontCameraId();
+          targetDeviceId = frontLookup.deviceId;
+          isMacContinuityMirrorFallback = frontLookup.onlyContinuityOnMac;
+        } else if (isMacDesktop && facing === 'environment') {
+          targetDeviceId = await findPreferredIphoneContinuityCameraId();
+        }
       }
 
       if (targetDeviceId) {
@@ -4869,34 +5013,44 @@
         }
       }
 
-      // 3-Stage Graceful Fallback (Omit audio:false to prevent "Invalid constraint" exceptions)
+      // 3-Stage Graceful Fallback: Utamakan exact facingMode terlebih dahulu saat beralih Depan/Belakang di HP
       if (!stream) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             video: {
-              facingMode: { ideal: facing },
+              facingMode: { exact: facing },
               width: { ideal: isPortrait ? 720 : 1280 },
               height: { ideal: isPortrait ? 1280 : 720 }
             }
           });
-        } catch (e1) {
-          console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+        } catch (e0) {
           try {
             stream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: facing }
+              video: {
+                facingMode: { ideal: facing },
+                width: { ideal: isPortrait ? 720 : 1280 },
+                height: { ideal: isPortrait ? 1280 : 720 }
+              }
             });
-          } catch (e2) {
-            console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: true
-            });
+          } catch (e1) {
+            console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facing }
+              });
+            } catch (e2) {
+              console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
+              stream = await navigator.mediaDevices.getUserMedia({
+                video: true
+              });
+            }
           }
         }
       }
 
       // Setelah izin kamera diberikan di Mac, cek ulang enumerateDevices():
       // Jika otomatis terbuka kamera virtual (mis. OBS) padahal ada Kamera iPhone (Continuity Camera), langsung pindah ke Kamera iPhone!
-      if (!selectedCamId && isMacDesktop && facing === 'environment' && stream) {
+      if (!specificDeviceId && isMacDesktop && facing === 'environment' && stream) {
         try {
           const preferredIphoneId = await findPreferredIphoneContinuityCameraId();
           const currentVidTrack = stream.getVideoTracks()[0];
@@ -4948,11 +5102,7 @@
       if (cameraFitToggleGroup) cameraFitToggleGroup.classList.remove('hidden');
       if (cameraZoomControlGroup) cameraZoomControlGroup.classList.remove('hidden');
       if (cameraZoomFloatingBar) {
-        if (facing === 'environment') {
-          cameraZoomFloatingBar.classList.remove('hidden');
-        } else {
-          cameraZoomFloatingBar.classList.add('hidden');
-        }
+        cameraZoomFloatingBar.classList.remove('hidden');
       }
       if (exportBgMode) exportBgMode.value = 'current';
 
@@ -4988,8 +5138,12 @@
           if (dockCameraIcon) dockCameraIcon.textContent = '🤳';
           btnDockCamera.title = t('dock_camera_front_active');
         }
-        const suffix = activeCamLabel ? ` (${activeCamLabel})` : '';
-        showToast(t('toast_camera_front_active') + suffix);
+        if (isMacDesktop && (isMacContinuityMirrorFallback || isIphoneContinuityCameraLabel(activeCamLabel))) {
+          showToast('🍏 Mode Cermin Aktif! (Catatan Apple: Continuity Camera di Mac hanya membuka lensa Belakang iPhone — arahkan belakang iPhone ke wajahmu)');
+        } else {
+          const suffix = activeCamLabel ? ` (${activeCamLabel})` : '';
+          showToast(t('toast_camera_front_active') + suffix);
+        }
       }
     } catch (err) {
       console.error('Kamera error:', err);
@@ -5183,18 +5337,12 @@
   }
 
   window.addEventListener('resize', () => {
-    if (cameraStream && cameraBgVideo) {
-      applyCameraFitStyle();
-    }
-    applyCustomBgTransform();
+    applyStageFrameAspect(false);
   });
 
   window.addEventListener('orientationchange', () => {
     setTimeout(() => {
-      if (cameraStream && cameraBgVideo) {
-        applyCameraFitStyle();
-      }
-      applyCustomBgTransform();
+      applyStageFrameAspect(false);
     }, 150);
   });
 
@@ -5661,7 +5809,7 @@
       await populateCameraDevices();
       const iphoneCamId = await findPreferredIphoneContinuityCameraId();
       if (iphoneCamId) {
-        if (cameraDeviceSelect) cameraDeviceSelect.value = iphoneCamId;
+        if (cameraDeviceSelect) cameraDeviceSelect.value = 'auto';
         await startCameraBackground('environment', iphoneCamId);
       } else {
         // Membangunkan Continuity Camera di macOS: memanggil startCameraBackground('environment')
@@ -5761,15 +5909,39 @@
       if (blinkDurationBadge) blinkDurationBadge.textContent = `${blinkDuration} ms`;
     }
 
-    // Pulihkan format, resolusi & FPS rekaman
+    // Pulihkan format, resolusi & FPS rekaman + Sinkronkan ukuran bingkai layar (1:1, 9:16, 16:9, 3:2, 2:3)
     if (exportResolution) {
       if (userSettings.exportResolution) {
         exportResolution.value = userSettings.exportResolution;
       }
+      if (bgStageAspectSelect) {
+        bgStageAspectSelect.value = exportResolution.value;
+      }
       exportResolution.addEventListener('change', () => {
+        if (bgStageAspectSelect) {
+          bgStageAspectSelect.value = exportResolution.value;
+        }
+        userSettings.exportResolution = exportResolution.value;
+        applyStageFrameAspect(true);
         saveUserSettings();
       });
     }
+    if (bgStageAspectSelect) {
+      if (exportResolution && exportResolution.value) {
+        bgStageAspectSelect.value = exportResolution.value;
+      } else if (userSettings.exportResolution) {
+        bgStageAspectSelect.value = userSettings.exportResolution;
+      }
+      bgStageAspectSelect.addEventListener('change', () => {
+        if (exportResolution) {
+          exportResolution.value = bgStageAspectSelect.value;
+        }
+        userSettings.exportResolution = bgStageAspectSelect.value;
+        applyStageFrameAspect(true);
+        saveUserSettings();
+      });
+    }
+    applyStageFrameAspect(false);
     if (exportFps) {
       if (userSettings.exportFps) {
         exportFps.value = userSettings.exportFps;
