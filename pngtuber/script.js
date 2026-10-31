@@ -5037,36 +5037,53 @@
         }
       }
 
-      // 3-Stage Graceful Fallback: Utamakan exact facingMode terlebih dahulu saat beralih Depan/Belakang di HP
+      // 3-Stage Graceful Fallback:
+      // - Di Mac desktop (Continuity Camera / Webcam), JANGAN panggil facingMode: exact karena macOS tidak punya properti facingMode pada kamera desktop.
+      // - Di HP (iOS / Android), utamakan exact facingMode terlebih dahulu saat beralih Depan/Belakang.
       if (!stream) {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { exact: facing },
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
-            }
-          });
-        } catch (e0) {
+        if (isMacDesktop) {
           try {
             stream = await navigator.mediaDevices.getUserMedia({
               video: {
-                facingMode: { ideal: facing },
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
               }
             });
-          } catch (e1) {
-            console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+          } catch (macErr1) {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true
+            });
+          }
+        } else {
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                facingMode: { exact: facing },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+              }
+            });
+          } catch (e0) {
             try {
               stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: facing }
+                video: {
+                  facingMode: { ideal: facing },
+                  width: { ideal: 1280 },
+                  height: { ideal: 720 }
+                }
               });
-            } catch (e2) {
-              console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
-              stream = await navigator.mediaDevices.getUserMedia({
-                video: true
-              });
+            } catch (e1) {
+              console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+              try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                  video: { facingMode: facing }
+                });
+              } catch (e2) {
+                console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
+                stream = await navigator.mediaDevices.getUserMedia({
+                  video: true
+                });
+              }
             }
           }
         }
@@ -5174,6 +5191,8 @@
       updateActiveCameraLabelDisplay();
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         showToast('⚠️ ' + t('err_camera_denied'));
+      } else if (isMacDesktop && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError' || err.name === 'OverconstrainedError')) {
+        showToast('🍏 Kamera iPhone belum terdeteksi di Mac mini! Pastikan: (1) Tutup tab SmoothieTuber/Kamera di iPhone, (2) KUNCI layar iPhone (layar mati), atau (3) Colok kabel cas iPhone ke Mac mini sekali.');
       } else {
         showToast('⚠️ ' + t('err_camera_failed') + (err.message ? ': ' + err.message : ''));
       }
