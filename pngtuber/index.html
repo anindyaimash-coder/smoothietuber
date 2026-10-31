@@ -230,16 +230,25 @@
       </div>
       <div class="input-group">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 2px;">
-          <label for="micSelect" class="input-label" data-i18n="label_mic_device">Perangkat Mikrofon:</label>
-          <button id="btnRefreshMicDevices" class="btn btn-secondary" type="button" style="font-size: 11px; padding: 3px 8px;" title="Segarkan & deteksi ulang mikrofon eksternal yang baru dicolok" data-i18n="btn_refresh_mic">
-            🔄 Deteksi Mic
+          <label for="micSelect" class="input-label" data-i18n="label_mic_device">Pilih Perangkat Mikrofon:</label>
+          <button id="btnRefreshMicDevices" class="btn btn-secondary" type="button" style="font-size: 11px; padding: 3px 8px;" title="Pindai ulang daftar mikrofon (jika baru mencolok receiver mic eksternal / wireless)" data-i18n="btn_refresh_mic">
+            🔄 Pindai Mic
           </button>
         </div>
         <select id="micSelect" class="form-select">
-          <option value="auto" data-i18n="option_default_system">⚡ Otomatis (Prioritas Mic Eksternal)</option>
+          <option value="default" data-i18n="option_default_system">📱 Default Sistem (Mikrofon Bawaan)</option>
         </select>
         <div id="activeMicInfoNote" style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">
           🎙️ <span data-i18n="label_active_mic">Input Aktif:</span> <strong id="activeMicDeviceName">Default Sistem</strong>
+        </div>
+      </div>
+      <div class="slider-control-group">
+        <div class="slider-info">
+          <label for="micRecordBoostSlider" class="slider-label" data-i18n="label_mic_boost">🔊 Penguat Suara Rekaman (Mic Boost):</label>
+        </div>
+        <div class="slider-with-number">
+          <input id="micRecordBoostSlider" type="range" min="100" max="400" step="10" value="280" class="range-slider">
+          <span id="micRecordBoostBadge" class="range-value-pill">280%</span>
         </div>
       </div>
       <div class="slider-control-group">
@@ -967,6 +976,6 @@
   </div>
 
   <!-- Core Script with Cache Buster -->
-  <script src="script.js?v=6.2"></script>
+  <script src="script.js?v=6.3"></script>
 </body>
 </html>

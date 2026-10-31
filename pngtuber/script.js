@@ -72,11 +72,12 @@
       status_disconnected: 'Terputus',
       status_active: 'Aktif',
       status_muted: 'Bungkam',
-      label_mic_device: 'Perangkat Mikrofon:',
-      option_default_system: '⚡ Otomatis (Prioritas Mic Eksternal)',
-      btn_refresh_mic: '🔄 Deteksi Mic',
+      label_mic_device: 'Pilih Perangkat Mikrofon:',
+      option_default_system: '📱 Default Sistem (Mikrofon Bawaan)',
+      btn_refresh_mic: '🔄 Pindai Mic',
       label_active_mic: 'Aktif:',
-      toast_mic_refreshed: '🎙️ Perangkat mikrofon diperbarui:',
+      label_mic_boost: '🔊 Penguat Suara Rekaman (Mic Boost):',
+      toast_mic_refreshed: '🎙️ Daftar mikrofon diperbarui — Aktif:',
       label_camera_zoom: '🔍 Zoom Kamera:',
       toast_cam_zoom: '🔍 Zoom Kamera:',
       label_threshold: 'Ambang Batas Suara (Threshold):',
@@ -319,11 +320,12 @@
       status_disconnected: '未接続',
       status_active: '有効',
       status_muted: 'ミュート中',
-      label_mic_device: 'マイクデバイス:',
-      option_default_system: '⚡ 自動 (外部マイク優先)',
-      btn_refresh_mic: '🔄 マイク再検出',
+      label_mic_device: 'マイクを選択:',
+      option_default_system: '📱 システム既定 (内蔵マイク)',
+      btn_refresh_mic: '🔄 マイク再スキャン',
       label_active_mic: '使用中:',
-      toast_mic_refreshed: '🎙️ マイクを更新しました:',
+      label_mic_boost: '🔊 録音マイク音量ブースト:',
+      toast_mic_refreshed: '🎙️ マイク一覧を更新しました:',
       label_camera_zoom: '🔍 カメラズーム:',
       toast_cam_zoom: '🔍 カメラズーム:',
       label_threshold: '音声検出しきい値 (Threshold):',
@@ -558,11 +560,12 @@
       status_disconnected: '未连接',
       status_active: '工作中',
       status_muted: '静音中',
-      label_mic_device: '麦克风设备:',
-      option_default_system: '⚡ 自动 (优先外接麦克风)',
-      btn_refresh_mic: '🔄 检测麦克风',
+      label_mic_device: '选择麦克风设备:',
+      option_default_system: '📱 系统默认 (内置麦克风)',
+      btn_refresh_mic: '🔄 扫描麦克风',
       label_active_mic: '当前使用:',
-      toast_mic_refreshed: '🎙️ 麦克风已更新:',
+      label_mic_boost: '🔊 录音麦克风音量增强:',
+      toast_mic_refreshed: '🎙️ 麦克风列表已更新:',
       label_camera_zoom: '🔍 摄像头缩放:',
       toast_cam_zoom: '🔍 摄像头缩放:',
       label_threshold: '声音感应阈值 (Threshold):',
@@ -797,11 +800,12 @@
       status_disconnected: 'Disconnected',
       status_active: 'Active',
       status_muted: 'Muted',
-      label_mic_device: 'Microphone Device:',
-      option_default_system: '⚡ Auto (Prioritize External Mic)',
-      btn_refresh_mic: '🔄 Detect Mic',
+      label_mic_device: 'Select Microphone Device:',
+      option_default_system: '📱 System Default (Built-in Mic)',
+      btn_refresh_mic: '🔄 Scan Mic',
       label_active_mic: 'Active:',
-      toast_mic_refreshed: '🎙️ Microphone updated:',
+      label_mic_boost: '🔊 Recorded Voice Boost (Mic Gain):',
+      toast_mic_refreshed: '🎙️ Microphone list updated:',
       label_camera_zoom: '🔍 Camera Zoom:',
       toast_cam_zoom: '🔍 Camera Zoom:',
       label_threshold: 'Voice Threshold:',
@@ -1044,11 +1048,12 @@
       status_disconnected: 'Disconnected',
       status_active: 'Active',
       status_muted: 'Muted',
-      label_mic_device: 'Microphone Device:',
-      option_default_system: '⚡ Auto (Prioritize External Mic)',
-      btn_refresh_mic: '🔄 Detect Mic',
+      label_mic_device: 'Select Microphone Device:',
+      option_default_system: '📱 System Default (Built-in Mic)',
+      btn_refresh_mic: '🔄 Scan Mic',
       label_active_mic: 'Active:',
-      toast_mic_refreshed: '🎙️ Microphone updated:',
+      label_mic_boost: '🔊 Recorded Voice Boost (Mic Gain):',
+      toast_mic_refreshed: '🎙️ Microphone list updated:',
       label_camera_zoom: '🔍 Camera Zoom:',
       toast_cam_zoom: '🔍 Camera Zoom:',
       label_threshold: 'Voice Threshold:',
@@ -1887,6 +1892,8 @@
   const micSelect = document.getElementById('micSelect');
   const btnRefreshMicDevices = document.getElementById('btnRefreshMicDevices');
   const activeMicDeviceName = document.getElementById('activeMicDeviceName');
+  const micRecordBoostSlider = document.getElementById('micRecordBoostSlider');
+  const micRecordBoostBadge = document.getElementById('micRecordBoostBadge');
   const thresholdSliderInput = document.getElementById('thresholdSliderInput');
   const thresholdBadge = document.getElementById('thresholdBadge');
   const holdDelaySlider = document.getElementById('holdDelaySlider');
@@ -2905,7 +2912,8 @@
     }
     if (!recordGainNode) {
       recordGainNode = audioContext.createGain();
-      recordGainNode.gain.value = 2.4; // Pre-amp boost (+7.6 dB) agar suara mikrofon & musik rekaman terdengar lantang di hasil video
+      const savedBoostPct = (userSettings && typeof userSettings.micRecordBoost === 'number') ? userSettings.micRecordBoost : 280;
+      recordGainNode.gain.value = savedBoostPct / 100; // Pre-amp boost (+9 dB default) agar suara mikrofon & musik rekaman terdengar lantang di hasil video
       recordGainNode.connect(recordCompressorNode);
     }
     if (audioContext.state === 'suspended') {
@@ -3070,75 +3078,64 @@
         micSourceNode = null;
       }
 
-      const rawSelected = micSelect ? micSelect.value : 'auto';
-      const isAutoPriority = !rawSelected || rawSelected === 'auto' || rawSelected === 'default';
+      const rawSelected = micSelect ? micSelect.value : 'default';
+      const isDefaultMic = !rawSelected || rawSelected === 'default' || rawSelected === 'auto';
 
-      // Pada iOS Safari, echoCancellation: true memaksa AVAudioSessionModeVoiceChat yang sering menolak/mengabaikan
-      // mic eksternal Lightning/USB/wireless dan memaksa iPhone Microphone bawaan.
-      // Karena SmoothieTuber TIDAK mengeluarkan suara mic ke speaker (tidak ada feedback loop),
-      // mematikan echoCancellation/noiseSuppression/autoGainControl membuat iOS langsung membaca mic eksternal dengan jernih!
-      const baseAudioProps = {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-        channelCount: { ideal: 1 }
+      // PENTING:
+      // 1. Untuk mikrofon bawaan HP (Default Sistem), WAJIB aktifkan autoGainControl: true, noiseSuppression: true, echoCancellation: true
+      //    agar penguat suara hardware HP (Hardware AGC) aktif dan tangkapan suara rekaman di HP terdengar lantang dan jernih!
+      // 2. Mic eksternal TIDAK dijadikan prioritas otomatis, melainkan menjadi PILIHAN di dropdown (micSelect).
+      // 3. Jika pengguna memilih perangkat mic eksternal / wireless condenser tertentu di dropdown (!isDefaultMic),
+      //    coba dengan Auto Gain Control terlebih dahulu, dan sediakan fallback tanpa DSP khusus jika chip receiver USB/Lightning menolak constraint voice-chat.
+      const standardAudioProps = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
       };
 
       let stream = null;
-      if (!isAutoPriority) {
+      if (!isDefaultMic) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             audio: {
-              ...baseAudioProps,
+              ...standardAudioProps,
               deviceId: { exact: rawSelected }
             }
           });
-        } catch (exactErr) {
-          console.warn('Exact mic deviceId failed, falling back to auto:', exactErr);
+        } catch (exactErr1) {
+          // Fallback 2 untuk Receiver Wireless Mic Condenser (USB-C / Lightning DAC) yang menolak echoCancellation/noiseSuppression:
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              audio: {
+                deviceId: { exact: rawSelected },
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: true
+              }
+            });
+          } catch (exactErr2) {
+            // Fallback 3: Murni hanya deviceId tanpa constraint tambahan agar chip USB Audio Class 1.0 tetap terbuka
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                  deviceId: { exact: rawSelected }
+                }
+              });
+            } catch (exactErr3) {
+              console.warn('Exact mic deviceId failed, falling back to system default:', exactErr3);
+            }
+          }
         }
       }
 
       if (!stream) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            audio: baseAudioProps
+            audio: standardAudioProps
           });
         } catch (baseErr) {
           stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         }
-      }
-
-      // Setelah izin didapat, cek daftar enumerateDevices().
-      // Jika mode "auto" aktif dan stream awal masih tertuju ke "iPhone Microphone" padahal ada mic eksternal di daftar,
-      // otomatis pindah ke deviceId mic eksternal tersebut!
-      if (isAutoPriority && navigator.mediaDevices.enumerateDevices) {
-        try {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const audioInputs = devices.filter(d => d.kind === 'audioinput' && d.deviceId);
-          const currentTrack = stream.getAudioTracks()[0];
-          const currentLabel = currentTrack ? (currentTrack.label || '') : '';
-
-          if (audioInputs.length > 1) {
-            const externalCandidate = audioInputs.find(d => d.label && !isBuiltInPhoneMicLabel(d.label));
-            if (externalCandidate && (!currentLabel || isBuiltInPhoneMicLabel(currentLabel)) && externalCandidate.label !== currentLabel) {
-              try {
-                stream.getTracks().forEach(tr => tr.stop());
-                const extStream = await navigator.mediaDevices.getUserMedia({
-                  audio: {
-                    ...baseAudioProps,
-                    deviceId: { exact: externalCandidate.deviceId }
-                  }
-                });
-                if (extStream) {
-                  stream = extStream;
-                }
-              } catch (extErr) {
-                // Jika gagal exact switch, buka kembali stream standar
-                stream = await navigator.mediaDevices.getUserMedia({ audio: baseAudioProps }).catch(() => navigator.mediaDevices.getUserMedia({ audio: true }));
-              }
-            }
-          }
-        } catch (_) {}
       }
 
       micStream = stream;
@@ -3250,31 +3247,30 @@
       const devices = await navigator.mediaDevices.enumerateDevices();
       const audioInputs = devices.filter(d => d.kind === 'audioinput');
       micSelect.disabled = false;
-      const previousSelection = micSelect.value || 'auto';
+      const previousSelection = micSelect.value || 'default';
       micSelect.innerHTML = '';
 
-      // Selalu sediakan opsi "⚡ Otomatis (Prioritas Mic Eksternal)" di urutan paling atas
-      // agar dropdown tidak mengunci paksa ke ID iPhone Microphone bawaan!
-      const autoOpt = document.createElement('option');
-      autoOpt.value = 'auto';
-      autoOpt.dataset.i18n = 'option_default_system';
-      autoOpt.textContent = t('option_default_system') || '⚡ Otomatis (Prioritas Mic Eksternal)';
-      micSelect.appendChild(autoOpt);
+      // Opsi pertama adalah Default Sistem (Mikrofon Bawaan) — mic eksternal menjadi pilihan manual di bawahnya!
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = 'default';
+      defaultOpt.dataset.i18n = 'option_default_system';
+      defaultOpt.textContent = t('option_default_system') || '📱 Default Sistem (Mikrofon Bawaan)';
+      micSelect.appendChild(defaultOpt);
 
       audioInputs.forEach((d, i) => {
-        if (!d.deviceId) return;
+        if (!d.deviceId || d.deviceId === 'default') return;
         const opt = document.createElement('option');
         opt.value = d.deviceId;
         const labelText = d.label || `Mikrofon ${i + 1}`;
         const isExt = d.label && !isBuiltInPhoneMicLabel(d.label);
-        opt.textContent = isExt ? `🎧 ${labelText}` : `📱 ${labelText}`;
+        opt.textContent = isExt ? `🎙️ [Eksternal/Wireless] ${labelText}` : `📱 ${labelText}`;
         micSelect.appendChild(opt);
       });
 
-      if (previousSelection && Array.from(micSelect.options).some(o => o.value === previousSelection)) {
+      if (previousSelection && previousSelection !== 'auto' && Array.from(micSelect.options).some(o => o.value === previousSelection)) {
         micSelect.value = previousSelection;
       } else {
-        micSelect.value = 'auto';
+        micSelect.value = 'default';
       }
       updateActiveMicLabelDisplay();
     } catch (e) {}
@@ -3385,25 +3381,38 @@
     });
   }
 
+  if (micRecordBoostSlider) {
+    const initialBoost = (userSettings && typeof userSettings.micRecordBoost === 'number') ? userSettings.micRecordBoost : 280;
+    micRecordBoostSlider.value = String(initialBoost);
+    if (micRecordBoostBadge) micRecordBoostBadge.textContent = `${initialBoost}%`;
+    micRecordBoostSlider.addEventListener('input', (e) => {
+      const pct = parseInt(e.target.value, 10) || 280;
+      if (micRecordBoostBadge) micRecordBoostBadge.textContent = `${pct}%`;
+      if (userSettings) userSettings.micRecordBoost = pct;
+      if (recordGainNode) {
+        recordGainNode.gain.value = pct / 100;
+      }
+      saveUserSettings();
+    });
+  }
+
   if (btnRefreshMicDevices) {
     btnRefreshMicDevices.addEventListener('click', async () => {
-      if (micSelect) micSelect.value = 'auto';
+      // JANGAN paksa micSelect.value kembali ke 'default' jika pengguna sudah memilih perangkat tertentu;
+      // pindai ulang daftar mikrofon dan perbarui dropdown agar mic eksternal / wireless muncul sebagai pilihan!
       await resetAudioCalibration();
+      await populateAudioDevices();
       const trackLabel = (micStream && micStream.getAudioTracks()[0] && micStream.getAudioTracks()[0].label)
         ? micStream.getAudioTracks()[0].label
         : 'Default';
-      showToast(`${t('toast_mic_refreshed')} ${trackLabel}`);
+      const totalOptions = micSelect ? Math.max(0, micSelect.options.length - 1) : 1;
+      showToast(`${t('toast_mic_refreshed')} ${trackLabel} (${totalOptions} perangkat di daftar pilihan)`);
     });
   }
 
   if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
     navigator.mediaDevices.addEventListener('devicechange', async () => {
       await populateAudioDevices();
-      if (isListening && (!micSelect || micSelect.value === 'auto')) {
-        setTimeout(() => {
-          startMicrophone(true).catch(() => {});
-        }, 250);
-      }
     });
   }
 
