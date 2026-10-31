@@ -3930,25 +3930,32 @@
       const normX = avatarPosX / winW;
       const normY = avatarPosY / winH;
 
-      const cx = (w / 2) + (normX * w);
-      const cy = (h / 2) + (normY * h) - currentFloatOffset - currentBounce;
+      // Samakan batas ukuran dasar avatar dengan CSS (.avatar-image: max-width 82% frame, max-height 72% sisi terkecil)
+      const maxW = w * 0.82;
+      const maxH = Math.min(w, h) * 0.72;
+      const aspect = currentImg.naturalWidth / currentImg.naturalHeight;
+      let baseDrawHeight = maxH;
+      let drawWidth = baseDrawHeight * aspect;
+      if (drawWidth > maxW) {
+        drawWidth = maxW;
+        baseDrawHeight = drawWidth / aspect;
+      }
 
-      exportCtx.translate(cx, cy);
+      // Samakan titik tumpu (transform-origin: bottom center / 50% 100%) antara CSS stage dan Canvas Export
+      // Di layar live, pusat kotak unscaled berada di (winW/2, winH/2), sehingga titik tumpu bawah-tengah berada di +baseDrawHeight/2
+      const pivotX = (w / 2) + (normX * w);
+      const pivotY = (h / 2) + (baseDrawHeight / 2) + (normY * h) - currentFloatOffset - currentBounce;
+
+      exportCtx.translate(pivotX, pivotY);
       exportCtx.scale(
         avatarScale * currentFloatScale * bounceScaleX,
         avatarScale * currentFloatScale * bounceScaleY
       );
 
-      // Ukuran dasar avatar mengikuti dimensi terkecil agar proporsional di semua rasio (9:16, 3:2, 1:1, 16:9)
-      const baseDimension = Math.min(w, h);
-      const baseDrawHeight = baseDimension * 0.72;
-      const aspect = currentImg.naturalWidth / currentImg.naturalHeight;
-      const drawWidth = baseDrawHeight * aspect;
-
       exportCtx.drawImage(
         currentImg,
         -drawWidth / 2,
-        -baseDrawHeight / 2,
+        -baseDrawHeight,
         drawWidth,
         baseDrawHeight
       );
@@ -3985,20 +3992,27 @@
 
       const normX = avatarPosX / winW;
       const normY = avatarPosY / winH;
-      const cx = (w / 2) + (normX * w);
-      const cy = (h / 2) + (normY * h) - currentFloatOffset - currentBounce;
 
-      exportCtx.translate(cx, cy);
+      const maxW = w * 0.82;
+      const maxH = Math.min(w, h) * 0.72;
+      const aspect = lastValidRecordedImg.naturalWidth / lastValidRecordedImg.naturalHeight;
+      let baseDrawHeight = maxH;
+      let drawWidth = baseDrawHeight * aspect;
+      if (drawWidth > maxW) {
+        drawWidth = maxW;
+        baseDrawHeight = drawWidth / aspect;
+      }
+
+      const pivotX = (w / 2) + (normX * w);
+      const pivotY = (h / 2) + (baseDrawHeight / 2) + (normY * h) - currentFloatOffset - currentBounce;
+
+      exportCtx.translate(pivotX, pivotY);
       exportCtx.scale(
         avatarScale * currentFloatScale * bounceScaleX,
         avatarScale * currentFloatScale * bounceScaleY
       );
 
-      const baseDimension = Math.min(w, h);
-      const baseDrawHeight = baseDimension * 0.72;
-      const aspect = lastValidRecordedImg.naturalWidth / lastValidRecordedImg.naturalHeight;
-      const drawWidth = baseDrawHeight * aspect;
-      exportCtx.drawImage(lastValidRecordedImg, -drawWidth / 2, -baseDrawHeight / 2, drawWidth, baseDrawHeight);
+      exportCtx.drawImage(lastValidRecordedImg, -drawWidth / 2, -baseDrawHeight, drawWidth, baseDrawHeight);
       exportCtx.restore();
     }
   }
@@ -5952,6 +5966,33 @@
       if (blinkDurationBadge) blinkDurationBadge.textContent = `${blinkDuration} ms`;
     }
 
+    // Helper: Jika pengguna mengganti rasio bingkai saat sedang merekam, mulai ulang sesi MediaRecorder dengan rasio baru agar hasil rekaman 100% sesuai layar
+    function handleAspectChangeDuringRecording() {
+      if (!isRecordingVideo || !mediaRecorder) return;
+      if (currentRenderRaf) {
+        cancelAnimationFrame(currentRenderRaf);
+        currentRenderRaf = null;
+      }
+      try {
+        mediaRecorder.ondataavailable = null;
+        mediaRecorder.onstop = null;
+        if (mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      } catch (e) {}
+      if (recordTimerInterval) {
+        clearInterval(recordTimerInterval);
+        recordTimerInterval = null;
+      }
+      isRecordingVideo = false;
+      requestAnimationFrame(() => {
+        startVideoRecording();
+        showToast(currentLang === 'en'
+          ? '📐 Frame ratio changed — recording restarted with new frame size!'
+          : '📐 Ukuran bingkai diubah — rekaman dimulai ulang mengikuti rasio baru!');
+      });
+    }
+
     // Pulihkan format, resolusi & FPS rekaman + Sinkronkan ukuran bingkai layar (1:1, 9:16, 16:9, 3:2, 2:3)
     if (exportResolution) {
       if (userSettings.exportResolution) {
@@ -5967,6 +6008,7 @@
         userSettings.exportResolution = exportResolution.value;
         applyStageFrameAspect(true);
         saveUserSettings();
+        handleAspectChangeDuringRecording();
       });
     }
     if (bgStageAspectSelect) {
@@ -5982,6 +6024,7 @@
         userSettings.exportResolution = bgStageAspectSelect.value;
         applyStageFrameAspect(true);
         saveUserSettings();
+        handleAspectChangeDuringRecording();
       });
     }
     applyStageFrameAspect(false);
