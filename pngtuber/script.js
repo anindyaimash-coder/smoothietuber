@@ -1942,6 +1942,10 @@
   const btnCameraBack = document.getElementById('btnCameraBack');
   const btnCameraFront = document.getElementById('btnCameraFront');
   const btnStopCamera = document.getElementById('btnStopCamera');
+  const cameraDeviceSelect = document.getElementById('cameraDeviceSelect');
+  const btnRefreshCameraDevices = document.getElementById('btnRefreshCameraDevices');
+  const activeCameraDeviceName = document.getElementById('activeCameraDeviceName');
+  const toggleAutoContinuityCam = document.getElementById('toggleAutoContinuityCam');
   const cameraFitToggleGroup = document.getElementById('cameraFitToggleGroup');
   const btnToggleCameraFit = document.getElementById('btnToggleCameraFit');
   const cameraZoomControlGroup = document.getElementById('cameraZoomControlGroup');
@@ -2057,6 +2061,9 @@
           if (vipAccessModal) vipAccessModal.classList.add('hidden');
           showToast(t('toast_vip_success') || '🎉 Kode BETATESTER Diterima! Selamat datang!');
           startMicrophone().catch(() => {});
+          if (typeof tryAutoConnectMacIphoneCamera === 'function') {
+            tryAutoConnectMacIphoneCamera();
+          }
         } else {
           if (vipErrorMsg) vipErrorMsg.classList.remove('hidden');
           vipAccessCode.classList.add('doodle-shake');
@@ -2479,6 +2486,9 @@
       target.classList.remove('hidden');
       if (flyoutId === 'flyoutAudio' && typeof populateAudioDevices === 'function') {
         populateAudioDevices().catch(() => {});
+      }
+      if (flyoutId === 'flyoutBg' && typeof populateCameraDevices === 'function') {
+        populateCameraDevices().catch(() => {});
       }
     }
   }
@@ -4572,21 +4582,25 @@
     }
     if (btnCamZoomPresets && btnCamZoomPresets.length > 0) {
       btnCamZoomPresets.forEach(btn => {
-        const z = parseFloat(btn.dataset.camZoom);
+        const z = parseFloat(btn.dataset.zoom || btn.dataset.camZoom);
         if (Math.abs(z - cameraZoom) < 0.04) {
           btn.classList.add('is-active');
+          btn.classList.add('active');
         } else {
           btn.classList.remove('is-active');
+          btn.classList.remove('active');
         }
       });
     }
     if (floatZoomPresetBtns && floatZoomPresetBtns.length > 0) {
       floatZoomPresetBtns.forEach(btn => {
-        const z = parseFloat(btn.dataset.camZoom);
+        const z = parseFloat(btn.dataset.zoom || btn.dataset.camZoom);
         if (Math.abs(z - cameraZoom) < 0.04) {
           btn.classList.add('is-active');
+          btn.classList.add('active');
         } else {
           btn.classList.remove('is-active');
+          btn.classList.remove('active');
         }
       });
     }
@@ -4741,7 +4755,85 @@
     }
   }
 
-  async function startCameraBackground(facing = 'environment') {
+  const isMacDesktop = typeof navigator !== 'undefined' && !isMobileDevice && /Macintosh|Mac OS X/i.test(navigator.userAgent || '');
+
+  function isIphoneContinuityCameraLabel(label) {
+    if (!label) return false;
+    return /(iphone|continuity|kamera berkelanjutan|kamera iphone|desk view|tampilan meja|ipad camera)/i.test(label);
+  }
+
+  function updateActiveCameraLabelDisplay() {
+    if (!activeCameraDeviceName) return;
+    if (cameraStream && cameraStream.getVideoTracks().length > 0) {
+      const track = cameraStream.getVideoTracks()[0];
+      activeCameraDeviceName.textContent = track.label || 'Kamera Aktif';
+    } else {
+      activeCameraDeviceName.textContent = 'Belum Aktif';
+    }
+  }
+
+  async function populateCameraDevices() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices || !cameraDeviceSelect) return;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(d => d.kind === 'videoinput');
+      const prevVal = cameraDeviceSelect.value || 'auto';
+      cameraDeviceSelect.innerHTML = '';
+
+      const autoOpt = document.createElement('option');
+      autoOpt.value = 'auto';
+      autoOpt.textContent = '⚡ Otomatis (Prioritas Kamera iPhone / Belakang)';
+      cameraDeviceSelect.appendChild(autoOpt);
+
+      videoInputs.forEach((d, idx) => {
+        if (!d.deviceId) return;
+        const opt = document.createElement('option');
+        opt.value = d.deviceId;
+        const rawLabel = d.label || `Kamera ${idx + 1}`;
+        const isIphoneCam = isIphoneContinuityCameraLabel(rawLabel);
+        opt.textContent = isIphoneCam ? `🍏📱 ${rawLabel}` : `📷 ${rawLabel}`;
+        cameraDeviceSelect.appendChild(opt);
+      });
+
+      if (prevVal && Array.from(cameraDeviceSelect.options).some(o => o.value === prevVal)) {
+        cameraDeviceSelect.value = prevVal;
+      } else {
+        cameraDeviceSelect.value = 'auto';
+      }
+      updateActiveCameraLabelDisplay();
+    } catch (_) {}
+  }
+
+  async function findPreferredIphoneContinuityCameraId() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return null;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(d => d.kind === 'videoinput' && d.deviceId);
+      if (videoInputs.length === 0) return null;
+
+      // 1. Prioritaskan kamera utama iPhone (bukan Desk View kecuali hanya itu yang ada)
+      const mainIphoneCam = videoInputs.find(d => {
+        const l = d.label || '';
+        return isIphoneContinuityCameraLabel(l) && !/(desk view|tampilan meja)/i.test(l);
+      });
+      if (mainIphoneCam) return mainIphoneCam.deviceId;
+
+      // 2. Fallback ke Desk View iPhone jika ada
+      const deskViewCam = videoInputs.find(d => isIphoneContinuityCameraLabel(d.label || ''));
+      if (deskViewCam) return deskViewCam.deviceId;
+
+      // 3. Jika di Mac mini (tanpa FaceTime kamera bawaan) dan ada 1 kamera eksternal (bukan virtual), gunakan itu
+      if (isMacDesktop) {
+        const nonVirtual = videoInputs.find(d => !/(virtual|obs|manycam|snap camera)/i.test(d.label || ''));
+        if (nonVirtual) return nonVirtual.deviceId;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function startCameraBackground(facing = 'environment', specificDeviceId = null) {
     stopCameraBackground(false);
 
     try {
@@ -4750,38 +4842,90 @@
         return;
       }
 
-      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280)
-      const isPortrait = window.innerHeight >= window.innerWidth;
+      // Deteksi orientasi perangkat: jika HP potret (tegak), minta resolusi potret (720x1280), di Mac minta 1920x1080 / 1280x720
+      const isPortrait = !isMacDesktop && (window.innerHeight >= window.innerWidth);
       let stream = null;
       isUsingUltraWideLens = false;
 
-      // 3-Stage Graceful Fallback (Omit audio:false to prevent "Invalid constraint" exceptions)
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: { ideal: facing },
-            width: { ideal: isPortrait ? 720 : 1280 },
-            height: { ideal: isPortrait ? 1280 : 720 }
-          }
-        });
-      } catch (e1) {
-        console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+      const selectedCamId = specificDeviceId || (cameraDeviceSelect && cameraDeviceSelect.value !== 'auto' ? cameraDeviceSelect.value : null);
+      let targetDeviceId = selectedCamId;
+
+      if (!targetDeviceId && isMacDesktop && facing === 'environment') {
+        targetDeviceId = await findPreferredIphoneContinuityCameraId();
+      }
+
+      if (targetDeviceId) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: facing }
+            video: {
+              deviceId: { exact: targetDeviceId },
+              width: { ideal: isPortrait ? 720 : 1920 },
+              height: { ideal: isPortrait ? 1280 : 1080 }
+            }
           });
-        } catch (e2) {
-          console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: true
-          });
+        } catch (exactCamErr) {
+          console.warn('Exact camera deviceId failed, falling back:', exactCamErr);
+          stream = null;
         }
+      }
+
+      // 3-Stage Graceful Fallback (Omit audio:false to prevent "Invalid constraint" exceptions)
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: { ideal: facing },
+              width: { ideal: isPortrait ? 720 : 1280 },
+              height: { ideal: isPortrait ? 1280 : 720 }
+            }
+          });
+        } catch (e1) {
+          console.warn('Camera Stage 1 failed, trying simple facingMode:', e1);
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: facing }
+            });
+          } catch (e2) {
+            console.warn('Camera Stage 2 failed, falling back to minimal video:', e2);
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true
+            });
+          }
+        }
+      }
+
+      // Setelah izin kamera diberikan di Mac, cek ulang enumerateDevices():
+      // Jika otomatis terbuka kamera virtual (mis. OBS) padahal ada Kamera iPhone (Continuity Camera), langsung pindah ke Kamera iPhone!
+      if (!selectedCamId && isMacDesktop && facing === 'environment' && stream) {
+        try {
+          const preferredIphoneId = await findPreferredIphoneContinuityCameraId();
+          const currentVidTrack = stream.getVideoTracks()[0];
+          const currentLabel = currentVidTrack ? (currentVidTrack.label || '') : '';
+          if (preferredIphoneId && !isIphoneContinuityCameraLabel(currentLabel)) {
+            const iphoneStream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                deviceId: { exact: preferredIphoneId },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+              }
+            }).catch(() => null);
+            if (iphoneStream) {
+              stream.getTracks().forEach(tr => tr.stop());
+              stream = iphoneStream;
+            }
+          }
+        } catch (_) {}
       }
 
       cameraStream = stream;
       activeCameraFacing = facing;
       cameraZoom = 1.0;
       updateCameraZoomUI();
+      await populateCameraDevices();
+      updateActiveCameraLabelDisplay();
+
+      const activeVidTrack = cameraStream.getVideoTracks()[0];
+      const activeCamLabel = activeVidTrack && activeVidTrack.label ? activeVidTrack.label : '';
 
       if (cameraBgWrapper) {
         cameraBgWrapper.classList.remove('hidden');
@@ -4834,7 +4978,8 @@
           if (dockCameraIcon) dockCameraIcon.textContent = '📷';
           btnDockCamera.title = t('dock_camera_back_active');
         }
-        showToast(t('toast_camera_back_active'));
+        const suffix = activeCamLabel ? ` (${activeCamLabel})` : '';
+        showToast(t('toast_camera_back_active') + suffix);
       } else {
         if (btnCameraFront) btnCameraFront.classList.add('is-active');
         if (btnCameraBack) btnCameraBack.classList.remove('is-active');
@@ -4843,10 +4988,12 @@
           if (dockCameraIcon) dockCameraIcon.textContent = '🤳';
           btnDockCamera.title = t('dock_camera_front_active');
         }
-        showToast(t('toast_camera_front_active'));
+        const suffix = activeCamLabel ? ` (${activeCamLabel})` : '';
+        showToast(t('toast_camera_front_active') + suffix);
       }
     } catch (err) {
       console.error('Kamera error:', err);
+      updateActiveCameraLabelDisplay();
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         showToast('⚠️ ' + t('err_camera_denied'));
       } else {
@@ -4869,6 +5016,7 @@
     if (cameraBgVideo) {
       cameraBgVideo.srcObject = null;
     }
+    updateActiveCameraLabelDisplay();
     if (btnStopCamera) btnStopCamera.classList.add('hidden');
     if (cameraFitToggleGroup) cameraFitToggleGroup.classList.add('hidden');
     if (cameraZoomControlGroup) cameraZoomControlGroup.classList.add('hidden');
@@ -4907,6 +5055,46 @@
   if (btnStopCamera) {
     btnStopCamera.addEventListener('click', () => stopCameraBackground(true));
   }
+  if (cameraDeviceSelect) {
+    cameraDeviceSelect.addEventListener('change', () => {
+      const selectedId = cameraDeviceSelect.value;
+      if (selectedId && selectedId !== 'auto') {
+        startCameraBackground(activeCameraFacing || 'environment', selectedId);
+      } else {
+        startCameraBackground('environment', null);
+      }
+    });
+  }
+  if (btnRefreshCameraDevices) {
+    btnRefreshCameraDevices.addEventListener('click', async () => {
+      try {
+        await populateCameraDevices(true);
+        const iphoneCamId = await findPreferredIphoneContinuityCameraId();
+        if (iphoneCamId) {
+          if (cameraDeviceSelect) cameraDeviceSelect.value = iphoneCamId;
+          await startCameraBackground('environment', iphoneCamId);
+        } else if (!cameraStream) {
+          await startCameraBackground('environment', null);
+        } else {
+          showToast('🔄 Daftar kamera diperbarui!');
+        }
+      } catch (e) {
+        console.warn('Gagal menyegarkan daftar kamera:', e);
+      }
+    });
+  }
+  if (toggleAutoContinuityCam) {
+    const savedAutoCam = localStorage.getItem('smoothietuber_auto_continuity_cam');
+    if (savedAutoCam !== null) {
+      toggleAutoContinuityCam.checked = savedAutoCam !== '0';
+    }
+    toggleAutoContinuityCam.addEventListener('change', () => {
+      localStorage.setItem('smoothietuber_auto_continuity_cam', toggleAutoContinuityCam.checked ? '1' : '0');
+      showToast(toggleAutoContinuityCam.checked
+        ? '🍏 Auto-Konek Kamera iPhone saat buka di Mac: AKTIF'
+        : '⏸️ Auto-Konek Kamera iPhone saat buka di Mac: NONAKTIF');
+    });
+  }
   if (btnToggleCameraFit) {
     btnToggleCameraFit.addEventListener('click', () => {
       isCameraCoverFit = !isCameraCoverFit;
@@ -4934,7 +5122,7 @@
   if (btnCamZoomPresets && btnCamZoomPresets.length > 0) {
     btnCamZoomPresets.forEach(btn => {
       btn.addEventListener('click', () => {
-        const targetZ = parseFloat(btn.dataset.camZoom);
+        const targetZ = parseFloat(btn.dataset.zoom || btn.dataset.camZoom);
         if (!isNaN(targetZ)) setCameraZoom(targetZ, true);
       });
     });
@@ -4955,7 +5143,7 @@
     floatZoomPresetBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const targetZ = parseFloat(btn.dataset.camZoom);
+        const targetZ = parseFloat(btn.dataset.zoom || btn.dataset.camZoom);
         if (!isNaN(targetZ)) setCameraZoom(targetZ, true);
       });
     });
@@ -5461,6 +5649,51 @@
     }
   }
 
+  function isAutoContinuityCamEnabled() {
+    if (toggleAutoContinuityCam) return toggleAutoContinuityCam.checked;
+    const saved = localStorage.getItem('smoothietuber_auto_continuity_cam');
+    return saved !== '0';
+  }
+
+  async function tryAutoConnectMacIphoneCamera() {
+    if (!isMacDesktop || !isAutoContinuityCamEnabled() || cameraStream) return;
+    try {
+      await populateCameraDevices();
+      const iphoneCamId = await findPreferredIphoneContinuityCameraId();
+      if (iphoneCamId) {
+        if (cameraDeviceSelect) cameraDeviceSelect.value = iphoneCamId;
+        await startCameraBackground('environment', iphoneCamId);
+      } else {
+        // Membangunkan Continuity Camera di macOS: memanggil startCameraBackground('environment')
+        // akan otomatis membuka stream & mengganti ke iPhone Camera begitu label terdeteksi
+        await startCameraBackground('environment', null);
+      }
+    } catch (e) {
+      console.warn('Auto-connect iPhone Continuity Camera ditunda:', e);
+    }
+  }
+
+  // Hotplug listener: Jika iPhone baru didekatkan / dinyalakan Continuity Camera-nya saat web sudah terbuka
+  if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+    navigator.mediaDevices.addEventListener('devicechange', async () => {
+      try {
+        await populateCameraDevices();
+        if (isMacDesktop && isAutoContinuityCamEnabled()) {
+          const iphoneCamId = await findPreferredIphoneContinuityCameraId();
+          if (iphoneCamId) {
+            const currentSettings = cameraStream && cameraStream.getVideoTracks()[0]
+              ? cameraStream.getVideoTracks()[0].getSettings()
+              : null;
+            if (!cameraStream || (currentSettings && currentSettings.deviceId !== iphoneCamId)) {
+              if (cameraDeviceSelect) cameraDeviceSelect.value = iphoneCamId;
+              await startCameraBackground('environment', iphoneCamId);
+            }
+          }
+        }
+      } catch (e) {}
+    });
+  }
+
   // --- 12. INITIALIZATION ---
   async function init() {
     setupVipGateEvents();
@@ -5699,6 +5932,9 @@
       startCameraBackground('environment').catch(() => {});
     } else if (camParam === 'front') {
       startCameraBackground('user').catch(() => {});
+    } else if (isUnlocked && isMacDesktop && isAutoContinuityCamEnabled() && camParam !== 'off' && camParam !== '0') {
+      // Otomatis bangunkan & konek ke kamera iPhone (Continuity Camera) saat dibuka di Mac mini
+      tryAutoConnectMacIphoneCamera();
     }
 
     // Otomatis deteksi suara hanya jika sudah terotentikasi!
@@ -5706,13 +5942,16 @@
       startMicrophone().catch(() => {});
     }
 
-    // Fallback: Aktifkan/resume audio jika browser mewajibkan interaksi awal
+    // Fallback: Aktifkan/resume audio & kamera iPhone jika browser mewajibkan interaksi awal
     const resumeAudioOnFirstInteraction = () => {
       if (!isVipAuthorized()) return;
       if (!isListening) {
         startMicrophone().catch(() => {});
       } else if (audioContext && audioContext.state === 'suspended') {
         audioContext.resume().catch(() => {});
+      }
+      if (!cameraStream && isMacDesktop && isAutoContinuityCamEnabled() && camParam !== 'off' && camParam !== '0') {
+        tryAutoConnectMacIphoneCamera();
       }
       window.removeEventListener('click', resumeAudioOnFirstInteraction);
       window.removeEventListener('keydown', resumeAudioOnFirstInteraction);
